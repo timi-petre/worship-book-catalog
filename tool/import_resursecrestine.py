@@ -421,6 +421,32 @@ def finalize() -> None:
                 "chordpro": rec["chordpro"],
             }
         )
+
+    # Songbook (carte) songs from the lyrics section, when fetched
+    # (tool/fetch_book_songs.py). They carry a "book" field the app groups by.
+    books_file = OUT / "cantece_songs.jsonl"
+    if books_file.exists():
+        n_books = 0
+        for line in books_file.read_text().split("\n"):
+            if not line.strip():
+                continue
+            rec = json.loads(line)
+            if not rec.get("ok"):
+                continue
+            songs.append(
+                {
+                    "id": rec["id"],
+                    "title": rec["title"],
+                    "author": rec.get("author", ""),
+                    "theme": rec.get("theme", ""),
+                    "url": rec["url"],
+                    "book": rec.get("book", ""),
+                    "album": rec.get("album", ""),
+                    "chordpro": rec["chordpro"],
+                }
+            )
+            n_books += 1
+        print(f"merged {n_books} songbook songs")
     songs.sort(key=lambda s: s["title"].lower())
     CATALOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     payload = {

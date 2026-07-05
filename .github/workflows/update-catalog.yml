@@ -7,6 +7,11 @@
 # 3. dacă numărul de cântări s-a schimbat, publică catalog.json pe canalul
 #    dev și ca release datat (prod = releases/latest)
 # 4. salvează starea înapoi, ca rularea următoare să fie tot incrementală
+#
+# Cărțile de cântări (cantece_songs.jsonl, secțiunea de versuri a sursei) NU
+# se re-descarcă aici: starea lor e un asset în release-ul "state", iar
+# `finalize` le îmbină automat în catalog. Re-descărcarea (rară) se face
+# manual cu tool/fetch_book_songs.py din repo-ul aplicației.
 name: Actualizare catalog
 
 on:
@@ -73,6 +78,12 @@ jobs:
             -n "Fișiere interne pentru rulările incrementale — nu descărca manual." \
           || true
           gh release upload state tool/out/index.jsonl.gz tool/out/songs.jsonl.gz --clobber
+          # Starea cărților se re-urcă doar ca s-o păstrăm intactă la clobber
+          # viitor; conținutul ei se schimbă numai la re-descărcare manuală.
+          if [ -e tool/out/cantece_songs.jsonl ]; then
+            gzip -kf tool/out/cantece_songs.jsonl
+            gh release upload state tool/out/cantece_songs.jsonl.gz --clobber
+          fi
 
       # GitHub dezactivează cron-urile din repo-urile fără commit-uri 60 de
       # zile; commit-ul acesta mic ține automatizarea în viață pe termen lung.
