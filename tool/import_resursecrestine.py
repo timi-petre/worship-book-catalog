@@ -163,18 +163,115 @@ CHORD_TOKEN = re.compile(
     r"(?:/[A-G][#b]?)?$"
 )
 
+# Romanian solfège notation (Sol, Re/Fa#, mim7, lam...), mapped to letters so
+# the songs transpose like everything else. Bare note names double as
+# Romanian words ("la", "si", "mi"), so a line only counts as solfège when
+# at least one UNAMBIGUOUS token (accidental/minor/quality/slash) anchors it.
+SOLFEGE_PART = re.compile(
+    r"^(do|re|mi|fa|sol|la|si)([#b]?)(m(?!aj))?"
+    r"((?:maj|min|dim|aug|sus|add|[0-9]|\+|°)*)$",
+    re.I,
+)
+NOTE_MAP = {"do": "C", "re": "D", "mi": "E", "fa": "F",
+            "sol": "G", "la": "A", "si": "B"}
+MARKER = re.compile(r"^(?:/+:?|:/+|x\d+|\||,|-|\.|[0-9])+$")
+
+
+def _solfege_part_to_letter(part):
+    m = SOLFEGE_PART.match(part)
+    if not m:
+        return None
+    return (NOTE_MAP[m.group(1).lower()] + (m.group(2) or "")
+            + ("m" if m.group(3) else "") + (m.group(4) or ""))
+
+
+def _solfege_to_letter(token):
+    parts = token.split("/")
+    if not parts or len(parts) > 2:
+        return None
+    root = _solfege_part_to_letter(parts[0])
+    if root is None:
+        return None
+    if len(parts) == 1 or parts[1] == "":
+        return root
+    bass = _solfege_part_to_letter(parts[1])
+    return None if bass is None else root + "/" + bass
+
+
+def _is_unambiguous_solfege(token):
+    if "/" in token:
+        return _solfege_to_letter(token) is not None
+    m = SOLFEGE_PART.match(token)
+    return bool(m and (m.group(2) or m.group(3) or m.group(4)))
+
+
+def _is_bare_cap_solfege(token):
+    m = SOLFEGE_PART.match(token)
+    if not m or m.group(2) or m.group(3) or m.group(4):
+        return False
+    return token[:1].isupper()
+
+
+def _is_chordish(token):
+    if CHORD_TOKEN.match(token) or _is_unambiguous_solfege(token):
+        return True
+    if "-" in token:
+        parts = [p for p in token.split("-") if p]
+        return bool(parts) and all(
+            CHORD_TOKEN.match(p) or _is_unambiguous_solfege(p)
+            or _is_bare_cap_solfege(p) for p in parts)
+    return False
+
 
 def _is_plain_chord_line(text):
-    """True when a no-anchor line consists solely of chord tokens."""
+    """True when a no-anchor line consists solely of chord tokens/markers."""
     tokens = text.split()
     if not tokens or len(tokens) > 12:
         return False
-    return all(len(t) <= 10 and CHORD_TOKEN.match(t) for t in tokens)
+    has_chord = has_solfege_anchor = False
+    bare_solfege = 0
+    for t in tokens:
+        if len(t) > 20:
+            return False
+        if _is_chordish(t):
+            has_chord = True
+            if _is_unambiguous_solfege(t) or "-" in t:
+                has_solfege_anchor = True
+            continue
+        if _is_bare_cap_solfege(t):
+            bare_solfege += 1
+            continue
+        if MARKER.match(t):
+            continue
+        return False
+    return has_chord or (bare_solfege > 0 and has_solfege_anchor)
+
+
+def _to_letter_chord(token):
+    """Solfège → letter notation; dash-joined runs convert piecewise."""
+    mapped = _solfege_to_letter(token)
+    if mapped is not None:
+        return mapped
+    if "-" in token:
+        return "-".join(
+            (_solfege_to_letter(p) or p) if p else "" for p in token.split("-"))
+    return token
 
 
 def _plain_chords(text):
-    """Extract (column, chord) pairs from a plain-text chord line."""
-    return [(m.start(), m.group(0)) for m in re.finditer(r"\S+", text)]
+    """(column, chord) pairs from a plain-text chord line: standalone digit
+    qualities attach to the previous chord ("mim 7" → "mim7"), solfège maps
+    to letters, and pure markers are dropped."""
+    toks = []
+    for m in re.finditer(r"\S+", text):
+        t = m.group(0)
+        if re.match(r"^[0-9]+$", t) and toks:
+            toks[-1] = (toks[-1][0], toks[-1][1] + t)
+        else:
+            toks.append((m.start(), t))
+    return [(col, _to_letter_chord(t)) for col, t in toks
+            if _is_chordish(t) or _is_bare_cap_solfege(t)
+            or re.match(r"^[0-9]+$", t) is None and not MARKER.match(t)]
 
 
 def _visible(fragment: str) -> str:
@@ -209,7 +306,9 @@ def _line_parts(line: str):
         col += len(before)
         chord = _visible(m.group(1)).strip()
         if chord:
-            chords.append((col, chord))
+            # Map solfège to letters, but advance the visible column by the
+            # ORIGINAL width — that's what the browser rendered above lyrics.
+            chords.append((col, _to_letter_chord(chord)))
             col += len(chord)
         pos = m.end()
     rest = _visible(line[pos:])
