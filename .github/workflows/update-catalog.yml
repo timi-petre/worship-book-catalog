@@ -1,0 +1,86 @@
+# Actualizare automată a catalogului de cântări.
+#
+# Rulează săptămânal (luni dimineața) sau manual (Actions -> Run workflow):
+# 1. restaurează starea (cântările deja descărcate) din release-ul "state"
+# 2. re-parcurge indexul alfabetic de pe resursecrestine.ro și descarcă
+#    DOAR cântările noi (importerul e incremental)
+# 3. dacă numărul de cântări s-a schimbat, publică catalog.json pe canalul
+#    dev și ca release datat (prod = releases/latest)
+# 4. salvează starea înapoi, ca rularea următoare să fie tot incrementală
+name: Actualizare catalog
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # luni 03:00 UTC (06:00 România)
+  workflow_dispatch:
+
+concurrency:
+  group: update-catalog
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restaurează starea importerului
+        run: |
+          mkdir -p tool/out
+          gh release download state -p '*.gz' -D tool/out --clobber || echo "(fără stare — prima rulare descarcă tot)"
+          for f in tool/out/*.gz; do [ -e "$f" ] && gunzip -f "$f"; done
+          wc -l tool/out/*.jsonl 2>/dev/null || true
+
+      - name: Import incremental (doar cântările noi)
+        run: |
+          rm -f tool/out/letters_done.txt
+          python3 tool/import_resursecrestine.py all
+
+      - name: Detectează schimbări
+        id: diff
+        run: |
+          NEW=$(python3 -c "import json;print(json.load(open('assets/catalog/catalog.json'))['count'])")
+          if gh release download dev --pattern catalog.json --output /tmp/old.json --clobber 2>/dev/null; then
+            OLD=$(python3 -c "import json;print(json.load(open('/tmp/old.json'))['count'])")
+          else
+            OLD=0
+          fi
+          echo "vechi: $OLD -> nou: $NEW"
+          [ "$NEW" != "$OLD" ] && CHANGED=yes || CHANGED=no
+          { echo "changed=$CHANGED"; echo "count=$NEW"; } >> "$GITHUB_OUTPUT"
+
+      - name: Publică pe dev + release datat (prod)
+        if: steps.diff.outputs.changed == 'yes'
+        run: |
+          gh release upload dev assets/catalog/catalog.json --clobber
+          TAG="v$(date +%Y-%m-%d)"
+          gh release create "$TAG" assets/catalog/catalog.json \
+            -t "Catalog $(date +%Y-%m-%d)" \
+            -n "${{ steps.diff.outputs.count }} cântări. Actualizare automată." \
+          || gh release upload "$TAG" assets/catalog/catalog.json --clobber
+
+      - name: Salvează starea importerului
+        run: |
+          gzip -kf tool/out/index.jsonl tool/out/songs.jsonl
+          gh release create state --prerelease \
+            -t "Stare importer (uz intern)" \
+            -n "Fișiere interne pentru rulările incrementale — nu descărca manual." \
+          || true
+          gh release upload state tool/out/index.jsonl.gz tool/out/songs.jsonl.gz --clobber
+
+      # GitHub dezactivează cron-urile din repo-urile fără commit-uri 60 de
+      # zile; commit-ul acesta mic ține automatizarea în viață pe termen lung.
+      - name: Marchează rularea (menține cron-ul activ)
+        run: |
+          git config user.name "catalog-bot"
+          git config user.email "actions@github.com"
+          date -u +"%Y-%m-%d %H:%M UTC" > ULTIMA_VERIFICARE.txt
+          git add ULTIMA_VERIFICARE.txt
+          git commit -m "Verificare automată: $(date -u +%Y-%m-%d)" || exit 0
+          git push
