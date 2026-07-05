@@ -1,0 +1,10 @@
+# worship-book-catalog
+
+Catalogul de cântări al aplicației **Cântări de Laudă** (Android).
+
+- `catalog.json` este publicat ca asset la Releases:
+  - **prod**: `releases/latest/download/catalog.json`
+  - **dev**: `releases/download/dev/catalog.json`
+- Conținut: cântări cu acorduri de pe [resursecrestine.ro](https://www.resursecrestine.ro),
+  licențiate **CC BY-NC-SA 3.0** (atribuire per cântec inclusă în fișier; uz necomercial).
+- Regenerare: `tool/import_resursecrestine.py` din repo-ul aplicației.
