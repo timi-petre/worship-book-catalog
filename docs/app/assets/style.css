@@ -3,25 +3,37 @@
    auriu #E2A93B), ca site-ul să arate ca aplicația, nu ca o interpretare a ei. */
 
 :root {
+  /* O singură declarație per culoare, pentru amândouă temele: `light-dark()`
+     citește `color-scheme`, deci comutatorul din bară schimbă o singură
+     proprietate, iar fără JavaScript pagina urmează tema sistemului. */
+  color-scheme: light dark;
+
   --brand-seed: #1e5aa8;
   --gold: #e2a93b;
   --on-gold: #3e2d00;
 
-  --primary: #415f91;
-  --on-primary: #ffffff;
-  --primary-container: #d6e3ff;
-  --on-primary-container: #274777;
-  --background: #eff3fa;
-  --surface: #ffffff;
-  --on-surface: #191c20;
-  --on-surface-variant: #44474e;
-  --outline-variant: #c4c6d0;
+  --primary: light-dark(#415f91, #aac7ff);
+  --on-primary: light-dark(#ffffff, #0a305f);
+  --primary-container: light-dark(#d6e3ff, #274777);
+  --on-primary-container: light-dark(#274777, #d6e3ff);
+  --background: light-dark(#eff3fa, #0d1420);
+  --surface: light-dark(#ffffff, #141c2c);
+  --on-surface: light-dark(#191c20, #e2e2e9);
+  --on-surface-variant: light-dark(#44474e, #c4c6d0);
+  --outline-variant: light-dark(#c4c6d0, #44474e);
 
   /* Materialul translucid al barei: se schimbă cu tema, nu e o culoare fixă. */
-  --chrome: rgba(255, 255, 255, 0.72);
-  --chrome-edge: rgba(255, 255, 255, 0.55);
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 4px 12px rgba(16, 24, 40, 0.06);
-  --shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.14), 0 2px 8px rgba(16, 24, 40, 0.08);
+  --chrome: light-dark(rgba(255, 255, 255, 0.72), rgba(20, 28, 44, 0.72));
+  --chrome-edge: light-dark(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.12));
+  /* Umbrele au două straturi, iar virgula dintre ele ar fi citită drept
+     separatorul de argumente al lui `light-dark()` — de aceea fiecare strat
+     își are variabila lui, și abia apoi se lipesc. */
+  --shadow-sm-1: light-dark(0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(0, 0, 0, 0.4));
+  --shadow-sm-2: light-dark(0 4px 12px rgba(16, 24, 40, 0.06), 0 4px 12px rgba(0, 0, 0, 0.3));
+  --shadow-lg-1: light-dark(0 12px 32px rgba(16, 24, 40, 0.14), 0 12px 32px rgba(0, 0, 0, 0.5));
+  --shadow-lg-2: light-dark(0 2px 8px rgba(16, 24, 40, 0.08), 0 2px 8px rgba(0, 0, 0, 0.4));
+  --shadow-sm: var(--shadow-sm-1), var(--shadow-sm-2);
+  --shadow-lg: var(--shadow-lg-1), var(--shadow-lg-2);
 
   /* Spațierea urcă în rem, nu în px: dacă utilizatorul mărește textul,
      layout-ul crește cu el (Dynamic Type, §15 din ghid). */
@@ -29,23 +41,9 @@
   --section-y: clamp(4rem, 10vw, 8rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: #aac7ff;
-    --on-primary: #0a305f;
-    --primary-container: #274777;
-    --on-primary-container: #d6e3ff;
-    --background: #0d1420;
-    --surface: #141c2c;
-    --on-surface: #e2e2e9;
-    --on-surface-variant: #c4c6d0;
-    --outline-variant: #44474e;
-    --chrome: rgba(20, 28, 44, 0.72);
-    --chrome-edge: rgba(255, 255, 255, 0.12);
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
-  }
-}
+/* Alegerea manuală: o singură proprietate răstoarnă toată paleta. */
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -181,6 +179,15 @@ p { margin: 0 0 1em; letter-spacing: 0; }
 
 @media (max-width: 34rem) { .nav-links { display: none; } }
 
+/* Pe ecrane înguste, bara are trei lucruri de dus: numele, tema și butonul.
+   Strâng spațiile în loc să las numele să se rupă pe două rânduri — un rând
+   rupt îngroașă bara pentru toată pagina. */
+@media (max-width: 26rem) {
+  .nav-row { gap: 0.25rem; }
+  .nav-brand { font-size: 0.9375rem; gap: 0.5rem; }
+  .nav .btn { padding-inline: 0.875rem; }
+}
+
 /* Butonul din bară e mai compact decât cele din pagină — bara e cronică, nu
    un îndemn. Pastila scade la ~38px, dar ținta de atingere rămâne 44px,
    întinsă invizibil peste ea: text mic nu are voie să însemne țintă mică.
@@ -201,6 +208,31 @@ p { margin: 0 0 1em; letter-spacing: 0; }
   height: 44px;
   transform: translateY(-50%);
 }
+
+/* Comutatorul de temă: doar iconiță, dar cu aceeași țintă de 44px ca restul.
+   Rămâne discret — e o preferință, nu un îndemn. */
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 150ms ease, color 150ms ease, transform 100ms ease-out;
+}
+
+.icon-btn:hover { background: var(--primary-container); color: var(--on-primary-container); }
+.icon-btn:active { transform: scale(0.92); }
+.icon-btn svg { width: 20px; height: 20px; }
+
+/* Iconița arată UNDE duce apăsarea, nu unde ești: pe temă deschisă vezi luna. */
+.icon-btn .i-moon, .icon-btn .i-sun { display: none; }
+.icon-btn[data-icon="moon"] .i-moon { display: block; }
+.icon-btn[data-icon="sun"] .i-sun { display: block; }
 
 /* ── Butoane: feedback pe APĂSARE, nu pe eliberare (§1) ────────────────── */
 
@@ -297,14 +329,18 @@ p { margin: 0 0 1em; letter-spacing: 0; }
 
 .shots {
   position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.shots-viewport {
+  position: relative;
   /* Pista e mai lată decât cadrul: capturile vecine se văd intrând, iar
      restul e tăiat aici — altfel ar lărgi pagina pe orizontală. */
   overflow: hidden;
   padding-block: 1rem;
   /* Degetul poate derula pagina pe verticală; orizontala e a noastră. */
   touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
 }
 
 .shots-track {
@@ -333,6 +369,45 @@ p { margin: 0 0 1em; letter-spacing: 0; }
 }
 
 .shot img { width: 100%; height: auto; display: block; }
+
+/* Săgețile: pastile de sticlă peste marginile cadrului. Cea din stânga
+   lipsește la prima captură, cea din dreapta la ultima — o săgeată care nu
+   duce nicăieri e o promisiune falsă. Dispar prin opacitate, nu prin
+   `display`, ca să nu salte layout-ul. */
+.shots-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--chrome-edge);
+  background: var(--chrome);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  box-shadow: var(--shadow-sm);
+  color: var(--on-surface);
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 200ms ease, transform 100ms ease-out, background-color 150ms ease;
+}
+
+.shots-arrow svg { width: 20px; height: 20px; }
+.shots-arrow:active { transform: translateY(-50%) scale(0.92); }
+.shots-arrow[data-side="prev"] { left: 0.25rem; }
+.shots-arrow[data-side="next"] { right: 0.25rem; }
+
+.shots-arrow[aria-disabled="true"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .shots-arrow { background: var(--surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
 
 .shots-dots {
   display: flex;

@@ -158,6 +158,7 @@
       dots[d].setAttribute('aria-selected', d === next ? 'true' : 'false');
     }
     if (caption) caption.textContent = slides[next].getAttribute('data-caption') || '';
+    syncArrows(next);
     for (var s = 0; s < slides.length; s++) {
       slides[s].setAttribute('aria-hidden', s === next ? 'false' : 'true');
     }
@@ -271,6 +272,28 @@
     dot.addEventListener('click', function () { setIndex(i); });
   });
 
+  /* ── Săgețile ────────────────────────────────────────────────────────────
+   * Aceeași stare ca punctele, altă unealtă: pentru mouse și pentru cine nu
+   * ghicește că imaginea se trage. Săgeata care n-ar duce nicăieri dispare.
+   */
+  var arrows = Array.prototype.slice.call(root.querySelectorAll('.shots-arrow'));
+
+  function syncArrows(i) {
+    arrows.forEach(function (a) {
+      var atEnd = a.getAttribute('data-side') === 'prev'
+        ? i <= 0
+        : i >= slides.length - 1;
+      a.setAttribute('aria-disabled', atEnd ? 'true' : 'false');
+    });
+  }
+
+  arrows.forEach(function (a) {
+    a.addEventListener('click', function () {
+      if (a.getAttribute('aria-disabled') === 'true') return;
+      setIndex(index + (a.getAttribute('data-side') === 'prev' ? -1 : 1));
+    });
+  });
+
   root.addEventListener('keydown', function (e) {
     if (e.key === 'ArrowRight') { e.preventDefault(); setIndex(index + 1); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); setIndex(index - 1); }
@@ -296,6 +319,18 @@
   /* ── Varianta cu mișcare redusă ───────────────────────────────────────── */
 
   function bindDotsToScroll() {
+    var cur = 0;
+    var arrows = Array.prototype.slice.call(root.querySelectorAll('.shots-arrow'));
+    arrows.forEach(function (a) {
+      a.addEventListener('click', function () {
+        if (a.getAttribute('aria-disabled') === 'true') return;
+        var i = cur + (a.getAttribute('data-side') === 'prev' ? -1 : 1);
+        i = Math.max(0, Math.min(slides.length - 1, i));
+        slides[i].scrollIntoView({ block: 'nearest', inline: 'center' });
+        mark(i);
+      });
+    });
+
     dots.forEach(function (dot, i) {
       dot.addEventListener('click', function () {
         slides[i].scrollIntoView({ block: 'nearest', inline: 'center' });
@@ -314,10 +349,17 @@
     mark(0);
 
     function mark(i) {
+      cur = i;
       dots.forEach(function (d, n) {
         d.setAttribute('aria-selected', n === i ? 'true' : 'false');
       });
       if (caption) caption.textContent = slides[i].getAttribute('data-caption') || '';
+      arrows.forEach(function (a) {
+        var atEnd = a.getAttribute('data-side') === 'prev'
+          ? i <= 0
+          : i >= slides.length - 1;
+        a.setAttribute('aria-disabled', atEnd ? 'true' : 'false');
+      });
     }
   }
 })();
@@ -330,5 +372,49 @@
     nav.setAttribute('data-scrolled', window.scrollY > 8 ? 'true' : 'false');
   }
   window.addEventListener('scroll', sync, { passive: true });
+  sync();
+})();
+
+/* Comutatorul de temă. Alegerea manuală bate sistemul și rămâne memorată;
+   fără ea, pagina urmează tema telefonului, ca până acum. Comută o singură
+   proprietate (`color-scheme`), restul paletei vine din `light-dark()`. */
+(function () {
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+
+  var root = document.documentElement;
+  var system = window.matchMedia('(prefers-color-scheme: dark)');
+  var BAR = { light: '#415f91', dark: '#0d1420' };
+
+  function resolved() {
+    return root.dataset.theme || (system.matches ? 'dark' : 'light');
+  }
+
+  function sync() {
+    var dark = resolved() === 'dark';
+    // Iconița arată UNDE duce apăsarea, nu unde ești.
+    btn.setAttribute('data-icon', dark ? 'sun' : 'moon');
+    btn.setAttribute('aria-label', dark ? 'Treci pe tema deschisă' : 'Treci pe tema închisă');
+
+    // Culoarea barei browserului pe telefon: cele două meta-uri sunt legate de
+    // tema SISTEMULUI, deci după o alegere manuală ar rămâne pe cealaltă temă.
+    if (root.dataset.theme) {
+      var metas = document.querySelectorAll('meta[name="theme-color"]');
+      for (var i = 0; i < metas.length; i++) {
+        metas[i].removeAttribute('media');
+        metas[i].setAttribute('content', dark ? BAR.dark : BAR.light);
+      }
+    }
+  }
+
+  btn.addEventListener('click', function () {
+    var next = resolved() === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('tema', next); } catch (e) {}
+    sync();
+  });
+
+  // Cât timp n-a ales nimeni manual, schimbarea temei sistemului se vede.
+  system.addEventListener('change', sync);
   sync();
 })();
