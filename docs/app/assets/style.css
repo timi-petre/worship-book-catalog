@@ -38,7 +38,7 @@
   /* Spațierea urcă în rem, nu în px: dacă utilizatorul mărește textul,
      layout-ul crește cu el (Dynamic Type, §15 din ghid). */
   --gap: clamp(1rem, 3vw, 2rem);
-  --section-y: clamp(4rem, 10vw, 8rem);
+  --section-y: clamp(2.5rem, 5vw, 4.5rem);
 }
 
 /* Alegerea manuală: o singură proprietate răstoarnă toată paleta. */
@@ -272,7 +272,7 @@ p { margin: 0 0 1em; letter-spacing: 0; }
 
 /* ── Hero ─────────────────────────────────────────────────────────────── */
 
-.hero { padding: clamp(3rem, 8vw, 6rem) 0 var(--section-y); position: relative; }
+.hero { padding: clamp(2rem, 5vw, 4rem) 0 var(--section-y); position: relative; }
 
 .hero-grid {
   display: grid;
@@ -448,7 +448,7 @@ p { margin: 0 0 1em; letter-spacing: 0; }
 
 .section { padding: var(--section-y) 0; }
 
-.section-head { max-width: 42ch; margin-bottom: clamp(2rem, 5vw, 3.5rem); }
+.section-head { max-width: 42ch; margin-bottom: clamp(1.5rem, 3vw, 2.5rem); }
 .section-head p { color: var(--on-surface-variant); font-size: 1.0625rem; }
 
 .cards {
