@@ -1,0 +1,460 @@
+/* Cântări de Laudă — pagina de prezentare.
+   Paleta e cea reală din lib/theme.dart (Material 3, seed #1E5AA8 + accentul
+   auriu #E2A93B), ca site-ul să arate ca aplicația, nu ca o interpretare a ei. */
+
+:root {
+  --brand-seed: #1e5aa8;
+  --gold: #e2a93b;
+  --on-gold: #3e2d00;
+
+  --primary: #415f91;
+  --on-primary: #ffffff;
+  --primary-container: #d6e3ff;
+  --on-primary-container: #274777;
+  --background: #eff3fa;
+  --surface: #ffffff;
+  --on-surface: #191c20;
+  --on-surface-variant: #44474e;
+  --outline-variant: #c4c6d0;
+
+  /* Materialul translucid al barei: se schimbă cu tema, nu e o culoare fixă. */
+  --chrome: rgba(255, 255, 255, 0.72);
+  --chrome-edge: rgba(255, 255, 255, 0.55);
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 4px 12px rgba(16, 24, 40, 0.06);
+  --shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.14), 0 2px 8px rgba(16, 24, 40, 0.08);
+
+  /* Spațierea urcă în rem, nu în px: dacă utilizatorul mărește textul,
+     layout-ul crește cu el (Dynamic Type, §15 din ghid). */
+  --gap: clamp(1rem, 3vw, 2rem);
+  --section-y: clamp(4rem, 10vw, 8rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #aac7ff;
+    --on-primary: #0a305f;
+    --primary-container: #274777;
+    --on-primary-container: #d6e3ff;
+    --background: #0d1420;
+    --surface: #141c2c;
+    --on-surface: #e2e2e9;
+    --on-surface-variant: #c4c6d0;
+    --outline-variant: #44474e;
+    --chrome: rgba(20, 28, 44, 0.72);
+    --chrome-edge: rgba(255, 255, 255, 0.12);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  /* Fontul de sistem: aduce deja optical sizing și tabele de tracking, și e
+     exact fontul pe care îl folosește aplicația (SF Pro / Roboto). */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 100%;
+  line-height: 1.6;
+  color: var(--on-surface);
+  background: var(--background);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── Tipografie ────────────────────────────────────────────────────────────
+   Tracking-ul e specific mărimii: negativ pe text mare (literele par prea
+   depărtate cum cresc), ~0 pe corp. O singură valoare pentru tot ar fi
+   greșită undeva. Leading-ul merge invers cu mărimea. */
+
+h1, h2, h3 { margin: 0 0 0.5em; font-weight: 700; }
+
+h1 {
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: 1.1875rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+p { margin: 0 0 1em; letter-spacing: 0; }
+
+.lead {
+  font-size: clamp(1.125rem, 2.2vw, 1.375rem);
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  color: var(--on-surface-variant);
+  max-width: 34ch;
+}
+
+.eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  /* Text mic: tracking ușor POZITIV, pentru lizibilitate. */
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin: 0 0 0.75rem;
+}
+
+.wrap { width: min(100% - 2.5rem, 68rem); margin-inline: auto; }
+
+/* ── Bara de sus: material translucid, conținutul curge pe sub ─────────────
+   Nu o bandă opacă care consumă o fâșie din ecran (§12). */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--chrome);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid transparent;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+/* Efect de margine la scroll, în loc de o linie de 1px mereu prezentă:
+   separarea apare doar când chiar există conținut pe dedesubt. */
+.nav[data-scrolled="true"] {
+  border-bottom-color: var(--outline-variant);
+  box-shadow: 0 1px 12px rgba(16, 24, 40, 0.06);
+}
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--on-surface);
+  text-decoration: none;
+  margin-inline-end: auto;
+}
+
+.nav-brand img { width: 28px; height: 28px; border-radius: 7px; }
+
+.nav-links { display: flex; gap: 0.25rem; }
+
+.nav-links a {
+  color: var(--on-surface-variant);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  /* Ținta de atingere rămâne ≥44px chiar dacă textul e mic. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.nav-links a:hover { background: var(--primary-container); color: var(--on-primary-container); }
+
+@media (max-width: 34rem) { .nav-links { display: none; } }
+
+/* ── Butoane: feedback pe APĂSARE, nu pe eliberare (§1) ────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.8125rem 1.5rem;
+  border-radius: 999px;
+  border: 0;
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  /* Doar transform/opacity — proprietăți compuse pe GPU, fără layout. */
+  transition: transform 100ms ease-out, box-shadow 150ms ease, background-color 150ms ease;
+  will-change: transform;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary { background: var(--primary); color: var(--on-primary); box-shadow: var(--shadow-sm); }
+.btn-primary:hover { box-shadow: var(--shadow-lg); }
+
+.btn-quiet {
+  background: transparent;
+  color: var(--on-surface-variant);
+  border: 1px solid var(--outline-variant);
+}
+.btn-quiet:hover { border-color: var(--primary); color: var(--primary); }
+
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
+
+/* ── Hero ─────────────────────────────────────────────────────────────── */
+
+.hero { padding: clamp(3rem, 8vw, 6rem) 0 var(--section-y); position: relative; }
+
+.hero-grid {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 56rem) { .hero-grid { grid-template-columns: 1fr 1fr; } }
+
+/* Un `1fr` de grid înseamnă minmax(auto, 1fr): pista caruselului, lată de
+   ~1400px, ar dicta lățimea coloanei și ar strivi textul de lângă ea.
+   `min-width: 0` rupe legătura dintre conținutul lat și dimensiunea coloanei. */
+.hero-grid > * { min-width: 0; }
+
+.hero-icon {
+  width: 76px; height: 76px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+
+.hero-note {
+  margin-top: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--outline-variant);
+}
+
+.stat b {
+  display: block;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.stat span { font-size: 0.875rem; color: var(--on-surface-variant); }
+
+/* ── Caruselul de capturi ─────────────────────────────────────────────────
+   Aici trăiește partea fizică: degetul trage 1:1, la eliberare mișcarea
+   continuă cu viteza degetului, iar la capete rezistă în loc să se oprească
+   sec. Vezi assets/carousel.js. */
+
+.shots {
+  position: relative;
+  /* Pista e mai lată decât cadrul: capturile vecine se văd intrând, iar
+     restul e tăiat aici — altfel ar lărgi pagina pe orizontală. */
+  overflow: hidden;
+  padding-block: 1rem;
+  /* Degetul poate derula pagina pe verticală; orizontala e a noastră. */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.shots-track {
+  display: flex;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+  will-change: transform;
+  cursor: grab;
+}
+
+.shots-track:active { cursor: grabbing; }
+
+.shot {
+  flex: 0 0 auto;
+  /* <figure> vine cu `margin: 1em 40px` de la browser: fără resetare, fiecare
+     captură ar sta cu 80px mai departe decât spune `gap`, iar vecinele n-ar
+     mai intra în cadru. */
+  margin: 0;
+  width: clamp(200px, 58vw, 264px);
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  background: var(--surface);
+  /* Marginea luminoasă de sus = lumina care prinde materialul. */
+  border: 1px solid var(--chrome-edge);
+  transform-origin: center;
+}
+
+.shot img { width: 100%; height: auto; display: block; }
+
+.shots-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.dot {
+  width: 44px; height: 44px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.dot::after {
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  background: var(--outline-variant);
+  transition: transform 200ms ease, background-color 200ms ease;
+}
+
+.dot[aria-selected="true"]::after { background: var(--primary); transform: scale(1.4); }
+
+.shot-caption {
+  text-align: center;
+  margin-top: 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--on-surface-variant);
+  min-height: 1.5em;
+}
+
+/* ── Secțiuni ─────────────────────────────────────────────────────────── */
+
+.section { padding: var(--section-y) 0; }
+
+.section-head { max-width: 42ch; margin-bottom: clamp(2rem, 5vw, 3.5rem); }
+.section-head p { color: var(--on-surface-variant); font-size: 1.0625rem; }
+
+.cards {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+.card p { color: var(--on-surface-variant); margin-bottom: 0; }
+
+.card-icon {
+  width: 44px; height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  margin-bottom: 1rem;
+}
+
+.card-icon svg { width: 22px; height: 22px; }
+
+/* Cardul aurii — accentul unic al aplicației, folosit o singură dată aici. */
+.card-soon { border-color: var(--gold); }
+.card-soon .card-icon { background: var(--gold); color: var(--on-gold); }
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--gold);
+  color: var(--on-gold);
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: 24px;
+  padding: clamp(1.75rem, 4vw, 3rem);
+}
+
+.panel h3 { margin-top: 0; }
+.panel p:last-child { margin-bottom: 0; }
+.panel + .panel { margin-top: var(--gap); }
+
+.muted { color: var(--on-surface-variant); font-size: 0.9375rem; }
+
+.book-list { list-style: none; padding: 0; margin: 0 0 1rem; }
+.book-list li { padding: 0.5rem 0; border-bottom: 1px solid var(--outline-variant); }
+.book-list li:last-child { border-bottom: 0; }
+
+a { color: var(--primary); }
+
+/* ── Subsol ───────────────────────────────────────────────────────────── */
+
+.footer {
+  padding: 3rem 0 4rem;
+  border-top: 1px solid var(--outline-variant);
+  font-size: 0.9375rem;
+  color: var(--on-surface-variant);
+}
+
+.footer-row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: center; }
+.footer-row nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; margin-inline-start: auto; }
+
+/* Linkurile de subsol arată ca text, dar rămân ținte de atingere întregi:
+   textul mic nu are voie să însemne o țintă mică. */
+.footer-row nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 0.25rem;
+}
+
+/* ── Preferințe de accesibilitate ─────────────────────────────────────────
+   Mișcare redusă nu înseamnă fără feedback, ci un echivalent blând. */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .card:hover { transform: none; }
+  /* Caruselul devine o listă derulabilă normal — fără fizică, dar întreg. */
+  .shots-track { overflow-x: auto; scroll-snap-type: x mandatory; }
+  .shot { scroll-snap-align: center; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .nav { background: var(--surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+@media (prefers-contrast: more) {
+  :root { --outline-variant: var(--on-surface); }
+  .nav { background: var(--surface); backdrop-filter: none; }
+  .card, .panel { border-width: 2px; }
+}
