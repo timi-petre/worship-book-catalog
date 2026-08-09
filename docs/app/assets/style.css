@@ -172,6 +172,27 @@ p { margin: 0 0 1em; letter-spacing: 0; }
 
 @media (max-width: 34rem) { .nav-links { display: none; } }
 
+/* Butonul din bară e mai compact decât cele din pagină — bara e cronică, nu
+   un îndemn. Pastila scade la ~38px, dar ținta de atingere rămâne 44px,
+   întinsă invizibil peste ea: text mic nu are voie să însemne țintă mică.
+   Înălțimea mai mică nu mișcă textul, fiindcă rândul e centrat pe axă. */
+.nav .btn {
+  min-height: 0;
+  padding: 0.4375rem 1.125rem;
+  font-size: 0.9375rem;
+  position: relative;
+}
+
+.nav .btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
+}
+
 /* ── Butoane: feedback pe APĂSARE, nu pe eliberare (§1) ────────────────── */
 
 .btn {
