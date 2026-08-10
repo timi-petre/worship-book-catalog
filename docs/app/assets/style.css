@@ -9,8 +9,6 @@
   color-scheme: light dark;
 
   --brand-seed: #1e5aa8;
-  --gold: #e2a93b;
-  --on-gold: #3e2d00;
 
   --primary: light-dark(#415f91, #aac7ff);
   --on-primary: light-dark(#ffffff, #0a305f);
@@ -481,23 +479,6 @@ p { margin: 0 0 1em; letter-spacing: 0; }
 }
 
 .card-icon svg { width: 22px; height: 22px; }
-
-/* Cardul aurii — accentul unic al aplicației, folosit o singură dată aici. */
-.card-soon { border-color: var(--gold); }
-.card-soon .card-icon { background: var(--gold); color: var(--on-gold); }
-
-.badge {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  background: var(--gold);
-  color: var(--on-gold);
-  padding: 0.25rem 0.625rem;
-  border-radius: 999px;
-  margin-bottom: 0.75rem;
-}
 
 .panel {
   background: var(--surface);
