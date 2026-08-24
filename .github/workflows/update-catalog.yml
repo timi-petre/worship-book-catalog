@@ -8,10 +8,18 @@
 #    dev și ca release datat (prod = releases/latest)
 # 4. salvează starea înapoi, ca rularea următoare să fie tot incrementală
 #
-# Cărțile de cântări (cantece_songs.jsonl, secțiunea de versuri a sursei) NU
-# se re-descarcă aici: starea lor e un asset în release-ul "state", iar
-# `finalize` le îmbină automat în catalog. Re-descărcarea (rară) se face
-# manual cu tool/fetch_book_songs.py din repo-ul aplicației.
+# Pe lângă indexul + cântările cu acorduri (index.jsonl, songs.jsonl),
+# release-ul "state" mai ține 4 fișiere obținute prin rulări MANUALE (din
+# repo-ul aplicației), pe care `finalize` le îmbină automat în catalog:
+#   cantece_songs.jsonl        cărți de cântări + cântece standalone
+#                              (tool/fetch_book_songs.py)
+#   cantaricrestine_songs.jsonl  versuri de pe cantaricrestine.ro
+#   chord_lyrics.jsonl         versuri curate atașate cântărilor cu acorduri
+#   book_numbers.jsonl         numerele de imn din cărți
+# Ele NU se re-descarcă aici (doar se păstrează); fără ele în "state",
+# catalogul ar regresa la doar cântările cu acorduri. Rularea rămâne
+# incrementală inclusiv la prima execuție după sincronizarea scripturilor
+# din 24 aug 2026: starea completă e deja urcată în release-ul "state".
 name: Actualizare catalog
 
 on:
@@ -78,12 +86,16 @@ jobs:
             -n "Fișiere interne pentru rulările incrementale — nu descărca manual." \
           || true
           gh release upload state tool/out/index.jsonl.gz tool/out/songs.jsonl.gz --clobber
-          # Starea cărților se re-urcă doar ca s-o păstrăm intactă la clobber
-          # viitor; conținutul ei se schimbă numai la re-descărcare manuală.
-          if [ -e tool/out/cantece_songs.jsonl ]; then
-            gzip -kf tool/out/cantece_songs.jsonl
-            gh release upload state tool/out/cantece_songs.jsonl.gz --clobber
-          fi
+          # Starea manuală (cărți, cantaricrestine, versuri curate, numere)
+          # se re-urcă doar ca s-o păstrăm intactă; conținutul ei se schimbă
+          # numai la re-descărcare manuală din repo-ul aplicației.
+          for f in cantece_songs.jsonl cantaricrestine_songs.jsonl \
+                   chord_lyrics.jsonl book_numbers.jsonl; do
+            if [ -e "tool/out/$f" ]; then
+              gzip -kf "tool/out/$f"
+              gh release upload state "tool/out/$f.gz" --clobber
+            fi
+          done
 
       # GitHub dezactivează cron-urile din repo-urile fără commit-uri 60 de
       # zile; commit-ul acesta mic ține automatizarea în viață pe termen lung.

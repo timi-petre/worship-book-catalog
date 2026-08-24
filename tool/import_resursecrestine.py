@@ -19,6 +19,17 @@ Usage:
   python3 tool/import_resursecrestine.py fetch       # fetch + convert songs
   python3 tool/import_resursecrestine.py finalize    # write catalog.json
   python3 tool/import_resursecrestine.py all         # all three phases
+  python3 tool/import_resursecrestine.py reconvert   # redo HTML->ChordPro
+                                                     # from tool/out cache,
+                                                     # no network; follow
+                                                     # with 'finalize'
+
+NOTE (aug 2026): the chord-row recognition was widened (trailing "."/",",
+capital M major, "(F)", loose text chords on rows that also carry nice-acord
+anchors). The shipped catalog.json predates this: regenerate it with
+'reconvert' + 'finalize' (needs tool/out/songs.jsonl from the original run;
+otherwise re-fetch). Until then the app repairs affected songs at parse time
+(lib/services/text_to_chordpro.dart, inlineLooseChordLines).
 """
 
 import html
@@ -157,10 +168,14 @@ TITLE_TAG = re.compile(r"<title>\s*(.*?)\s*</title>", re.S)
 # quality letters outside (m, maj, min, dim, aug, sus, add) are rejected so
 # Romanian words like "Da"/"Ce"/"Fa" don't false-positive; the truly ambiguous
 # survivors ("E", "A", "Am") only count on lines where EVERY token is a chord.
+# Capital M major ("DM", "GM7", "A#Maj9") and mid-quality accidentals
+# ("Am7b5", "Ebadd#11") are accepted, both frequent on contributor rows.
+# A dangling slash ("Bb/") is a chord whose bass sits in a nice-acord anchor
+# right after it ("Bb/[F]"): accepting it lets the row refold as "Bb/F".
 CHORD_TOKEN = re.compile(
     r"^[A-G][#b]?"
-    r"(?:m(?!aj)|maj|min|dim|aug|sus|add|[0-9]|\+|°)*"
-    r"(?:/[A-G][#b]?)?$"
+    r"(?:m(?!aj)|maj|min|dim|aug|sus|add|M(?!aj)|Maj|[0-9#b+°])*"
+    r"(?:/[A-G][#b]?|/)?$"
 )
 
 # Romanian solfège notation (Sol, Re/Fa#, mim7, lam...), mapped to letters so
@@ -212,7 +227,18 @@ def _is_bare_cap_solfege(token):
     return token[:1].isupper()
 
 
+def _clean_token(token):
+    """Wrapping parens/brackets and riding punctuation off a loose chord
+    token: "(F)", "Bbm.", "Eb).", because contributors write chord runs
+    as "C. F. G. C"."""
+    token = re.sub(r"^[(\[]+", "", token)
+    return re.sub(r"[)\],;:.]+$", "", token)
+
+
 def _is_chordish(token):
+    # "Amin" fits the letter grammar (A + min) but is the sung word Amen.
+    if token.lower() == "amin":
+        return False
     if CHORD_TOKEN.match(token) or _is_unambiguous_solfege(token):
         return True
     if "-" in token:
@@ -233,6 +259,9 @@ def _is_plain_chord_line(text):
     for t in tokens:
         if len(t) > 20:
             return False
+        t = _clean_token(t)
+        if not t:
+            continue
         if _is_chordish(t):
             has_chord = True
             if _is_unambiguous_solfege(t) or "-" in t:
@@ -269,9 +298,15 @@ def _plain_chords(text):
             toks[-1] = (toks[-1][0], toks[-1][1] + t)
         else:
             toks.append((m.start(), t))
-    return [(col, _to_letter_chord(t)) for col, t in toks
-            if _is_chordish(t) or _is_bare_cap_solfege(t)
-            or re.match(r"^[0-9]+$", t) is None and not MARKER.match(t)]
+    out = []
+    for col, t in toks:
+        t = _clean_token(t)
+        if not t:
+            continue
+        if (_is_chordish(t) or _is_bare_cap_solfege(t)
+                or re.match(r"^[0-9]+$", t) is None and not MARKER.match(t)):
+            out.append((col, _to_letter_chord(t)))
+    return out
 
 
 def _visible(fragment: str) -> str:
@@ -284,9 +319,11 @@ def _visible(fragment: str) -> str:
 def _line_parts(line: str):
     """Split one HTML line into (column, chord) anchors + the plain visible text.
 
-    Returns (chords, text) where chords is a list of (col, chord) with col being
-    the visible-column where the chord starts, and text is the line's visible
-    text with the chord names removed (spacing preserved).
+    Returns (chords, text, vis) where chords is a list of (col, chord) with
+    col being the visible-column where the chord starts, text is the line's
+    visible text with the chord names removed (spacing preserved), and vis is
+    the full visible line WITH the (unmapped) chord names in place, so
+    columns in vis are the same visible columns the chords report.
     """
     # Mimic browser whitespace handling BEFORE measuring columns: literal
     # newlines/tabs/spaces from HTML source formatting collapse to nothing at
@@ -296,6 +333,7 @@ def _line_parts(line: str):
     line = re.sub(r"[\r\n\t ]+", " ", line).strip()
     chords = []
     plain = []
+    vis = []
     col = 0  # VISIBLE column: includes the width of chord names already seen,
     #          because the lyric line underneath is aligned against what the
     #          browser renders (chords occupy columns there).
@@ -303,17 +341,20 @@ def _line_parts(line: str):
     for m in CHORD_ANCHOR.finditer(line):
         before = _visible(line[pos : m.start()])
         plain.append(before)
+        vis.append(before)
         col += len(before)
         chord = _visible(m.group(1)).strip()
         if chord:
             # Map solfège to letters, but advance the visible column by the
             # ORIGINAL width — that's what the browser rendered above lyrics.
             chords.append((col, _to_letter_chord(chord)))
+            vis.append(chord)
             col += len(chord)
         pos = m.end()
     rest = _visible(line[pos:])
     plain.append(rest)
-    return chords, "".join(plain)
+    vis.append(rest)
+    return chords, "".join(plain), "".join(vis)
 
 
 def to_chordpro(body_html: str) -> str:
@@ -327,11 +368,18 @@ def to_chordpro(body_html: str) -> str:
     lines = BR.split(body_html)
     parsed = []  # (chords, text) per line
     for raw_line in lines:
-        chords, text = _line_parts(raw_line)
+        chords, text, vis = _line_parts(raw_line)
         text = text.rstrip()
         # Recognize chord lines written as plain text (no nice-acord markup).
         if not chords and _is_plain_chord_line(text):
             chords = _plain_chords(text)
+            text = ""
+        elif chords and text.strip() and _is_plain_chord_line(text):
+            # Anchor chords AND loose text chords on one row ("[Fm7]  Bbm. Ab"
+            # in the old output): refold the whole visible row so every chord
+            # merges into the lyric below instead of leaving the loose ones
+            # behind as lyric text.
+            chords = _plain_chords(vis)
             text = ""
         parsed.append((chords, text))
 
@@ -500,9 +548,79 @@ def reconvert() -> None:
 
 # ---------------------------------------------------------------- finalize
 
+def _char_trigrams(text):
+    t = re.sub(r"[^a-z0-9]+", "", _fold_search(text))
+    return {t[i:i + 3] for i in range(len(t) - 2)} if len(t) > 2 else set()
+
+
+def _fold_search(text):
+    import unicodedata
+    t = unicodedata.normalize("NFKD", text.lower())
+    return "".join(c for c in t if not unicodedata.combining(c))
+
+
+def _strip_chordpro(chordpro):
+    """Lyric text of a ChordPro doc: no [chords], {directives}, # comments,
+    and no chord-noise lines (plain chord runs, Intro:/Capo lines) — those
+    would drag down the similarity score of a genuine same-song pairing."""
+    out = []
+    for line in chordpro.split("\n"):
+        s = line.strip()
+        if not s or s.startswith("#") or (s.startswith("{") and s.endswith("}")):
+            continue
+        bare = re.sub(r"\[[^\]]*\]", "", line)
+        b = bare.strip()
+        if not b or _is_plain_chord_line(b):
+            continue
+        if re.match(r"^(intro|capo|outro|bridge|interlud)", b, re.I) and len(b) < 60:
+            continue
+        out.append(bare)
+    return "\n".join(out)
+
+
+def _load_clean_lyrics():
+    """chord_id -> clean lyrics body, when tool/fetch_lyrics_for_chords.py ran.
+
+    Same-title pairing can hit a DIFFERENT song, so each pairing must pass a
+    text-similarity gate: character-trigram Jaccard between the clean lyrics
+    and the chord version's stripped text (trigrams shrug off the alignment
+    gaps that break whole words). Threshold chosen loose enough for variant
+    verses, tight enough to reject different songs.
+    """
+    return {
+        rec["chord_id"]: rec["lyrics"]
+        for rec in _read_jsonl(OUT / "chord_lyrics.jsonl")
+    }
+
+
+def _load_book_numbers():
+    """song id -> hymn number, when tool/fetch_book_numbers.py ran."""
+    return {
+        rec["id"]: rec["number"]
+        for rec in _read_jsonl(OUT / "book_numbers.jsonl")
+        if rec.get("number") is not None
+    }
+
+
+def _read_jsonl(path):
+    """Records from a .jsonl file; a partial trailing line (a fetcher may
+    still be appending) is skipped instead of crashing finalize()."""
+    if not path.exists():
+        return
+    for line in path.read_text().split("\n"):
+        if not line.strip():
+            continue
+        try:
+            yield json.loads(line)
+        except json.JSONDecodeError:
+            continue
+
+
 def finalize() -> None:
     if not SONGS_FILE.exists():
         sys.exit("run the 'fetch' phase first")
+    clean_lyrics = _load_clean_lyrics()
+    lyrics_attached = lyrics_rejected = 0
     songs = []
     for line in SONGS_FILE.read_text().split("\n"):
         if not line.strip():
@@ -510,46 +628,113 @@ def finalize() -> None:
         rec = json.loads(line)
         if not rec.get("ok"):
             continue
-        songs.append(
-            {
-                "id": rec["id"],
-                "title": rec["title"],
-                "author": rec.get("author", ""),
-                "theme": rec.get("theme", ""),
-                "url": rec["url"],
-                "chordpro": rec["chordpro"],
-            }
-        )
+        entry = {
+            "id": rec["id"],
+            "title": rec["title"],
+            "author": rec.get("author", ""),
+            "theme": rec.get("theme", ""),
+            "url": rec["url"],
+            "chordpro": rec["chordpro"],
+        }
+        lyrics = clean_lyrics.get(rec["id"])
+        if lyrics:
+            a = _char_trigrams(lyrics)
+            b = _char_trigrams(_strip_chordpro(rec["chordpro"]))
+            union = len(a | b)
+            sim = (len(a & b) / union) if union else 0.0
+            if sim >= 0.45:
+                entry["lyrics"] = lyrics
+                lyrics_attached += 1
+            else:
+                lyrics_rejected += 1
+        songs.append(entry)
+    if clean_lyrics:
+        print(f"clean lyrics: {lyrics_attached} attached, "
+              f"{lyrics_rejected} rejected by similarity gate")
 
     # Songbook (carte) songs from the lyrics section, when fetched
     # (tool/fetch_book_songs.py). They carry a "book" field the app groups by.
     books_file = OUT / "cantece_songs.jsonl"
     if books_file.exists():
-        n_books = 0
-        for line in books_file.read_text().split("\n"):
-            if not line.strip():
-                continue
-            rec = json.loads(line)
+        numbers = _load_book_numbers()
+        n_books = n_numbered = 0
+        for rec in _read_jsonl(books_file):
             if not rec.get("ok"):
                 continue
-            songs.append(
-                {
-                    "id": rec["id"],
-                    "title": rec["title"],
-                    "author": rec.get("author", ""),
-                    "theme": rec.get("theme", ""),
-                    "url": rec["url"],
-                    "book": rec.get("book", ""),
-                    "album": rec.get("album", ""),
-                    "chordpro": rec["chordpro"],
-                }
-            )
+            entry = {
+                "id": rec["id"],
+                "title": rec["title"],
+                "author": rec.get("author", ""),
+                "theme": rec.get("theme", ""),
+                "url": rec["url"],
+                "book": rec.get("book", ""),
+                "album": rec.get("album", ""),
+                "chordpro": rec["chordpro"],
+            }
+            # Hymn number within the book ("cântarea nr. N"), when fetched
+            # (tool/fetch_book_numbers.py). Shown and searchable in the app.
+            number = numbers.get(rec["id"])
+            if number is not None:
+                entry["number"] = number
+                n_numbered += 1
+            songs.append(entry)
             n_books += 1
-        print(f"merged {n_books} songbook songs")
+        print(f"merged {n_books} songbook songs ({n_numbered} with numbers)")
+
+    # Songbook texts from the cantaricrestine.ro public API (lyrics for
+    # projection; terms permit free copying/distribution — the app is free).
+    # Lyrics-only, hymn numbers included (tool/fetch_cantaricrestine.py).
+    cc_file = OUT / "cantaricrestine_songs.jsonl"
+    if cc_file.exists():
+        cc_songs = [
+            rec for rec in _read_jsonl(cc_file) if "page_done" not in rec
+        ]
+        # The site keeps duplicate uploads: most unnumbered entries shadow a
+        # numbered one of the same title in the same book — drop those (and
+        # repeated unnumbered titles), keep the canonical numbered hymn.
+        numbered_titles = set()
+        for rec in cc_songs:
+            if rec.get("number") is not None:
+                numbered_titles.add((rec["book"], _fold_search(rec["title"])))
+        seen_unnumbered = set()
+        n_cc = n_cc_dropped = 0
+        for rec in cc_songs:
+            if rec.get("number") is None:
+                key = (rec["book"], _fold_search(rec["title"]))
+                if key in numbered_titles or key in seen_unnumbered:
+                    n_cc_dropped += 1
+                    continue
+                seen_unnumbered.add(key)
+            doc = "\n".join([
+                f"{{title: {rec['title']}}}",
+                f"# Carte: {rec['book']}",
+                f"# Sursă: cantaricrestine.ro — {rec['url']}",
+                "",
+                rec["text"],
+            ])
+            entry = {
+                "id": rec["id"],
+                "title": rec["title"],
+                "author": "",
+                "theme": "",
+                "url": rec["url"],
+                "book": rec["book"],
+                "album": rec["book"],
+                "chordpro": doc,
+            }
+            if rec.get("number") is not None:
+                entry["number"] = rec["number"]
+            songs.append(entry)
+            n_cc += 1
+        print(f"merged {n_cc} cantaricrestine.ro songbook songs "
+              f"({n_cc_dropped} duplicate uploads dropped)")
     songs.sort(key=lambda s: s["title"].lower())
     CATALOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     payload = {
-        "source": "resursecrestine.ro",
+        # Two free sources: resursecrestine.ro (CC BY-NC-SA 3.0) and
+        # cantaricrestine.ro (free distribution per its terms). Per-song
+        # attribution lives in each entry's "# Sursă:" comment.
+        "source": "resursecrestine.ro · cantaricrestine.ro",
         "license": "CC BY-NC-SA 3.0",
         "generated": time.strftime("%Y-%m-%d"),
         "count": len(songs),
