@@ -1,30 +1,30 @@
-# Actualizare automată a catalogului de cântări.
+# Actualizarea automată a catalogului de cântări.
 #
-# Rulează săptămânal (luni dimineața) sau manual (Actions -> Run workflow):
-# 1. restaurează starea (cântările deja descărcate) din release-ul "state"
-# 2. re-parcurge indexul alfabetic de pe resursecrestine.ro și descarcă
-#    DOAR cântările noi (importerul e incremental)
-# 3. dacă numărul de cântări s-a schimbat, publică catalog.json pe canalul
-#    dev și ca release datat (prod = releases/latest)
-# 4. salvează starea înapoi, ca rularea următoare să fie tot incrementală
+# Rulează luni seara, la 21:00 ora României, sau manual (Actions -> Run
+# workflow). Cron-ul GitHub știe DOAR ora UTC și nu se mută cu ora de vară, de
+# aceea sunt două declanșări, 18:00 și 19:00 UTC, plus o poartă care oprește
+# rularea greșită: la 21:00 în București trece exact una.
 #
-# Pe lângă indexul + cântările cu acorduri (index.jsonl, songs.jsonl),
-# release-ul "state" mai ține 4 fișiere obținute prin rulări MANUALE (din
-# repo-ul aplicației), pe care `finalize` le îmbină automat în catalog:
-#   cantece_songs.jsonl        cărți de cântări + cântece standalone
-#                              (tool/fetch_book_songs.py)
-#   cantaricrestine_songs.jsonl  versuri de pe cantaricrestine.ro
-#   chord_lyrics.jsonl         versuri curate atașate cântărilor cu acorduri
-#   book_numbers.jsonl         numerele de imn din cărți
-# Ele NU se re-descarcă aici (doar se păstrează); fără ele în "state",
-# catalogul ar regresa la doar cântările cu acorduri. Rularea rămâne
-# incrementală inclusiv la prima execuție după sincronizarea scripturilor
-# din 24 aug 2026: starea completă e deja urcată în release-ul "state".
+# Ce face, în ordine:
+#  1. restaurează starea (tot ce s-a descărcat vreodată) din release-ul "state"
+#  2. reia, incremental, TOATE sursele: indexul cu acorduri și indexul de
+#     cântece de pe resursecrestine.ro, cântările din cărți, versurile de pe
+#     cantaricrestine.ro, versurile curate și numerele de imn
+#  3. reface catalog.json și îl publică pe canalul dev + un release datat
+#  4. RECONSTRUIEȘTE ȘI PUBLICĂ PACHETELE, partea fără de care nimic nu ajunge
+#     în aplicație: din 1.4.6, aplicația nu mai citește catalog.json, ci
+#     pachetele pe cărți din release-ul "books" și colecțiile din "collections"
+#  5. salvează starea înapoi, ca rularea următoare să fie tot incrementală
+#
+# De ce pasul 4 e obligatoriu: până pe 26 aug 2026 workflow-ul publica doar
+# catalog.json, pe care aplicația nu-l mai citea de o lună. Rulările erau
+# corecte și nu ajungeau la nimeni.
 name: Actualizare catalog
 
 on:
   schedule:
-    - cron: '0 3 * * 1' # luni 03:00 UTC (06:00 România)
+    - cron: '0 18 * * 1' # luni, 21:00 România pe ora de vară
+    - cron: '0 19 * * 1' # luni, 21:00 România pe ora de iarnă
   workflow_dispatch:
 
 concurrency:
@@ -35,7 +35,28 @@ permissions:
   contents: write
 
 jobs:
+  # Poarta de oră: cele două cron-uri acoperă ambele ore ale anului, iar aici
+  # cade cel care nu e la 21:00 în București. Rulările manuale trec mereu,
+  # altfel n-ar exista nicio cale de a proba workflow-ul.
+  poarta:
+    runs-on: ubuntu-latest
+    outputs:
+      ruleaza: ${{ steps.ora.outputs.ruleaza }}
+    steps:
+      - id: ora
+        run: |
+          H=$(TZ=Europe/Bucharest date +%H)
+          echo "În București e ora $H (declanșator: ${{ github.event_name }})."
+          if [ "${{ github.event_name }}" != "schedule" ] || [ "$H" = "21" ]; then
+            echo "ruleaza=da" >> "$GITHUB_OUTPUT"
+          else
+            echo "ruleaza=nu" >> "$GITHUB_OUTPUT"
+            echo "Nu e 21:00, las cealaltă declanșare să facă treaba."
+          fi
+
   update:
+    needs: poarta
+    if: needs.poarta.outputs.ruleaza == 'da'
     runs-on: ubuntu-latest
     timeout-minutes: 330
     env:
@@ -46,14 +67,37 @@ jobs:
       - name: Restaurează starea importerului
         run: |
           mkdir -p tool/out
-          gh release download state -p '*.gz' -D tool/out --clobber || echo "(fără stare — prima rulare descarcă tot)"
+          gh release download state -p '*.gz' -D tool/out --clobber || echo "(fără stare, prima rulare descarcă tot)"
           for f in tool/out/*.gz; do [ -e "$f" ] && gunzip -f "$f"; done
-          wc -l tool/out/*.jsonl 2>/dev/null || true
+          # Cache-ul colecției trăiește în collections/, acolo îl caută
+          # build_collection.py; în release-ul de stare stă plat.
+          mkdir -p tool/out/collections
+          [ -e tool/out/cantari-internet.songs.jsonl ] \
+            && mv tool/out/cantari-internet.songs.jsonl tool/out/collections/
+          wc -l tool/out/*.jsonl tool/out/collections/*.jsonl 2>/dev/null || true
 
-      - name: Import incremental (doar cântările noi)
+      # --- sursele, toate incrementale: fiecare script sare peste ce are deja
+      - name: resursecrestine.ro, secțiunea acorduri
         run: |
           rm -f tool/out/letters_done.txt
           python3 tool/import_resursecrestine.py all
+
+      - name: resursecrestine.ro, indexul de cântece
+        run: python3 tool/scan_cantece_books.py
+
+      - name: Cântările din cărți
+        run: python3 tool/fetch_book_songs.py
+
+      - name: cantaricrestine.ro
+        run: python3 tool/fetch_cantaricrestine.py
+
+      - name: Versuri curate și numere de imn
+        run: |
+          python3 tool/fetch_lyrics_for_chords.py
+          python3 tool/fetch_book_numbers.py
+
+      - name: Reface catalog.json din tot ce s-a strâns
+        run: python3 tool/import_resursecrestine.py finalize
 
       - name: Detectează schimbări
         id: diff
@@ -68,7 +112,7 @@ jobs:
           [ "$NEW" != "$OLD" ] && CHANGED=yes || CHANGED=no
           { echo "changed=$CHANGED"; echo "count=$NEW"; } >> "$GITHUB_OUTPUT"
 
-      - name: Publică pe dev + release datat (prod)
+      - name: Publică catalog.json pe dev + release datat
         if: steps.diff.outputs.changed == 'yes'
         run: |
           gh release upload dev assets/catalog/catalog.json --clobber
@@ -78,23 +122,55 @@ jobs:
             -n "${{ steps.diff.outputs.count }} cântări. Actualizare automată." \
           || gh release upload "$TAG" assets/catalog/catalog.json --clobber
 
+      # --- pachetele: ASTA e ce citește aplicația
+      - name: Pachetele pe cărți
+        if: steps.diff.outputs.changed == 'yes'
+        run: |
+          python3 tool/build_book_packages.py
+          gh release upload books tool/out/books/*.json --clobber
+
+      - name: Colecția „Cântări de pe internet"
+        if: steps.diff.outputs.changed == 'yes'
+        run: |
+          # Manifestul PUBLICAT, adus întâi: scriptul rescrie collections.json
+          # pornind de la ce găsește local, deci fără pasul ăsta ar publica un
+          # manifest care conține doar colecția reconstruită acum, iar restul
+          # ar dispărea din aplicație la toată lumea.
+          mkdir -p tool/out/collections
+          curl -sL -o tool/out/collections/collections.json \
+            https://github.com/timi-petre/worship-book-catalog/releases/download/collections/collections.json \
+            || echo "(fără manifest publicat, se scrie unul nou)"
+          python3 tool/build_collection.py --id cantari-internet \
+            --name "Cântări de pe internet" \
+            --description "Cântări care nu apar în nicio carte de cântări, numai versuri."
+          python3 - <<'PY'
+          import json, pathlib, sys
+          m = json.loads(pathlib.Path("tool/out/collections/collections.json").read_text())
+          ids = {c["id"] for c in m.get("collections", [])}
+          if "cantari-internet" not in ids:
+              sys.exit("Manifestul n-are colecția nouă, nu urc nimic.")
+          print("manifest:", sorted(ids))
+          PY
+          gh release upload collections \
+            tool/out/collections/cantari-internet.json \
+            tool/out/collections/collections.json --clobber
+
       - name: Salvează starea importerului
         run: |
-          gzip -kf tool/out/index.jsonl tool/out/songs.jsonl
+          for f in index.jsonl songs.jsonl cantece_index.jsonl cantece_songs.jsonl \
+                   cantaricrestine_songs.jsonl chord_lyrics.jsonl book_numbers.jsonl; do
+            [ -e "tool/out/$f" ] && gzip -kf "tool/out/$f"
+          done
+          if [ -e tool/out/collections/cantari-internet.songs.jsonl ]; then
+            gzip -kf tool/out/collections/cantari-internet.songs.jsonl
+            mv tool/out/collections/cantari-internet.songs.jsonl.gz tool/out/
+          fi
           gh release create state --prerelease \
             -t "Stare importer (uz intern)" \
-            -n "Fișiere interne pentru rulările incrementale — nu descărca manual." \
+            -n "Fișiere interne pentru rulările incrementale, nu descărca manual." \
           || true
-          gh release upload state tool/out/index.jsonl.gz tool/out/songs.jsonl.gz --clobber
-          # Starea manuală (cărți, cantaricrestine, versuri curate, numere)
-          # se re-urcă doar ca s-o păstrăm intactă; conținutul ei se schimbă
-          # numai la re-descărcare manuală din repo-ul aplicației.
-          for f in cantece_songs.jsonl cantaricrestine_songs.jsonl \
-                   chord_lyrics.jsonl book_numbers.jsonl; do
-            if [ -e "tool/out/$f" ]; then
-              gzip -kf "tool/out/$f"
-              gh release upload state "tool/out/$f.gz" --clobber
-            fi
+          for f in tool/out/*.gz; do
+            [ -e "$f" ] && gh release upload state "$f" --clobber
           done
 
       # GitHub dezactivează cron-urile din repo-urile fără commit-uri 60 de
