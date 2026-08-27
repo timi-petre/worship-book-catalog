@@ -80,21 +80,21 @@ jobs:
       - name: resursecrestine.ro, secțiunea acorduri
         run: |
           rm -f tool/out/letters_done.txt
-          python3 tool/import_resursecrestine.py all
+          bash tool/ruleaza_cu_buget.sh 40m python3 tool/import_resursecrestine.py all
 
       - name: resursecrestine.ro, indexul de cântece
-        run: python3 tool/scan_cantece_books.py
+        run: bash tool/ruleaza_cu_buget.sh 20m python3 tool/scan_cantece_books.py
 
       - name: Cântările din cărți
-        run: python3 tool/fetch_book_songs.py
+        run: bash tool/ruleaza_cu_buget.sh 60m python3 tool/fetch_book_songs.py
 
       - name: cantaricrestine.ro
-        run: python3 tool/fetch_cantaricrestine.py
+        run: bash tool/ruleaza_cu_buget.sh 40m python3 tool/fetch_cantaricrestine.py
 
       - name: Versuri curate și numere de imn
         run: |
-          python3 tool/fetch_lyrics_for_chords.py
-          python3 tool/fetch_book_numbers.py
+          bash tool/ruleaza_cu_buget.sh 15m python3 tool/fetch_lyrics_for_chords.py
+          bash tool/ruleaza_cu_buget.sh 10m python3 tool/fetch_book_numbers.py
 
       - name: Reface catalog.json din tot ce s-a strâns
         run: python3 tool/import_resursecrestine.py finalize
@@ -140,9 +140,19 @@ jobs:
           curl -sL -o tool/out/collections/collections.json \
             https://github.com/timi-petre/worship-book-catalog/releases/download/collections/collections.json \
             || echo "(fără manifest publicat, se scrie unul nou)"
-          python3 tool/build_collection.py --id cantari-internet \
+          # Cu buget, ca restul: colecția aduce și cântările standalone noi.
+          # Dacă bugetul se termină înainte de „BUILD COMPLETE", fișierul nu s-a
+          # rescris în rularea asta, deci NU se urcă nimic: cache-ul rămâne, iar
+          # săptămâna viitoare pornește de unde a rămas.
+          bash tool/ruleaza_cu_buget.sh 50m python3 tool/build_collection.py \
+            --id cantari-internet \
             --name "Cântări de pe internet" \
-            --description "Cântări care nu apar în nicio carte de cântări, numai versuri."
+            --description "Cântări care nu apar în nicio carte de cântări, numai versuri." \
+            | tee /tmp/colectie.log
+          if ! grep -q "BUILD COMPLETE" /tmp/colectie.log; then
+            echo "::notice title=Colecția nu s-a terminat::Bugetul s-a epuizat înainte de împachetare, nu urc nimic."
+            exit 0
+          fi
           python3 - <<'PY'
           import json, pathlib, sys
           m = json.loads(pathlib.Path("tool/out/collections/collections.json").read_text())
