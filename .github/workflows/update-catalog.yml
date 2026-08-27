@@ -165,7 +165,11 @@ jobs:
             tool/out/collections/cantari-internet.json \
             tool/out/collections/collections.json --clobber
 
+      # always(): o sursă care crapă nu mai are voie să arunce la gunoi orele
+      # de crawl de dinaintea ei. Pe 27 aug 2026, cantaricrestine.ro a picat
+      # după 1h28m și starea nu s-a mai salvat, deci totul s-a reluat de la zero.
       - name: Salvează starea importerului
+        if: always()
         run: |
           for f in index.jsonl songs.jsonl cantece_index.jsonl cantece_songs.jsonl \
                    cantaricrestine_songs.jsonl chord_lyrics.jsonl book_numbers.jsonl; do

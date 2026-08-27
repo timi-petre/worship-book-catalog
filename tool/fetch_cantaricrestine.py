@@ -59,7 +59,11 @@ def fetch_page(code, page):
            f"&categorie={code}&limita={LIMIT}&pagina={page}")
     req = urllib.request.Request(url, headers={"User-Agent": UA})
     with urllib.request.urlopen(req, timeout=30) as resp:
-        return json.loads(resp.read().decode("utf-8", "replace"))
+        data = json.loads(resp.read().decode("utf-8", "replace"))
+    # Dincolo de ultima pagina API-ul raspunde cu un sir ("Nu sunt
+    # rezultate"), nu cu un obiect. La reluare, paginile deja facute sunt
+    # sarite fara sa se citeasca total_pagini, deci se ajunge acolo.
+    return data if isinstance(data, dict) else {}
 
 
 def parse_song(code, raw):
