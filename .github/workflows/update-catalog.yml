@@ -140,18 +140,24 @@ jobs:
           curl -sL -o tool/out/collections/collections.json \
             https://github.com/timi-petre/worship-book-catalog/releases/download/collections/collections.json \
             || echo "(fără manifest publicat, se scrie unul nou)"
-          # Cu buget, ca restul: colecția aduce și cântările standalone noi.
-          # Dacă bugetul se termină înainte de „BUILD COMPLETE", fișierul nu s-a
-          # rescris în rularea asta, deci NU se urcă nimic: cache-ul rămâne, iar
-          # săptămâna viitoare pornește de unde a rămas.
-          bash tool/ruleaza_cu_buget.sh 50m python3 tool/build_collection.py \
-            --id cantari-internet \
-            --name "Cântări de pe internet" \
-            --description "Cântări care nu apar în nicio carte de cântări, numai versuri." \
-            | tee /tmp/colectie.log
+          COL=(--id cantari-internet
+               --name "Cântări de pe internet"
+               --description "Cântări care nu apar în nicio carte de cântări, numai versuri.")
+          # 1. Descărcarea, cu buget, și fără drept de veto asupra pasului 2:
+          #    buget depășit sau crăpătură, tot una, în cache intră doar
+          #    reușitele, iar ce a rămas se ia la rularea următoare.
+          bash tool/ruleaza_cu_buget.sh 50m python3 tool/build_collection.py "${COL[@]}" \
+            || echo "::warning title=Descărcarea colecției a picat::Împachetez oricum ce e în cache."
+          # 2. Împachetarea, MEREU, pe ce e deja în cache, fără nicio
+          #    descărcare (sub o secundă pe 17.763 de cântări). Până pe 27 aug
+          #    2026 era în același proces cu descărcarea: bugetul s-a epuizat
+          #    înainte de ea, nu s-a urcat nimic, iar rularea a rămas verde. Cum
+          #    descărcarea depășește bugetul în fiecare săptămână, colecția nu
+          #    s-ar mai fi publicat niciodată. Așa, crește în trepte.
+          python3 tool/build_collection.py --no-fetch "${COL[@]}" | tee /tmp/colectie.log
           if ! grep -q "BUILD COMPLETE" /tmp/colectie.log; then
-            echo "::notice title=Colecția nu s-a terminat::Bugetul s-a epuizat înainte de împachetare, nu urc nimic."
-            exit 0
+            echo "::error title=Împachetarea colecției a picat::Nu urc nimic (cache lipsă?)."
+            exit 1
           fi
           python3 - <<'PY'
           import json, pathlib, sys

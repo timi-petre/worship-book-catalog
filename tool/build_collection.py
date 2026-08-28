@@ -18,7 +18,13 @@ Usage:
   python3 tool/build_collection.py --id cantarile-bibliei \
       --name "Cântările Bibliei" --description "..." \
       [--author "Nicolae Moldoveanu"] [--album "Cantarile Bibliei"] \
-      [--limit N] [song_id ...]
+      [--limit N] [--no-fetch] [song_id ...]
+
+--no-fetch împachetează DOAR ce e deja în cache, fără nicio descărcare. Există
+fiindcă descărcarea rulează cu buget de timp în CI: pe 27 aug 2026 bugetul s-a
+epuizat înainte de împachetare, deci colecția n-a mai fost publicată deloc, iar
+rularea a rămas verde. Cu descărcarea și împachetarea despărțite, colecția
+crește în trepte: fiecare rulare publică exact ce e în cache, întreg și coerent.
 
 Output: tool/out/collections/<id>.json + tool/out/collections/collections.json
 Upload: gh release upload collections <files> -R timi-petre/worship-book-catalog
@@ -88,6 +94,8 @@ def main() -> None:
     ap.add_argument("--author")
     ap.add_argument("--album")
     ap.add_argument("--limit", type=int)
+    ap.add_argument("--no-fetch", action="store_true", dest="no_fetch",
+                    help="doar impacheteaza cache-ul, nu descarca nimic")
     ap.add_argument("ids", nargs="*")
     args = ap.parse_args()
 
@@ -101,7 +109,7 @@ def main() -> None:
         todo = [e for e in todo if e["id"] in only]
     if args.limit:
         todo = todo[: args.limit]
-    if not todo:
+    if not todo and not args.no_fetch:
         sys.exit("no matching songs (all filtered out or already in catalog)")
 
     col_dir = OUT / "collections"
@@ -114,9 +122,22 @@ def main() -> None:
             if line.strip():
                 rec = json.loads(line)
                 done[rec["id"]] = rec
-    print(f"{len(todo)} songs, {len(done)} cached", flush=True)
+    # „de adus" e numarul care conteaza, si NU e len(todo) - len(done): cache-ul
+    # tine si cantari care intre timp au intrat in catalogul principal, deci nu
+    # mai sunt eligibile. Pe 27 aug 2026 linia zicea „17992 songs, 17763 cached"
+    # (deci parca 229 ramase) cand de fapt mai erau 1997 de adus.
+    ramase = sum(1 for e in todo if "c" + e["id"] not in done)
+    print(f"{len(todo)} songs, {len(done)} cached, {ramase} de adus", flush=True)
 
-    crawled = crawled_chordpro()
+    if args.no_fetch:
+        # Garda: fara cache n-avem ce impacheta, iar o colectie goala publicata
+        # peste cea buna ar sterge cantarile din aplicatie la toata lumea.
+        if not done:
+            sys.exit("--no-fetch fara cache: n-am ce impacheta, nu scriu nimic")
+        print("--no-fetch: impachetez doar ce e in cache", flush=True)
+        todo = []
+
+    crawled = crawled_chordpro() if todo else {}
     failed = 0
     with cache.open("a", encoding="utf-8") as out:
         for n, meta in enumerate(todo, 1):
