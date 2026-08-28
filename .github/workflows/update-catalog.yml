@@ -72,9 +72,14 @@ jobs:
           # Cache-ul colecției trăiește în collections/, acolo îl caută
           # build_collection.py; în release-ul de stare stă plat.
           mkdir -p tool/out/collections
-          [ -e tool/out/cantari-internet.songs.jsonl ] \
-            && mv tool/out/cantari-internet.songs.jsonl tool/out/collections/
-          wc -l tool/out/*.jsonl tool/out/collections/*.jsonl 2>/dev/null || true
+          # Cache-ul de reușite ȘI lista paginilor fără strofe: fără a doua,
+          # aceleași ~1.600 de pagini moarte s-ar cere din nou în fiecare
+          # săptămână, cu tot bugetul ars pe zero cântări noi.
+          for f in cantari-internet.songs.jsonl cantari-internet.no-stanzas.txt; do
+            if [ -e "tool/out/$f" ]; then mv "tool/out/$f" tool/out/collections/; fi
+          done
+          wc -l tool/out/*.jsonl tool/out/collections/*.jsonl \
+                tool/out/collections/*.txt 2>/dev/null || true
 
       # --- sursele, toate incrementale: fiecare script sare peste ce are deja
       - name: resursecrestine.ro, secțiunea acorduri
@@ -181,10 +186,12 @@ jobs:
                    cantaricrestine_songs.jsonl chord_lyrics.jsonl book_numbers.jsonl; do
             [ -e "tool/out/$f" ] && gzip -kf "tool/out/$f"
           done
-          if [ -e tool/out/collections/cantari-internet.songs.jsonl ]; then
-            gzip -kf tool/out/collections/cantari-internet.songs.jsonl
-            mv tool/out/collections/cantari-internet.songs.jsonl.gz tool/out/
-          fi
+          for f in cantari-internet.songs.jsonl cantari-internet.no-stanzas.txt; do
+            if [ -e "tool/out/collections/$f" ]; then
+              gzip -kf "tool/out/collections/$f"
+              mv "tool/out/collections/$f.gz" tool/out/
+            fi
+          done
           gh release create state --prerelease \
             -t "Stare importer (uz intern)" \
             -n "Fișiere interne pentru rulările incrementale, nu descărca manual." \
