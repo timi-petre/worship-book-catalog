@@ -18,13 +18,22 @@ Usage:
   python3 tool/build_collection.py --id cantarile-bibliei \
       --name "Cântările Bibliei" --description "..." \
       [--author "Nicolae Moldoveanu"] [--album "Cantarile Bibliei"] \
-      [--limit N] [--no-fetch] [song_id ...]
+      [--limit N] [--no-fetch] [--retry-no-stanzas] [song_id ...]
 
 --no-fetch împachetează DOAR ce e deja în cache, fără nicio descărcare. Există
 fiindcă descărcarea rulează cu buget de timp în CI: pe 27 aug 2026 bugetul s-a
 epuizat înainte de împachetare, deci colecția n-a mai fost publicată deloc, iar
 rularea a rămas verde. Cu descărcarea și împachetarea despărțite, colecția
 crește în trepte: fiecare rulare publică exact ce e în cache, întreg și coerent.
+
+Pe lângă cache, care ține REUȘITELE, se ține minte și un fel de eșec:
+<id>.no-stanzas.txt, paginile care au răspuns dar nu conțin strofe. Pe 27 aug
+2026 s-au probat 1.613 pagini în 50 de minute și niciuna n-a reușit, aceleași
+în fiecare săptămână, fiindcă în cache intrau doar reușitele. Eșecurile de
+TRANSPORT (rețea, timeout, 5xx, 429) NU se țin minte niciodată: sunt temporare,
+iar o oră de internet prost ar șterge definitiv sute de cântări bune din
+colecție. --retry-no-stanzas ignoră lista pentru rularea aceea, pentru cazul în
+care site-ul sau parserul se schimbă; fără expirare, fără reîncercări automate.
 
 Output: tool/out/collections/<id>.json + tool/out/collections/collections.json
 Upload: gh release upload collections <files> -R timi-petre/worship-book-catalog
@@ -96,6 +105,9 @@ def main() -> None:
     ap.add_argument("--limit", type=int)
     ap.add_argument("--no-fetch", action="store_true", dest="no_fetch",
                     help="doar impacheteaza cache-ul, nu descarca nimic")
+    ap.add_argument("--retry-no-stanzas", action="store_true",
+                    dest="retry_no_stanzas",
+                    help="ignora lista de pagini fara strofe si le cere din nou")
     ap.add_argument("ids", nargs="*")
     args = ap.parse_args()
 
@@ -116,6 +128,26 @@ def main() -> None:
     col_dir.mkdir(parents=True, exist_ok=True)
     cache = col_dir / f"{args.cid}.songs.jsonl"
 
+    # Pagini care au raspuns dar n-au strofe. Langa cache, acelasi format: o
+    # linie pe id. Se scrie la fiecare esec, nu la final, fiindca rularea din
+    # CI e taiata cu SIGTERM la bugetul de timp.
+    fail_file = col_dir / f"{args.cid}.no-stanzas.txt"
+    memorate = set()
+    if fail_file.exists():
+        memorate = {
+            x.strip() for x in fail_file.read_text().split("\n") if x.strip()
+        }
+    # --retry-no-stanzas citeste lista (ca sa nu scrie dubluri) dar nu mai sare
+    # peste nimic: e reincercarea manuala, pentru cand site-ul s-a schimbat.
+    fara_strofe = set() if args.retry_no_stanzas else set(memorate)
+
+    def tine_minte(sid: str) -> None:
+        if sid in memorate:
+            return
+        memorate.add(sid)
+        with fail_file.open("a", encoding="utf-8") as f:
+            f.write(sid + "\n")
+
     done = {}
     if cache.exists():
         for line in cache.read_text().split("\n"):
@@ -125,9 +157,13 @@ def main() -> None:
     # „de adus" e numarul care conteaza, si NU e len(todo) - len(done): cache-ul
     # tine si cantari care intre timp au intrat in catalogul principal, deci nu
     # mai sunt eligibile. Pe 27 aug 2026 linia zicea „17992 songs, 17763 cached"
-    # (deci parca 229 ramase) cand de fapt mai erau 1997 de adus.
-    ramase = sum(1 for e in todo if "c" + e["id"] not in done)
-    print(f"{len(todo)} songs, {len(done)} cached, {ramase} de adus", flush=True)
+    # (deci parca 229 ramase) cand de fapt mai erau 1997 de adus, din care 1613
+    # pagini fara strofe, cerute degeaba saptamana de saptamana.
+    de_adus = [e for e in todo if "c" + e["id"] not in done]
+    sarite = sum(1 for e in de_adus if "c" + e["id"] in fara_strofe)
+    print(f"{len(todo)} eligibile, {len(done)} in cache, {len(de_adus)} de adus, "
+          f"{sarite} fara strofe (sarite), {len(de_adus) - sarite} raman",
+          flush=True)
 
     if args.no_fetch:
         # Garda: fara cache n-avem ce impacheta, iar o colectie goala publicata
@@ -142,7 +178,7 @@ def main() -> None:
     with cache.open("a", encoding="utf-8") as out:
         for n, meta in enumerate(todo, 1):
             sid = "c" + meta["id"]
-            if sid in done:
+            if sid in done or sid in fara_strofe:
                 continue
             if sid in crawled:
                 chordpro = crawled[sid]
@@ -154,17 +190,25 @@ def main() -> None:
                     # field below is what groups the collection in the app.
                     chordpro = to_chordpro(page, meta, "")
                 except Exception as e:  # noqa: BLE001
+                    # ESEC DE TRANSPORT (sau o crapatura a parserului): n-am
+                    # ajuns la pagina. Temporar, deci NU se tine minte, altfel
+                    # o ora de internet prost ar sterge definitiv sute de
+                    # cantari bune din colectie. `fetch` reincearca de 4 ori si
+                    # abia apoi ridica, deci aici ajung doar esecurile reale.
+                    #
                     # Orice, nu doar RuntimeError: un `socket.timeout` la
                     # citire a omorat o rulare de 4 ore si jumatate dupa
                     # 12.600 de cantari (26 aug 2026). O pagina pierduta se
-                    # reia la urmatoarea rulare, fiindca in cache intra doar
-                    # reusitele; un proces mort pierde tot ce mai avea de
-                    # facut.
+                    # reia la urmatoarea rulare; un proces mort pierde tot ce
+                    # mai avea de facut.
                     print(f"  !! {meta['url']}: {e!r}", flush=True)
                     failed += 1
                     continue
             if not chordpro:
+                # ESEC DE CONTINUT: pagina a raspuns, dar structura ei n-are
+                # versuri. Nu se schimba la reincercare, deci se tine minte.
                 print(f"  -- no stanzas: {meta['url']}", flush=True)
+                tine_minte(sid)
                 failed += 1
                 continue
             rec = {
