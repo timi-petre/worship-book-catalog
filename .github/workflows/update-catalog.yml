@@ -35,9 +35,16 @@ permissions:
   contents: write
 
 jobs:
-  # Poarta de oră: cele două cron-uri acoperă ambele ore ale anului, iar aici
+  # Poarta de sezon: cele două cron-uri acoperă ambele ore ale anului, iar aici
   # cade cel care nu e la 21:00 în București. Rulările manuale trec mereu,
   # altfel n-ar exista nicio cale de a proba workflow-ul.
+  #
+  # Poarta se uită la CARE cron a tras, comparat cu ora de vară sau de iarnă,
+  # nu la ceasul de la pornirea runner-ului. Motivul: pe 31 aug 2026 GitHub a
+  # întârziat ambele declanșări cu ~4 ore, în București era 01 și 02, deci
+  # poarta veche le-a respins pe amândouă. Workflow-ul a raportat "success" pe
+  # o rulare care n-a publicat nimic, iar catalogul a stat 11 zile pe loc.
+  # Offset-ul, spre deosebire de oră, nu se schimbă cu întârzierea.
   poarta:
     runs-on: ubuntu-latest
     outputs:
@@ -45,13 +52,16 @@ jobs:
     steps:
       - id: ora
         run: |
-          H=$(TZ=Europe/Bucharest date +%H)
-          echo "În București e ora $H (declanșator: ${{ github.event_name }})."
-          if [ "${{ github.event_name }}" != "schedule" ] || [ "$H" = "21" ]; then
+          OFFSET=$(TZ=Europe/Bucharest date +%z)   # +0300 vara, +0200 iarna
+          CRON="${{ github.event.schedule }}"
+          echo "Offset București: $OFFSET, cron: '$CRON' (declanșator: ${{ github.event_name }})."
+          if [ "${{ github.event_name }}" != "schedule" ] \
+             || { [ "$OFFSET" = "+0300" ] && [ "$CRON" = "0 18 * * 1" ]; } \
+             || { [ "$OFFSET" = "+0200" ] && [ "$CRON" = "0 19 * * 1" ]; }; then
             echo "ruleaza=da" >> "$GITHUB_OUTPUT"
           else
             echo "ruleaza=nu" >> "$GITHUB_OUTPUT"
-            echo "Nu e 21:00, las cealaltă declanșare să facă treaba."
+            echo "Nu e declanșarea potrivită pentru sezonul curent, o las pe cealaltă."
           fi
 
   update:
