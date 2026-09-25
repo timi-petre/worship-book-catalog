@@ -33,6 +33,7 @@ otherwise re-fetch). Until then the app repairs affected songs at parse time
 """
 
 import html
+import http.client
 import json
 import pathlib
 import random
@@ -62,7 +63,8 @@ def fetch(url: str, tries: int = 4) -> str:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
             with urllib.request.urlopen(req, timeout=30) as resp:
                 return resp.read().decode("utf-8", errors="replace")
-        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+        except (urllib.error.URLError, TimeoutError, ConnectionError,
+                http.client.IncompleteRead, http.client.HTTPException) as e:
             wait = 5 * (attempt + 1)
             print(f"  ! {e} -> retry in {wait}s", flush=True)
             time.sleep(wait)
