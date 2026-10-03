@@ -46,7 +46,7 @@ import sys
 import time
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from import_resursecrestine import CATALOG_FILE, OUT, fetch  # noqa: E402
+from import_resursecrestine import CATALOG_FILE, OUT, fetch, write_songs_file  # noqa: E402
 from fetch_book_songs import canonical_book, to_chordpro  # noqa: E402
 
 RELEASE_URL = (
@@ -243,10 +243,7 @@ def main() -> None:
         "songs": songs,
     }
     col_file = col_dir / f"{args.cid}.json"
-    col_file.write_text(
-        json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
-        encoding="utf-8",
-    )
+    write_songs_file(col_file, payload)
     print(f"{col_file.name}: {len(songs)} songs, "
           f"{col_file.stat().st_size / 1e6:.1f} MB")
 

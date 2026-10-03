@@ -114,18 +114,24 @@ jobs:
       - name: Reface catalog.json din tot ce s-a strâns
         run: python3 tool/import_resursecrestine.py finalize
 
+      # Numărul de cântări ȘI amprenta conținutului (content_hash, scrisă de
+      # finalize din cântări + tool/curated/). Până în oct 2026 se compara doar
+      # `count`: o reconvertire sau o corecție manuală, care schimbă textul la
+      # același număr de cântări, nu s-ar fi publicat niciodată. Un catalog
+      # publicat fără amprentă (cel vechi) se tratează ca schimbat.
       - name: Detectează schimbări
         id: diff
         run: |
-          NEW=$(python3 -c "import json;print(json.load(open('assets/catalog/catalog.json'))['count'])")
+          fp() { python3 -c "import json,sys;d=json.load(open(sys.argv[1]));print(d['count'],d.get('content_hash','-'))" "$1"; }
+          NEW=$(fp assets/catalog/catalog.json)
           if gh release download dev --pattern catalog.json --output /tmp/old.json --clobber 2>/dev/null; then
-            OLD=$(python3 -c "import json;print(json.load(open('/tmp/old.json'))['count'])")
+            OLD=$(fp /tmp/old.json)
           else
-            OLD=0
+            OLD="0 -"
           fi
           echo "vechi: $OLD -> nou: $NEW"
           [ "$NEW" != "$OLD" ] && CHANGED=yes || CHANGED=no
-          { echo "changed=$CHANGED"; echo "count=$NEW"; } >> "$GITHUB_OUTPUT"
+          { echo "changed=$CHANGED"; echo "count=${NEW%% *}"; } >> "$GITHUB_OUTPUT"
 
       - name: Publică catalog.json pe dev + release datat
         if: steps.diff.outputs.changed == 'yes'

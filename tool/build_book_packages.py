@@ -19,7 +19,11 @@ Upload: gh release upload books tool/out/books/*.json -R timi-petre/worship-book
 import gzip
 import json
 import pathlib
+import sys
 import unicodedata
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from import_resursecrestine import write_songs_file  # noqa: E402
 
 ROOT = pathlib.Path(__file__).parent.parent
 OUT = ROOT / "tool" / "out" / "books"
@@ -80,10 +84,7 @@ def main() -> None:
             "songs": book_songs,
         }
         f = OUT / f"{cid}.json"
-        f.write_text(
-            json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
-            encoding="utf-8",
-        )
+        write_songs_file(f, payload)
         size = f.stat().st_size
         total += len(book_songs)
         entries.append(

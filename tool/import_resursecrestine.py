@@ -26,12 +26,22 @@ Usage:
 
 NOTE (aug 2026): the chord-row recognition was widened (trailing "."/",",
 capital M major, "(F)", loose text chords on rows that also carry nice-acord
-anchors). The shipped catalog.json predates this: regenerate it with
-'reconvert' + 'finalize' (needs tool/out/songs.jsonl from the original run;
-otherwise re-fetch). Until then the app repairs affected songs at parse time
+anchors). The app still repairs old copies at parse time
 (lib/services/text_to_chordpro.dart, inlineLooseChordLines).
+
+finalize() rebuilds every song's ChordPro from the raw HTML stored at fetch
+time (oct 2026). Before, it copied the conversion frozen at download, and the
+weekly CI never ran 'reconvert', so every song fetched before a converter fix
+kept the old output forever (1.632 of 4.753 songs, ex. 318533: the chord row
+above "R1:" floated as text). The stored chordpro is only the fallback.
+
+Manual corrections: tool/curated/<id>.cho holds a full ChordPro document that
+replaces the song's `chordpro` in EVERY published file. They are applied in
+write_songs_file(), the one function catalog.json, the book packages and the
+collections are written through.
 """
 
+import hashlib
 import html
 import http.client
 import json
@@ -163,6 +173,14 @@ WRAPPER = re.compile(
     r'class="stil-acorduri"+[^>]*>(.*?)</span>', re.S
 )
 TITLE_TAG = re.compile(r"<title>\s*(.*?)\s*</title>", re.S)
+# Cloudflare hides e-mail addresses in the page as
+# <a ... data-cfemail="HEX">[email&#160;protected]</a>; the browser decodes them
+# with JavaScript, we never run it, so "[email protected]" reached the catalog
+# (35 songs) and the app showed it as a chord chip.
+CF_EMAIL = re.compile(r'<a[^>]*\bdata-cfemail="([0-9a-fA-F]*)"[^>]*>(.*?)</a>', re.S)
+# A bracket pair, for telling "[Am]" (a chord a contributor typed inline,
+# song 234) from literal brackets in the lyric ("[ E glorios, ... ]", 63699).
+BRACKET_PAIR = re.compile(r"\[([^\[\]]*)\]")
 
 # Strict chord token for detecting PLAIN-TEXT chord lines (some contributors
 # write chords without the nice-acord markup). Root A-G + optional accidental
@@ -311,6 +329,36 @@ def _plain_chords(text):
     return out
 
 
+def _decode_cf_email(m):
+    """data-cfemail is hex: the first byte is the key, every other byte is a
+    character XOR-ed with it. Undecodable -> the link text without brackets,
+    so it can't turn into a chord chip either."""
+    try:
+        raw = bytes.fromhex(m.group(1))
+        key = raw[0]  # IndexError on an empty attribute
+        return html.escape(bytes(b ^ key for b in raw[1:]).decode("utf-8"))
+    except (ValueError, IndexError, UnicodeDecodeError):
+        return m.group(2).replace("[", "").replace("]", "")
+
+
+def _neutralize_brackets(text):
+    """Literal [ and ] in lyric text become ( and ).
+
+    In ChordPro a bracket IS a chord. Once chords merge into a line that
+    starts with "[ E glorios," the app pairs that "[" with the "]" of the
+    first chord and swallows the lyric into one chip (63699). A pair whose
+    content is a chord ("[Am]", typed inline by the contributor) is kept.
+    """
+    out, pos = [], 0
+    for m in BRACKET_PAIR.finditer(text):
+        if _is_chordish(m.group(1).strip()):
+            out.append(text[pos:m.start()].replace("[", "(").replace("]", ")"))
+            out.append(m.group(0))
+            pos = m.end()
+    out.append(text[pos:].replace("[", "(").replace("]", ")"))
+    return "".join(out)
+
+
 def _visible(fragment: str) -> str:
     """Strip tags and decode entities; nbsp becomes a regular space."""
     text = TAG.sub("", fragment)
@@ -367,11 +415,12 @@ def to_chordpro(body_html: str) -> str:
     # them to spaces before they can leak into the output.
     for ch in (" ", " ", "\x85"):
         body_html = body_html.replace(ch, " ")
+    body_html = CF_EMAIL.sub(_decode_cf_email, body_html)
     lines = BR.split(body_html)
     parsed = []  # (chords, text) per line
     for raw_line in lines:
         chords, text, vis = _line_parts(raw_line)
-        text = text.rstrip()
+        text = _neutralize_brackets(text.rstrip())
         # Recognize chord lines written as plain text (no nice-acord markup).
         if not chords and _is_plain_chord_line(text):
             chords = _plain_chords(text)
@@ -580,15 +629,21 @@ def _strip_chordpro(chordpro):
     return "\n".join(out)
 
 
+def _lyrics_match(lyrics, chordpro):
+    """Same-title pairing can hit a DIFFERENT song, so clean lyrics ship only
+    past this gate: character-trigram Jaccard between them and the chord
+    version's stripped text (trigrams shrug off the alignment gaps that break
+    whole words). Threshold chosen loose enough for variant verses, tight
+    enough to reject different songs."""
+    a = _char_trigrams(lyrics)
+    b = _char_trigrams(_strip_chordpro(chordpro))
+    union = len(a | b)
+    return union > 0 and len(a & b) / union >= 0.45
+
+
 def _load_clean_lyrics():
     """chord_id -> clean lyrics body, when tool/fetch_lyrics_for_chords.py ran.
-
-    Same-title pairing can hit a DIFFERENT song, so each pairing must pass a
-    text-similarity gate: character-trigram Jaccard between the clean lyrics
-    and the chord version's stripped text (trigrams shrug off the alignment
-    gaps that break whole words). Threshold chosen loose enough for variant
-    verses, tight enough to reject different songs.
-    """
+    Candidates only: write_songs_file() runs _lyrics_match on them."""
     return {
         rec["chord_id"]: rec["lyrics"]
         for rec in _read_jsonl(OUT / "chord_lyrics.jsonl")
@@ -618,11 +673,67 @@ def _read_jsonl(path):
             continue
 
 
+CURATED_DIR = pathlib.Path(__file__).parent / "curated"
+
+
+def _curated():
+    """id -> manual correction, tool/curated/<id>.cho (full ChordPro doc)."""
+    docs = {}
+    for f in sorted(CURATED_DIR.glob("*.cho")):
+        doc = f.read_text(encoding="utf-8").rstrip("\n")
+        # The license (CC BY-NC-SA) requires attribution on every song.
+        if "# Sursă:" not in doc:
+            sys.exit(f"{f}: lipseste randul '# Sursă: ...' (atribuirea ceruta de licenta)")
+        docs[f.stem] = doc
+    return docs
+
+
+def write_songs_file(path, payload):
+    """The one exit for every published song file: catalog.json (finalize),
+    the book packages incl. Diverse (build_book_packages.py) and the
+    collections (build_collection.py).
+
+    Manual corrections replace `chordpro` HERE, so no output can skip them,
+    and the clean-lyrics gate runs here, after them, so `lyrics` is judged
+    against the text that ships. Both are idempotent: the book packages are
+    cut from an already corrected catalog.json and come out the same.
+    """
+    curated = _curated()
+    applied = rejected = 0
+    for song in payload["songs"]:
+        doc = curated.get(str(song["id"]))
+        if doc is not None:
+            song["chordpro"] = doc
+            applied += 1
+        if "lyrics" in song and not _lyrics_match(song["lyrics"], song["chordpro"]):
+            del song["lyrics"]
+            rejected += 1
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
+        encoding="utf-8",
+    )
+    attached = sum("lyrics" in s for s in payload["songs"])
+    if applied or attached or rejected:
+        print(f"{path.name}: {applied} curated; clean lyrics: {attached} "
+              f"attached, {rejected} rejected by similarity gate")
+
+
+def _content_hash(songs):
+    """Fingerprint of everything that decides the published songs: the
+    uncorrected songs (clean lyrics candidates included) plus the corrections.
+    The weekly workflow publishes when it changes, not only when `count` does,
+    so a reconversion or a correction reaches people at the same song count."""
+    h = hashlib.sha256(
+        json.dumps(songs, ensure_ascii=False, sort_keys=True).encode("utf-8"))
+    for f in sorted(CURATED_DIR.glob("*.cho")):
+        h.update(f.name.encode("utf-8") + b"\0" + f.read_bytes())
+    return h.hexdigest()
+
+
 def finalize() -> None:
     if not SONGS_FILE.exists():
         sys.exit("run the 'fetch' phase first")
     clean_lyrics = _load_clean_lyrics()
-    lyrics_attached = lyrics_rejected = 0
     songs = []
     for line in SONGS_FILE.read_text().split("\n"):
         if not line.strip():
@@ -636,23 +747,16 @@ def finalize() -> None:
             "author": rec.get("author", ""),
             "theme": rec.get("theme", ""),
             "url": rec["url"],
-            "chordpro": rec["chordpro"],
+            # Today's converter over the stored HTML; the conversion frozen at
+            # download is only the fallback (see the module docstring).
+            "chordpro": build_doc(rec.get("html") or None,
+                                  rec.get("page_title", ""), rec)
+            or rec["chordpro"],
         }
         lyrics = clean_lyrics.get(rec["id"])
         if lyrics:
-            a = _char_trigrams(lyrics)
-            b = _char_trigrams(_strip_chordpro(rec["chordpro"]))
-            union = len(a | b)
-            sim = (len(a & b) / union) if union else 0.0
-            if sim >= 0.45:
-                entry["lyrics"] = lyrics
-                lyrics_attached += 1
-            else:
-                lyrics_rejected += 1
+            entry["lyrics"] = lyrics
         songs.append(entry)
-    if clean_lyrics:
-        print(f"clean lyrics: {lyrics_attached} attached, "
-              f"{lyrics_rejected} rejected by similarity gate")
 
     # Songbook (carte) songs from the lyrics section, when fetched
     # (tool/fetch_book_songs.py). They carry a "book" field the app groups by.
@@ -740,12 +844,10 @@ def finalize() -> None:
         "license": "CC BY-NC-SA 3.0",
         "generated": time.strftime("%Y-%m-%d"),
         "count": len(songs),
+        "content_hash": _content_hash(songs),
         "songs": songs,
     }
-    CATALOG_FILE.write_text(
-        json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
-        encoding="utf-8",
-    )
+    write_songs_file(CATALOG_FILE, payload)
     size_mb = CATALOG_FILE.stat().st_size / 1e6
     print(f"catalog.json written: {len(songs)} songs, {size_mb:.1f} MB")
 
