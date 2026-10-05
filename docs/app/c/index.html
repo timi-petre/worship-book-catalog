@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cântări de Laudă</title>
+<!-- Pagina de rezervă a linkului de partajare din aplicație (din 1.6.0):
+     https://cantari.ontagonal.app/c/#d=... Cu aplicația instalată, linkul o
+     deschide direct și pagina nu se vede. Fără ea, sau cu o versiune mai
+     veche de 1.6.0, omul ajunge aici. Fragmentul #d=... nu pleacă spre
+     server, iar pagina nu afișează nimic din el: fără versuri aici.
+     Logica stă în link.js (CSP-ul nu permite scripturi inline noi). -->
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#415f91" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1420" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../assets/icon.png">
+<link rel="apple-touch-icon" href="../assets/icon.png">
+<link rel="stylesheet" href="../assets/style.css?v=11">
+<script src="link.js?v=1" defer></script>
+</head>
+<body>
+
+<main class="hero">
+  <div class="wrap">
+    <img class="hero-icon" src="../assets/icon.png" alt="Iconița aplicației Cântări de Laudă" width="76" height="76">
+    <h1>Cântări de Laudă</h1>
+
+    <!-- Unul din cele două blocuri îl arată link.js, după fragment. Fără
+         JavaScript rămân ascunse amândouă și se văd doar magazinele. -->
+    <div id="cu-link" hidden>
+      <p class="lead">Cineva ți-a trimis o cântare sau un program din aplicație.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" id="deschide" href="../">Deschide în aplicație</a>
+      </div>
+      <p class="hero-note">
+        Dacă apare o eroare sau nu se deschide nimic, aplicația nu e
+        instalată pe acest telefon. O găsești gratuit mai jos; după
+        instalare, atinge din nou linkul primit.
+      </p>
+      <p class="hero-note">
+        Nimic din ce ți s-a trimis nu trece prin acest site: stă chiar în
+        link și se deschide direct în aplicație.
+      </p>
+    </div>
+
+    <div id="fara-link" hidden>
+      <p class="lead">Linkul nu conține nicio cântare.</p>
+      <p class="hero-note">
+        Poate s-a tăiat când a fost copiat. Cere-i celui care ți l-a trimis
+        să-l trimită din nou.
+      </p>
+    </div>
+
+    <div class="hero-actions">
+      <a class="btn btn-quiet" href="https://apps.apple.com/ro/app/id6796594509">Descarcă din App Store</a>
+      <a class="btn btn-quiet" href="https://play.google.com/store/apps/details?id=com.worship.worship_book">Descarcă din Google Play</a>
+    </div>
+
+    <p class="hero-note"><a href="../">Despre aplicație</a></p>
+  </div>
+</main>
+
+</body>
+</html>
