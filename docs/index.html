@@ -35,7 +35,7 @@
 <p class="meta">
   Aplicația: <strong>Cântări de Laudă</strong> (Praise Songs), <code>com.worship.worship_book</code><br>
   Dezvoltator: Timotei Petre · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Ultima actualizare: 2026-10-06 · <a href="#english">English version below</a>
+  Ultima actualizare: 2026-10-09 · <a href="#english">English version below</a>
 </p>
 
 <div class="card">
@@ -77,8 +77,8 @@ el, stocăm doar ce au nevoie funcțiile pe care le folosești.</p>
   arată „online" pentru scurt timp după aceea. Cu cont, numele e numele afișat al contului
   (sau, dacă nu ai unul, partea din fața lui „@" din email). Fără cont, e numele ales în
   aplicație, păstrat lângă identificatorul anonim pe care aplicația îl creează prima dată
-  când deschizi un program partajat de altcineva. Lista o văd doar liderul programului și
-  co-liderii numiți de el. Liderul te poate face co-lider cu sau fără cont; fără cont,
+  când deschizi un program partajat de altcineva (sau lângă cel creat deja pentru un
+  raport de greșeală). Lista o văd doar liderul programului și co-liderii numiți de el. Liderul te poate face co-lider cu sau fără cont; fără cont,
   rolul e legat de identificatorul anonim, care se pierde dacă dezinstalezi aplicația sau
   îi ștergi datele, ori dacă intri într-un cont care există deja (aplicația te anunță
   înainte). Dacă îți faci mai târziu un cont nou în aplicație, identificatorul anonim
@@ -98,10 +98,12 @@ el, stocăm doar ce au nevoie funcțiile pe care le folosești.</p>
   Conține doar: ce cântare (identificatorul ei din catalog și, când le are, cartea și
   numărul), ce e greșit (versurile, acordurile, titlul sau autorul, altceva), textul pe
   care îl scrii (opțional, cel mult 500 de caractere), versiunea aplicației, data și un
-  identificator. Cu cont e identificatorul contului; fără cont, e un identificator anonim
-  pe care aplicația îl creează pentru asta (Firebase Authentication, fără email, fără
-  parolă și fără numele tău). Fără email, fără nume, fără date despre dispozitiv. Te rugăm
-  să nu scrii date personale în text. Nimeni nu poate citi rapoartele din aplicație, nici
+  identificator. Cu cont, e identificatorul contului tău. Fără cont, e identificatorul
+  anonim pe care aplicația îl folosește deja dacă ai deschis un program partajat de
+  altcineva (legat acolo de numele ales), altfel unul creat pentru raport (Firebase
+  Authentication, fără email, parolă sau nume); dacă deschizi mai târziu un astfel de
+  program, același identificator e folosit și acolo. Raportul în sine nu conține email,
+  nume sau date despre dispozitiv. Te rugăm să nu scrii date personale în text. Nimeni nu poate citi rapoartele din aplicație, nici
   tu; le citește doar dezvoltatorul. Un identificator poate trimite un singur raport
   pentru o cântare. Raportul se păstrează până când corectura apare în catalog sau
   raportul e respins, apoi se șterge; ne poți cere pe email să-l ștergem mai devreme.</li>
@@ -167,8 +169,8 @@ numele ales și codurile programelor.</p>
 <h2>Copii</h2>
 <p>Aplicația nu se adresează copiilor. Singurele date personale colectate vreodată sunt
 emailul și numele, cu un cont opțional, sau, fără cont, numele pe care îl alegi, trimis
-doar când deschizi un program partajat de altcineva. Un raport de greșeală poartă doar
-un identificator anonim și ce scrii în el.</p>
+doar când deschizi un program partajat de altcineva. Un raport de greșeală nu poartă
+nume sau email, doar un identificator și ce scrii în el.</p>
 
 <h2>Conținutul bibliotecii</h2>
 <p>Cântările din Bibliotecă provin de pe resursecrestine.ro și sunt licențiate
@@ -190,7 +192,7 @@ actualizată înainte, iar schimbarea va fi anunțată clar în notele de actual
 <p class="meta">
   App: <strong>Praise Songs</strong> (Cântări de Laudă), <code>com.worship.worship_book</code><br>
   Developer: Timotei Petre · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Last updated: 2026-10-06
+  Last updated: 2026-10-09
 </p>
 
 <div class="card">
@@ -232,7 +234,8 @@ optional; with one, we store only what the features you use need.</p>
   for a short while after. With an account, the name is your account's display name (or,
   if you have none, the part of your email before the "@"). Without an account, it is the
   name you chose in the app, stored with the anonymous identifier the app creates the
-  first time you open a setlist someone else shared. Only the setlist's leader and the
+  first time you open a setlist someone else shared (or the one it already created for a
+  mistake report). Only the setlist's leader and the
   co-leaders the leader appoints can see this list. The leader can make you a co-leader
   with or without an account; without one, the role is tied to the anonymous identifier,
   which is lost if you uninstall the app or clear its data, or if you sign in to an
@@ -254,10 +257,12 @@ optional; with one, we store only what the features you use need.</p>
   catalog identifier and, when it has them, the songbook and the hymn number), what is
   wrong (lyrics, chords, title or author, something else), the text you write (optional,
   up to 500 characters), the app version, the date, and an identifier. With an account it
-  is your account's identifier; without one, it is an anonymous identifier the app
-  creates for this (Firebase Authentication, without email or password and without your
-  name). No email, no name, no device details. Please don't write personal information in
-  the text. Nobody can read reports from the app, not even you; only the developer reads
+  is your account's identifier. Without one, it is the anonymous identifier the app
+  already uses if you opened a setlist someone else shared (linked there to the name you
+  chose), or otherwise one it creates for this (Firebase Authentication, without email,
+  password or name); if you open such a setlist later, that same identifier is used there
+  too. The report itself contains no email, no name and no device details. Please don't
+  write personal information in the text. Nobody can read reports from the app, not even you; only the developer reads
   them. Each identifier can send one report per song. A report is kept until the
   correction is published in the catalog or the report is rejected, and is then deleted;
   you can ask us by email to delete it sooner.</li>
@@ -323,8 +328,8 @@ chose and the setlist codes.</p>
 <h2>Children</h2>
 <p>The app is not directed at children. The only personal data ever collected is your
 email and name with an optional account or, without one, the name you choose, sent only
-when you open a setlist someone else shared. A mistake report carries only an anonymous
-identifier and what you write in it.</p>
+when you open a setlist someone else shared. A mistake report carries no name and no
+email, only an identifier and what you write in it.</p>
 
 <h2>Library content</h2>
 <p>Library songs come from resursecrestine.ro, licensed CC BY-NC-SA 3.0. The app is and
