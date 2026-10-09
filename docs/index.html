@@ -53,8 +53,7 @@ el, stocăm doar ce au nevoie funcțiile pe care le folosești.</p>
   <li><strong>Fără cont:</strong> totul stă pe dispozitivul tău. Internetul e folosit pentru
   descărcarea catalogului public („Actualizează biblioteca"), citirea cărții comune și a
   programelor partajate prin cod. La prima pornire aplicația se oferă să-ți țină minte
-  numele; e opțional, iar numele stă pe telefon. Doar când deschizi un program partajat de
-  altcineva (din versiunea 1.6.0) aplicația creează un identificator anonim (Firebase
+  numele; e opțional, iar numele stă pe telefon. Când deschizi un program partajat de altcineva (din versiunea 1.6.0), aplicația creează un identificator anonim (Firebase
   Authentication, fără email și fără parolă) și îl trimite împreună cu numele, cum scrie la
   „Oamenii dintr-un program partajat". Dacă ai sărit peste nume, aplicația ți-l cere o
   singură dată, atunci; dacă sari și acolo, nu creează și nu trimite nimic, iar programul
@@ -99,10 +98,8 @@ el, stocăm doar ce au nevoie funcțiile pe care le folosești.</p>
   numărul), ce e greșit (versurile, acordurile, titlul sau autorul, altceva), textul pe
   care îl scrii (opțional, cel mult 500 de caractere), versiunea aplicației, data și un
   identificator. Cu cont, e identificatorul contului tău. Fără cont, e identificatorul
-  anonim pe care aplicația îl folosește deja dacă ai deschis un program partajat de
-  altcineva (legat acolo de numele ales), altfel unul creat pentru raport (Firebase
-  Authentication, fără email, parolă sau nume); dacă deschizi mai târziu un astfel de
-  program, același identificator e folosit și acolo. Raportul în sine nu conține email,
+  anonim pe care aplicația îl folosește deja dacă ți-ai dat numele la deschiderea unui program partajat de altcineva (legat acolo de acest nume), altfel unul creat pentru raport (Firebase
+  Authentication, fără email, parolă sau nume); dacă deschizi mai târziu un astfel de program și îți dai numele, același identificator e folosit și acolo. Raportul în sine nu conține email,
   nume sau date despre dispozitiv. Te rugăm să nu scrii date personale în text. Nimeni nu poate citi rapoartele din aplicație, nici
   tu; le citește doar dezvoltatorul. Un identificator poate trimite un singur raport
   pentru o cântare. Raportul se păstrează până când corectura apare în catalog sau
@@ -210,9 +207,7 @@ optional; with one, we store only what the features you use need.</p>
   <li><strong>No account:</strong> everything is stored on your device. Internet is used
   to download the public song catalog ("Update library"), to read the shared songbook and
   to read setlists shared with you by code. The first time it starts, the app offers to
-  remember your name; giving it is optional, and the name stays on your phone. Only when
-  you open a setlist someone else shared (from version 1.6.0) does the app create an
-  anonymous identifier (Firebase Authentication, without email or password) and send it
+  remember your name; giving it is optional, and the name stays on your phone. When you open a setlist someone else shared (from version 1.6.0), the app creates an anonymous identifier (Firebase Authentication, without email or password) and send it
   together with that name, as described under "People in a shared setlist". If you
   skipped the name, the app asks for it once, at that moment; if you skip it again, it
   creates nothing and sends nothing, and you read the setlist without appearing in its
@@ -257,11 +252,8 @@ optional; with one, we store only what the features you use need.</p>
   catalog identifier and, when it has them, the songbook and the hymn number), what is
   wrong (lyrics, chords, title or author, something else), the text you write (optional,
   up to 500 characters), the app version, the date, and an identifier. With an account it
-  is your account's identifier. Without one, it is the anonymous identifier the app
-  already uses if you opened a setlist someone else shared (linked there to the name you
-  chose), or otherwise one it creates for this (Firebase Authentication, without email,
-  password or name); if you open such a setlist later, that same identifier is used there
-  too. The report itself contains no email, no name and no device details. Please don't
+  is your account's identifier. Without one, it is the anonymous identifier the app already uses if you gave your name when opening a setlist someone else shared (linked there to that name), or otherwise one it creates for this (Firebase Authentication, without email,
+  password or name); if you later open such a setlist and give your name, that same identifier is used there too. The report itself contains no email, no name and no device details. Please don't
   write personal information in the text. Nobody can read reports from the app, not even you; only the developer reads
   them. Each identifier can send one report per song. A report is kept until the
   correction is published in the catalog or the report is rejected, and is then deleted;
