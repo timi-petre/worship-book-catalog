@@ -32,6 +32,12 @@ SLEEP = 1.0
 LIMIT = 200  # results per page — few requests per book
 
 # Category code -> canonical book name (site menus skip diacritics).
+#
+# "ld" (Laudele Domnului) is gone on purpose and must not come back: the app
+# ships the 2024 edition from Editura ICAM inside the app, under a license
+# that forbids the public catalog (docs/adr/0016-laudele-domnului-2024.md).
+# This dict is also the whitelist finalize() keeps from the resumable state,
+# whose old pages still hold "ld" records.
 BOOKS = {
     "cr": "Cântările Evangheliei (Carte Roșie)",
     "cn": "Cântările Evangheliei (Carte Neagră)",
@@ -39,7 +45,6 @@ BOOKS = {
     "ic": "Imnuri Creștine (AZSMR)",
     "ic2": "Imnuri Creștine",
     "pdc": "Pe Drumul Credinței",
-    "ld": "Laudele Domnului",
     "ih": "Imnurile Harului",
     "lpd": "Lăudați pe Domnul",
     "lpdag": "Lăudați pe Domnul (Groza)",

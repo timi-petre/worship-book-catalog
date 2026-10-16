@@ -35,6 +35,14 @@ RELEASE_URL = (
 # Mirrors _priorityBooks in lib/utils/book_order.dart (prefix match).
 PRIORITY = ["Laudele Domnului", "Pe Drumul Credinței", "Cântările Evangheliei"]
 
+# Book ids the app must hide and delete from the phone (ADR 0016, decision
+# 8): written into books.json as "withdrawn", read by every app that fetches
+# the manifest (welcome, manage books, "Actualizează biblioteca"). Ids only,
+# never text. HERE and not in a hand-edited books.json, because the weekly
+# workflow rebuilds the manifest from this script and would drop the edit.
+# To withdraw the 2024 edition: WITHDRAWN = ["laudele-domnului-2024"].
+WITHDRAWN: list[str] = []
+
 
 def book_rank(book: str) -> int:
     for i, p in enumerate(PRIORITY):
@@ -103,7 +111,7 @@ def main() -> None:
               f"{size / 1e6:.2f} MB ({gz / 1e6:.2f} MB gzip)")
 
     assert total == len(songs), f"{total} packaged != {len(songs)} in catalog"
-    manifest = {"collections": entries, "generated": date}
+    manifest = {"collections": entries, "generated": date, "withdrawn": WITHDRAWN}
     (OUT / "books.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=1),
         encoding="utf-8",

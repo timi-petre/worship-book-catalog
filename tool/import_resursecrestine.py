@@ -53,6 +53,12 @@ import time
 import urllib.error
 import urllib.request
 
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+# Both must sit next to this file in EVERY copy of tool/, the public repo's
+# included: a missing one stops the run instead of publishing unguarded.
+from fetch_cantaricrestine import BOOKS as CC_BOOKS  # noqa: E402
+from icam_ids import ICAM_IDS  # noqa: E402
+
 BASE = "https://www.resursecrestine.ro"
 # Letters as listed on the site's alphabetical index (no Q, no X).
 LETTERS = list("ABCDEFGHIJKLMNOPRSTUVWYZ")
@@ -676,6 +682,21 @@ def _read_jsonl(path):
 CURATED_DIR = pathlib.Path(__file__).parent / "curated"
 
 
+ICAM_BOOK = "Laudele Domnului"
+
+
+def _is_icam(song_id, text="", book=""):
+    """Whether a song (or a correction) belongs to "Laudele Domnului", whose
+    2024 text from Editura ICAM is licensed for the app ONLY (ADR 0016): its
+    ids (tool/icam_ids.py, plus the `ld24-` ones), its source marker
+    `ld2024/` and its book name, which the public catalog no longer carries
+    under any source. The old cantaricrestine.ro text of the same book is
+    out too, so the name alone is enough to refuse."""
+    return (str(song_id) in ICAM_IDS or str(song_id).startswith("ld24-")
+            or "ld2024/" in text or book == ICAM_BOOK
+            or f"# Carte: {ICAM_BOOK}" in text)
+
+
 def _curated():
     """id -> manual correction, tool/curated/<id>.cho (full ChordPro doc)."""
     docs = {}
@@ -684,6 +705,13 @@ def _curated():
         # The license (CC BY-NC-SA) requires attribution on every song.
         if "# Sursă:" not in doc:
             sys.exit(f"{f}: lipseste randul '# Sursă: ...' (atribuirea ceruta de licenta)")
+        # tool/curated/ lives in the PUBLIC repo too (runbook §2): a fix to a
+        # 2024 ICAM song kept here would publish the licensed text. Those
+        # songs are not corrected by us at all; the text stays as ICAM sent
+        # it and a fix goes to ICAM (ADR 0016).
+        if _is_icam(f.stem, doc):
+            sys.exit(f"{f}: corectura pentru o cantare din Laudele Domnului (ICAM); "
+                     "textul nu se publica si nu se corecteaza aici, ADR 0016")
         docs[f.stem] = doc
     return docs
 
@@ -694,16 +722,30 @@ def write_songs_file(path, payload):
     collections (build_collection.py).
 
     Manual corrections replace `chordpro` HERE, so no output can skip them,
-    and the clean-lyrics gate runs here, after them, so `lyrics` is judged
-    against the text that ships. Both are idempotent: the book packages are
-    cut from an already corrected catalog.json and come out the same.
+    and drop `lyrics`: the corrected text is the only one that ships. The
+    site's clean lyrics feed the app's synthetic "Doar versuri" version, so a
+    typo reported there (`<id>-versuri`, ADR 0012) would survive a correction
+    that passes the similarity gate, i.e. any small one. Without `lyrics` the
+    version goes away and hiding chords shows the corrected text. The
+    clean-lyrics gate judges the uncorrected songs. Both are idempotent: the
+    book packages are cut from an already corrected catalog.json and come out
+    the same.
     """
     curated = _curated()
+    # The last door before a file goes public: whatever path brought an
+    # ICAM song here (a stale state, "ld" back in BOOKS, a hand-built input),
+    # nothing is written (ADR 0016).
+    icam = [s["id"] for s in payload["songs"]
+            if _is_icam(s["id"], s.get("chordpro", ""), s.get("book", ""))]
+    if icam:
+        sys.exit(f"{path.name}: {len(icam)} cantari din Laudele Domnului (ICAM), "
+                 f"ex. {icam[:3]}; textul e licentiat doar pentru aplicatie, ADR 0016")
     applied = rejected = 0
     for song in payload["songs"]:
         doc = curated.get(str(song["id"]))
         if doc is not None:
             song["chordpro"] = doc
+            song.pop("lyrics", None)
             applied += 1
         if "lyrics" in song and not _lyrics_match(song["lyrics"], song["chordpro"]):
             del song["lyrics"]
@@ -765,7 +807,9 @@ def finalize() -> None:
         numbers = _load_book_numbers()
         n_books = n_numbered = 0
         for rec in _read_jsonl(books_file):
-            if not rec.get("ok"):
+            # Same book name as the edition bundled in the app (ADR 0016):
+            # from any public source it would merge into it in the Library.
+            if not rec.get("ok") or rec.get("book") == ICAM_BOOK:
                 continue
             entry = {
                 "id": rec["id"],
@@ -792,8 +836,12 @@ def finalize() -> None:
     # Lyrics-only, hymn numbers included (tool/fetch_cantaricrestine.py).
     cc_file = OUT / "cantaricrestine_songs.jsonl"
     if cc_file.exists():
+        # Only the books still in BOOKS: the resumable state keeps the
+        # records of a book dropped from it ("ld", ADR 0016) forever.
+        cc_books = set(CC_BOOKS.values())
         cc_songs = [
-            rec for rec in _read_jsonl(cc_file) if "page_done" not in rec
+            rec for rec in _read_jsonl(cc_file)
+            if "page_done" not in rec and rec.get("book") in cc_books
         ]
         # The site keeps duplicate uploads: most unnumbered entries shadow a
         # numbered one of the same title in the same book — drop those (and
