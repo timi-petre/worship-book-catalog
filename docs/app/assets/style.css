@@ -1,6 +1,7 @@
 /* Cântări de Laudă — pagina de prezentare.
-   Paleta e cea reală din lib/theme.dart (Material 3, seed #1E5AA8 + accentul
-   auriu #E2A93B), ca site-ul să arate ca aplicația, nu ca o interpretare a ei. */
+   Paleta e cea reală din lib/theme.dart (aspectul violet, ADR 0022: seed
+   #8750F6, schema fidelity pe luminos, schema din machetă pe întunecat), ca
+   site-ul să arate ca aplicația, nu ca o interpretare a ei. */
 
 :root {
   /* O singură declarație per culoare, pentru amândouă temele: `light-dark()`
@@ -8,20 +9,24 @@
      proprietate, iar fără JavaScript pagina urmează tema sistemului. */
   color-scheme: light dark;
 
-  --brand-seed: #1e5aa8;
+  --brand-seed: #8750f6;
 
-  --primary: light-dark(#415f91, #aac7ff);
-  --on-primary: light-dark(#ffffff, #0a305f);
-  --primary-container: light-dark(#d6e3ff, #274777);
-  --on-primary-container: light-dark(#274777, #d6e3ff);
-  --background: light-dark(#eff3fa, #0d1420);
-  --surface: light-dark(#ffffff, #141c2c);
-  --on-surface: light-dark(#191c20, #e2e2e9);
-  --on-surface-variant: light-dark(#44474e, #c4c6d0);
-  --outline-variant: light-dark(#c4c6d0, #44474e);
+  --primary: light-dark(#6e31dc, #8750f6);
+  --on-primary: #ffffff;
+  --primary-container: #8750f6;
+  --on-primary-container: light-dark(#fffbff, #ffffff);
+  /* Textul de accent (linkuri, eticheta de deasupra titlurilor): pe întunecat
+     violetHi, nu primary, care are doar 4,26 pe fundal (AppTheme.accentText,
+     ADR 0011, decizia 4). */
+  --accent-text: light-dark(#6e31dc, #b29bff);
+  --background: light-dark(#eff3fa, #09090f);
+  --surface: light-dark(#ffffff, #15151c);
+  --on-surface: light-dark(#1d1a24, #fafafa);
+  --on-surface-variant: light-dark(#4a4455, #9696a8);
+  --outline-variant: light-dark(#ccc3d7, rgba(255, 255, 255, 0.09));
 
   /* Materialul translucid al barei: se schimbă cu tema, nu e o culoare fixă. */
-  --chrome: light-dark(rgba(255, 255, 255, 0.72), rgba(20, 28, 44, 0.72));
+  --chrome: light-dark(rgba(255, 255, 255, 0.72), rgba(21, 21, 28, 0.72));
   --chrome-edge: light-dark(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.12));
   /* Umbrele au două straturi, iar virgula dintre ele ar fi citită drept
      separatorul de argumente al lui `light-dark()` — de aceea fiecare strat
@@ -102,7 +107,7 @@ p { margin: 0 0 1em; letter-spacing: 0; }
   /* Text mic: tracking ușor POZITIV, pentru lizibilitate. */
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--primary);
+  color: var(--accent-text);
   margin: 0 0 0.75rem;
 }
 
@@ -264,7 +269,7 @@ p { margin: 0 0 1em; letter-spacing: 0; }
   color: var(--on-surface-variant);
   border: 1px solid var(--outline-variant);
 }
-.btn-quiet:hover { border-color: var(--primary); color: var(--primary); }
+.btn-quiet:hover { border-color: var(--primary); color: var(--accent-text); }
 
 :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
 
@@ -497,7 +502,7 @@ p { margin: 0 0 1em; letter-spacing: 0; }
 .book-list li { padding: 0.5rem 0; border-bottom: 1px solid var(--outline-variant); }
 .book-list li:last-child { border-bottom: 0; }
 
-a { color: var(--primary); }
+a { color: var(--accent-text); }
 
 /* ── Subsol ───────────────────────────────────────────────────────────── */
 

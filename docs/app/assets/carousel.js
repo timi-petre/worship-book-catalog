@@ -384,7 +384,7 @@
 
   var root = document.documentElement;
   var system = window.matchMedia('(prefers-color-scheme: dark)');
-  var BAR = { light: '#415f91', dark: '#0d1420' };
+  var BAR = { light: '#6e31dc', dark: '#09090f' };
 
   function resolved() {
     return root.dataset.theme || (system.matches ? 'dark' : 'light');
