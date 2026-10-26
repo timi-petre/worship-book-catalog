@@ -103,7 +103,16 @@ jobs:
       - name: Cântările din cărți
         run: bash tool/ruleaza_cu_buget.sh 60m python3 tool/fetch_book_songs.py
 
+      # Cererile spun cine le face (User-Agent cu contact), nu se dau drept
+      # browser (auditul 1.15.0, S12). Dacă site-ul le refuză (401/403),
+      # scriptul iese nenul, fără să scrie nimic. Rularea merge totuși mai
+      # departe pe starea restaurată, deci cărțile de pe cantaricrestine.ro se
+      # publică din ultimele texte bune, nu se strică; ultimul pas face apoi
+      # rularea roșie, ca refuzul să nu treacă neobservat. Remediul e o cerere
+      # de acces la site, nu înapoi la User-Agent-ul de browser.
       - name: cantaricrestine.ro
+        id: cantaricrestine
+        continue-on-error: true
         run: bash tool/ruleaza_cu_buget.sh 40m python3 tool/fetch_cantaricrestine.py
 
       - name: Versuri curate și numere de imn
@@ -226,3 +235,11 @@ jobs:
           git add ULTIMA_VERIFICARE.txt
           git commit -m "Verificare automată: $(date -u +%Y-%m-%d)" || exit 0
           git push
+
+      # La capăt, după publicare și după salvarea stării: o sursă picată nu
+      # mai oprește restul, dar nici nu lasă rularea verde.
+      - name: cantaricrestine.ro a picat
+        if: steps.cantaricrestine.outcome == 'failure'
+        run: |
+          echo "::error title=cantaricrestine.ro a picat::Cărțile de pe cantaricrestine.ro s-au publicat din starea salvată. La un refuz (403), de cerut acces site-ului; vezi jurnalul pasului cantaricrestine.ro."
+          exit 1

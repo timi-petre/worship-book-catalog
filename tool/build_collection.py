@@ -236,8 +236,7 @@ def main() -> None:
         "collection": args.cid,
         "name": args.name,
         "description": args.description,
-        "source": "resursecrestine.ro",
-        "license": "CC BY-NC-SA 3.0",
+        # `source` and `license`: write_songs_file(), from the songs.
         "generated": date,
         "count": len(songs),
         "songs": songs,

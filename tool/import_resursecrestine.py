@@ -402,7 +402,7 @@ def _line_parts(line: str):
         chord = _visible(m.group(1)).strip()
         if chord:
             # Map solfège to letters, but advance the visible column by the
-            # ORIGINAL width — that's what the browser rendered above lyrics.
+            # ORIGINAL width, that's what the browser rendered above lyrics.
             chords.append((col, _to_letter_chord(chord)))
             vis.append(chord)
             col += len(chord)
@@ -417,7 +417,7 @@ def to_chordpro(body_html: str) -> str:
     """Convert a stil-acorduri HTML block to a ChordPro body."""
     # Unicode line/paragraph separators (U+2028/U+2029/NEL) occasionally appear
     # in contributor-pasted content. json.dumps leaves them unescaped, and both
-    # Python's splitlines() and some editors treat them as newlines — flatten
+    # Python's splitlines() and some editors treat them as newlines; flatten
     # them to spaces before they can leak into the output.
     for ch in (" ", " ", "\x85"):
         body_html = body_html.replace(ch, " ")
@@ -474,7 +474,7 @@ def to_chordpro(body_html: str) -> str:
             # Chord-only line (intros, turnarounds) or chord line carrying
             # annotation text: emit it standalone, chords inline in place.
             # `text` holds the annotation with chord names removed, while the
-            # chord columns are visible columns — track both cursors.
+            # chord columns are visible columns; track both cursors.
             merged = []
             cursor = 0  # visible column emitted so far
             consumed = 0  # prefix of `text` already emitted
@@ -538,7 +538,7 @@ def build_doc(wrapper_html, page_title, meta):
     if author and author.lower() != "anonim":
         doc.append(f"{{artist: {author}}}")
     doc.append(f"# Sursă: resursecrestine.ro — {meta['url']}")
-    doc.append("# Licență conținut: CC BY-NC-SA 3.0 (atribuire, necomercial)")
+    # The licence line is added by write_songs_file(), from LICENSES.
     doc.append("")
     doc.append(body)
     return "\n".join(doc)
@@ -618,7 +618,7 @@ def _fold_search(text):
 
 def _strip_chordpro(chordpro):
     """Lyric text of a ChordPro doc: no [chords], {directives}, # comments,
-    and no chord-noise lines (plain chord runs, Intro:/Capo lines) — those
+    and no chord-noise lines (plain chord runs, Intro:/Capo lines): those
     would drag down the similarity score of a genuine same-song pairing."""
     out = []
     for line in chordpro.split("\n"):
@@ -697,6 +697,66 @@ def _is_icam(song_id, text="", book=""):
             or f"# Carte: {ICAM_BOOK}" in text)
 
 
+PDC_BOOK = "Pe Drumul Credinței"  # the BCEV Union's book
+CC_URL = "https://creativecommons.org/licenses/by-nc-sa/3.0/"
+
+# The licence of every published song, by its SOURCE (audit 1.15.0, B5 and S5,
+# 26 oct 2026). Until then every package said "CC BY-NC-SA 3.0", so the
+# project itself granted a CC licence on books nobody had licensed to it:
+#   - resursecrestine.ro: the site's terms license the uploads under CC
+#     BY-NC-SA 3.0. §4(a) wants the licence's address with every copy, §4(c)
+#     a note that the work was adapted (the conversion to ChordPro, the
+#     corrections in tool/curated/, clean lyrics from another page).
+#   - "Pe Drumul Credinței": the BCEV Union allowed it in the app, nothing
+#     more. Keyed by BOOK, ahead of the sources: the permission covers the
+#     book whatever site its text came from, and a CC label on it is exactly
+#     the claim B5 is about.
+#   - cantaricrestine.ro, every other book: the source is named and the
+#     rights stay with their holders. The site's terms allow free copying,
+#     but that is not a licence the project can pass on, so none is claimed.
+# Laudele Domnului 2024 never gets here: write_songs_file() refuses it first
+# (ADR 0016). A source missing from this table stops the run instead of
+# falling back to CC. The labels are part of the content hash, so a change
+# here republishes every package at the next weekly run.
+LICENSES = {
+    PDC_BOOK: ("Cu permisiunea Uniunii BCEV, doar în aplicația Cântări de "
+               "Laudă; fără drept de redistribuire"),
+    "resursecrestine.ro": f"CC BY-NC-SA 3.0, {CC_URL}; adaptat: format ChordPro",
+    "cantaricrestine.ro": "Drepturile aparțin titularilor",
+}
+LICENSE_PREFIX = "# Licență conținut: "
+SOURCE_LINE = re.compile(r"^# Sursă: (\S+).*$", re.M)
+LICENSE_LINE = re.compile(r"^# Licență conținut:.*\n?", re.M)
+
+
+def _licensed(song):
+    """(source, LICENSES key, chordpro with exactly one licence line, right
+    under `# Sursă:`). The song's source is the site its `# Sursă:` names:
+    the attribution every published song carries (finalize, curated/)."""
+    text = LICENSE_LINE.sub("", song["chordpro"])
+    m = SOURCE_LINE.search(text)
+    if m is None:
+        sys.exit(f"cantarea {song['id']}: fara randul '# Sursă: ...' "
+                 "(atribuirea ceruta de licenta)")
+    source = m.group(1)
+    key = PDC_BOOK if song.get("book") == PDC_BOOK else source
+    if key not in LICENSES:
+        sys.exit(f"cantarea {song['id']}: sursa {source!r} n-are licenta "
+                 "hotarata in LICENSES; nu se publica fara ea")
+    line = LICENSE_PREFIX + LICENSES[key]
+    return source, key, f"{text[:m.end()]}\n{line}{text[m.end():]}"
+
+
+def _attribution(found_sources, found_keys):
+    """The file header's `source` and `license`, from what its songs carry.
+    One licence: that label. Several (catalog.json): each one named, in
+    LICENSES order, never one of them stretched over the others."""
+    keys = [k for k in LICENSES if k in found_keys]
+    license_ = (LICENSES[keys[0]] if len(keys) == 1
+                else " | ".join(f"{k}: {LICENSES[k]}" for k in keys))
+    return " · ".join(sorted(found_sources)), license_
+
+
 def _curated():
     """id -> manual correction, tool/curated/<id>.cho (full ChordPro doc)."""
     docs = {}
@@ -730,6 +790,14 @@ def write_songs_file(path, payload):
     clean-lyrics gate judges the uncorrected songs. Both are idempotent: the
     book packages are cut from an already corrected catalog.json and come out
     the same.
+
+    The licence is decided HERE too, from LICENSES: one `# Licență conținut:`
+    line per song, under its `# Sursă:`, and the file's `source` and
+    `license` header from what its songs carry. Callers pass neither: a
+    package can no longer state a licence its songs do not have. The header
+    goes right before `songs`, after `name` and `generated`, which the app
+    reads from a file's first 512 bytes (CollectionsStore._headOf); a long
+    label in front would push them out.
     """
     curated = _curated()
     # The last door before a file goes public: whatever path brought an
@@ -750,6 +818,16 @@ def write_songs_file(path, payload):
         if "lyrics" in song and not _lyrics_match(song["lyrics"], song["chordpro"]):
             del song["lyrics"]
             rejected += 1
+    sources, keys = set(), set()
+    for song in payload["songs"]:
+        source, key, song["chordpro"] = _licensed(song)
+        sources.add(source)
+        keys.add(key)
+    songs = payload.pop("songs")
+    payload.pop("source", None)
+    payload.pop("license", None)
+    payload["source"], payload["license"] = _attribution(sources, keys)
+    payload["songs"] = songs
     path.write_text(
         json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
         encoding="utf-8",
@@ -762,11 +840,13 @@ def write_songs_file(path, payload):
 
 def _content_hash(songs):
     """Fingerprint of everything that decides the published songs: the
-    uncorrected songs (clean lyrics candidates included) plus the corrections.
-    The weekly workflow publishes when it changes, not only when `count` does,
-    so a reconversion or a correction reaches people at the same song count."""
+    uncorrected songs (clean lyrics candidates included), the corrections and
+    the licence labels. The weekly workflow publishes when it changes, not
+    only when `count` does, so a reconversion, a correction or a new label
+    reaches people at the same song count."""
     h = hashlib.sha256(
         json.dumps(songs, ensure_ascii=False, sort_keys=True).encode("utf-8"))
+    h.update(json.dumps(LICENSES, ensure_ascii=False).encode("utf-8"))
     for f in sorted(CURATED_DIR.glob("*.cho")):
         h.update(f.name.encode("utf-8") + b"\0" + f.read_bytes())
     return h.hexdigest()
@@ -832,7 +912,7 @@ def finalize() -> None:
         print(f"merged {n_books} songbook songs ({n_numbered} with numbers)")
 
     # Songbook texts from the cantaricrestine.ro public API (lyrics for
-    # projection; terms permit free copying/distribution — the app is free).
+    # projection; terms permit free copying/distribution, the app is free).
     # Lyrics-only, hymn numbers included (tool/fetch_cantaricrestine.py).
     cc_file = OUT / "cantaricrestine_songs.jsonl"
     if cc_file.exists():
@@ -844,7 +924,7 @@ def finalize() -> None:
             if "page_done" not in rec and rec.get("book") in cc_books
         ]
         # The site keeps duplicate uploads: most unnumbered entries shadow a
-        # numbered one of the same title in the same book — drop those (and
+        # numbered one of the same title in the same book; drop those (and
         # repeated unnumbered titles), keep the canonical numbered hymn.
         numbered_titles = set()
         for rec in cc_songs:
@@ -884,12 +964,8 @@ def finalize() -> None:
               f"({n_cc_dropped} duplicate uploads dropped)")
     songs.sort(key=lambda s: s["title"].lower())
     CATALOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    # `source` and `license` come from write_songs_file(), per song source.
     payload = {
-        # Two free sources: resursecrestine.ro (CC BY-NC-SA 3.0) and
-        # cantaricrestine.ro (free distribution per its terms). Per-song
-        # attribution lives in each entry's "# Sursă:" comment.
-        "source": "resursecrestine.ro · cantaricrestine.ro",
-        "license": "CC BY-NC-SA 3.0",
         "generated": time.strftime("%Y-%m-%d"),
         "count": len(songs),
         "content_hash": _content_hash(songs),
