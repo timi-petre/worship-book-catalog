@@ -35,7 +35,7 @@
 <p class="meta">
   Aplicația: <strong>Cântări de Laudă</strong> (Praise Songs), <code>com.worship.worship_book</code><br>
   Operator: Timotei Sorin Petre, persoană fizică · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Ultima actualizare: 2026-10-26 · <a href="#english">English version below</a>
+  Ultima actualizare: 2026-10-27 · <a href="#english">English version below</a>
 </p>
 
 <div class="card">
@@ -178,7 +178,7 @@ dezvoltatorul. Un identificator poate trimite un singur raport pentru o cântare
 <h2>Rapoartele de eroare</h2>
 <p>Din versiunea 1.16, rapoartele de eroare sunt oprite până le pornești tu: ecranul de
 bun venit te întreabă, cu bifa „Trimite rapoarte de eroare” nebifată, iar același
-comutator e în Setări. Până alegi, nu pleacă nimic. O singură excepție, pe iPhone: dacă ai
+comutator e în Setări. Până alegi, nu pleacă nimic. O singură excepție, pe iPhone și iPad: dacă ai
 folosit o versiune de până la 1.15, la prima pornire după actualizare pot pleca o singură
 dată rapoartele rămase netrimise de la versiunea veche, împreună cu datele tehnice de
 pornire ale Crashlytics, înainte ca aplicația să apuce să oprească trimiterea. Cu ele
@@ -244,7 +244,10 @@ standard ale Comisiei Europene.</p>
   programelor partajate de abuz) și cererile tehnice (livrarea cărților și anunțul versiunii noi). Te
   poți opune oricând.</li>
   <li><strong>Consimțământul (art. 6 alin. 1 lit. a):</strong> rapoartele de eroare; îl
-  poți retrage oricând din Setări, fără să afecteze rapoartele trimise înainte.</li>
+  poți retrage oricând din Setări, fără să afecteze rapoartele trimise înainte. Excepția de o
+  singură dată de la „Rapoartele de eroare” (iPhone și iPad, la prima pornire după actualizarea
+  de la o versiune de până la 1.15) are loc înainte să poți alege, deci nu se sprijină pe
+  consimțământ.</li>
 </ul>
 
 <h2>Cât păstrăm datele</h2>
@@ -272,8 +275,8 @@ standard ale Comisiei Europene.</p>
   <li><strong>La Google:</strong> rapoartele de eroare 90 de zile; adresele IP din
   jurnalele Firebase Authentication câteva săptămâni.</li>
   <li><strong>Copiile de siguranță:</strong> baza de date și lista conturilor din Firebase
-  Authentication (emailul, numele, furnizorul de conectare și datele tehnice ale contului)
-  se exportă de mână, cam o dată pe lună, pe calculatorul dezvoltatorului, și se păstrează
+  Authentication (emailul, numele, furnizorul de conectare, datele tehnice ale contului și, la
+  conectarea cu email și parolă, hash-ul parolei) se exportă de mână, cam o dată pe lună, pe calculatorul dezvoltatorului, și se păstrează
   ultimele 12 exporturi; o dată ștearsă dispare din ele după ce 12 exporturi noi le-au
   înlocuit pe cele vechi.</li>
 </ul>
@@ -374,13 +377,19 @@ actualizată înainte, iar schimbarea va fi anunțată clar în notele de actual
 <p>Întrebări despre această politică:
 <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a></p>
 
+<p>Dacă scrii la această adresă despre un conținut (o notificare sau o raportare despre o
+cântare ori un program partajat), păstrăm un jurnal cu data, numele și calitatea ta așa cum
+le dai, și obiectul notificării, în depozitul privat de cod al dezvoltatorului, pe GitHub,
+cât e nevoie ca să arătăm cum a fost tratată; textul mesajului tău rămâne doar în contul
+Gmail (Google) al dezvoltatorului.</p>
+
 <hr>
 
 <h1 id="english">🎵 Praise Songs: Privacy Policy</h1>
 <p class="meta">
   App: <strong>Praise Songs</strong> (Cântări de Laudă), <code>com.worship.worship_book</code><br>
   Controller: Timotei Sorin Petre, natural person · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Last updated: 2026-10-26
+  Last updated: 2026-10-27
 </p>
 
 <div class="card">
@@ -523,7 +532,7 @@ Each identifier can send one report per song.</p>
 <h2>Crash reports</h2>
 <p>From version 1.16, crash reports are off until you turn them on: the welcome screen
 asks, with the box unchecked, and the same switch is in Settings. Until you choose,
-nothing is sent. One exception, on iPhone: if you used a version up to 1.15, on the first
+nothing is sent. One exception, on iPhone and iPad: if you used a version up to 1.15, on the first
 start after the update the reports the old version left unsent, together with Crashlytics'
 technical start-up data, may go out once, before the app gets to turn sending off. When
 they are on and the app crashes, or an error stops it from doing something, a technical
@@ -587,7 +596,9 @@ Commission's standard contractual clauses.</p>
   setlists safe from abuse), and the technical requests (delivering the books and telling you about new
   versions). You can object to these at any time.</li>
   <li><strong>Consent (art. 6(1)(a)):</strong> crash reports, which you can withdraw at
-  any time in Settings, without affecting the reports sent before.</li>
+  any time in Settings, without affecting the reports sent before. The one-time exception
+  described under "Crash reports" (iPhone and iPad, on the first start after updating from a
+  version up to 1.15) happens before you can choose, so consent is not its basis.</li>
 </ul>
 
 <h2>How long we keep data</h2>
@@ -614,8 +625,8 @@ Commission's standard contractual clauses.</p>
   <li><strong>At Google:</strong> crash reports for 90 days; IP addresses logged by
   Firebase Authentication for a few weeks.</li>
   <li><strong>Backups:</strong> the database and the list of accounts in Firebase
-  Authentication (email, name, sign-in provider and the account's technical data) are
-  exported by hand, about once a month, to the developer's computer, and the last 12
+  Authentication (email, name, sign-in provider, the account's technical data and, for email
+  sign-in, the password hash) are exported by hand, about once a month, to the developer's computer, and the last 12
   exports are kept; deleted data disappears from them once 12 newer exports have replaced
   the old ones.</li>
 </ul>
@@ -712,6 +723,12 @@ and the change will be clearly announced in the app's update notes.</p>
 <h2>Contact</h2>
 <p>Questions about this policy:
 <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a></p>
+
+<p>If you write to this address about content (a notice or a report about a song or a shared
+setlist), we keep a log with the date, your name and capacity as you give them, and what the
+notice is about, in the developer's private code repository on GitHub, for as long as needed
+to show how it was handled; the text of your message stays only in the developer's Gmail
+account (Google).</p>
 
 </body>
 </html>
