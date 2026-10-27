@@ -153,6 +153,11 @@ până când deschizi un program partajat de altcineva.</p>
   <li><strong>Propunerile:</strong> o cântare pe care o propui în programul altcuiva
   poartă numele tău afișat (fără cont, numele ales) și poate fi citită de oricine are
   codul, până când aplicația liderului o preia; după aceea rămâne doar cântarea.</li>
+  <li><strong>Blocarea:</strong> liderul sau un co-lider te poate bloca în programul
+  lui; nu mai poți propune cântări în el și nu mai apari în lista echipei lui.
+  Identificatorul tău intern (al contului sau cel anonim), fără nume, rămâne în programul
+  partajat, vizibil oricui are codul, până la deblocare sau până la ștergerea programului,
+  și după ștergerea contului sau a datelor tale, când nu mai duce la tine.</li>
 </ul>
 
 <h2>Raportarea unei greșeli dintr-o cântare din catalog</h2>
@@ -232,8 +237,8 @@ standard ale Comisiei Europene.</p>
   contul și sincronizarea lui, programele partajate, numele tău în echipa unui program,
   co-liderii și propunerile.</li>
   <li><strong>Interesul legitim (art. 6 alin. 1 lit. f):</strong> rapoartele de greșeală
-  (corectarea catalogului), App Check și rezervarea codului (apărarea programelor
-  partajate de abuz) și cererile tehnice (livrarea cărților și anunțul versiunii noi). Te
+  (corectarea catalogului), App Check, rezervarea codului și blocarea (apărarea
+  programelor partajate de abuz) și cererile tehnice (livrarea cărților și anunțul versiunii noi). Te
   poți opune oricând.</li>
   <li><strong>Consimțământul (art. 6 alin. 1 lit. a):</strong> rapoartele de eroare; îl
   poți retrage oricând din Setări, fără să afecteze rapoartele trimise înainte.</li>
@@ -252,6 +257,8 @@ standard ale Comisiei Europene.</p>
   rămâne, cum scrie mai sus.</li>
   <li><strong>Propunerile:</strong> până când aplicația liderului le preia; după aceea
   rămâne în program doar cântarea.</li>
+  <li><strong>Blocările:</strong> cât ține programul partajat, dacă liderul sau un
+  co-lider nu te deblochează mai devreme.</li>
   <li><strong>Rapoartele de greșeală:</strong> se șterg la 30 de zile după ce sunt
   rezolvate (corectura apare în catalog sau raportul e respins); orice raport mai vechi de
   12 luni se șterge oricum.</li>
@@ -283,19 +290,20 @@ sau la autoritatea din țara UE în care locuiești.</p>
   <li><strong>Cu cont:</strong> ștergerea contului din aplicație (Cont → Șterge contul)
   oprește programele pe care le partajezi (codurile lor nu mai funcționează, iar tot ce e
   stocat în ele se șterge, afară de rezervarea codului de mai sus), îți scoate numele din
-  listele de echipă ale programelor pe care le-ai urmărit pe telefonul respectiv, cere
-  Google (și, pe iPhone și iPad, Apple) să retragă accesul aplicației la contul Google sau
+  listele de echipă ale programelor pe care le-ai urmărit pe telefonul respectiv,
+  împreună cu propunerile tale încă nepreluate din ele, cere Google (și, pe iPhone și iPad, Apple) să retragă accesul aplicației la contul Google sau
   Apple cu care ai intrat și elimină înregistrarea de autentificare și datele tale private
   sincronizate. Ștergerea cere
   internet și o autentificare recentă; aplicația te roagă să te autentifici din nou dacă e
-  nevoie. Intrările din alte programe, deschise de pe alt dispozitiv, se șterg cum scrie
+  nevoie. Intrările și propunerile din alte programe, deschise de pe alt dispozitiv, se
+  șterg cum scrie
   la „Cât păstrăm datele”, sau le ștergem la cerere, pe email. Rapoartele de greșeală
   trimise se șterg tot cum scrie acolo; la cerere, pe email, le ștergem mai devreme. Dacă
   ți-ai făcut contul după ce ai folosit aplicația fără cont, ștergerea acoperă și
   intrările de dinainte.</li>
   <li><strong>Fără cont:</strong> Cont → Șterge datele mele din programe îți scoate
-  intrările din listele de echipă ale programelor urmărite pe telefonul respectiv, scoate
-  numele de pe identificatorul anonim și șterge identificatorul. Dacă Firebase nu mai lasă
+  intrările din listele de echipă ale programelor urmărite pe telefonul respectiv,
+  împreună cu propunerile tale încă nepreluate din ele, scoate numele de pe identificatorul anonim și șterge identificatorul. Dacă Firebase nu mai lasă
   telefonul să-l șteargă (poate cere o autentificare recentă, pe care un identificator
   anonim n-o poate da), în Firebase Authentication rămâne un identificator fără nume și
   fără date, care nu mai duce la tine și se șterge după 12 luni fără conectare. Numele ales
@@ -484,6 +492,12 @@ your phone until you open a setlist someone else shared.</p>
   <li><strong>Proposals:</strong> a song you propose to someone else's setlist carries
   your display name (without an account, the name you chose) and can be read by anyone who
   has the code until the leader's app takes it in; after that only the song remains.</li>
+  <li><strong>Blocking:</strong> the leader or a co-leader can block you in their setlist;
+  you can then no longer propose songs to it or appear in its team list. Your internal
+  identifier (of your account, or the anonymous one), without a name, stays in the shared
+  setlist, readable by anyone who has the code, until you are unblocked or the setlist is
+  deleted, also after you delete your account or your data, when it no longer leads to
+  you.</li>
 </ul>
 
 <h2>Reporting a mistake in a catalog song</h2>
@@ -561,8 +575,8 @@ Commission's standard contractual clauses.</p>
   and its sync, shared setlists, your name in a setlist's team, co-leaders and
   proposals.</li>
   <li><strong>Legitimate interest (art. 6(1)(f)):</strong> mistake reports (keeping the
-  catalog correct), App Check and the code reservation (keeping the shared setlists safe
-  from abuse), and the technical requests (delivering the books and telling you about new
+  catalog correct), App Check, the code reservation and blocking (keeping the shared
+  setlists safe from abuse), and the technical requests (delivering the books and telling you about new
   versions). You can object to these at any time.</li>
   <li><strong>Consent (art. 6(1)(a)):</strong> crash reports, which you can withdraw at
   any time in Settings, without affecting the reports sent before.</li>
@@ -580,6 +594,8 @@ Commission's standard contractual clauses.</p>
   stays, as described above.</li>
   <li><strong>Proposals:</strong> until the leader's app takes them in; then only the song
   remains in the setlist.</li>
+  <li><strong>Blocks:</strong> as long as the shared setlist lasts, unless the leader or a
+  co-leader unblocks you sooner.</li>
   <li><strong>Mistake reports:</strong> deleted 30 days after being handled (the
   correction is published in the catalog or the report is rejected); any report older than
   12 months is deleted regardless.</li>
@@ -610,19 +626,20 @@ the EU country where you live.</p>
   <li><strong>With an account:</strong> deleting your account in the app (Account → Delete
   account) stops the setlists you share (their codes stop working and everything stored
   in them is removed, except the code reservation described above), removes your name
-  from the team lists of the setlists you followed on that phone, asks Google (and, on
+  from the team lists of the setlists you followed on that phone, together with your
+  proposals to them not yet taken in, asks Google (and, on
   iPhone and iPad, Apple) to remove the app's access to the Google or Apple account you
   signed in with, and removes your authentication record and your private synced
   data. This needs an internet connection
-  and a recent sign-in; the app asks you to sign in again if necessary. Entries in other
-  setlists that you opened from a different device are deleted as described under "How
+  and a recent sign-in; the app asks you to sign in again if necessary. Entries and
+  proposals in other setlists that you opened from a different device are deleted as described under "How
   long we keep data", or we remove them on request by email. Mistake reports you sent are
   deleted as described there too; we delete them sooner on request by email. If you
   created the account after using the app without one, this also covers the entries from
   before.</li>
   <li><strong>Without an account:</strong> Account → Delete my data from setlists removes
-  your entries from the team lists of the setlists you followed on that phone, removes
-  your name from the anonymous identifier and deletes the identifier. If Firebase no
+  your entries from the team lists of the setlists you followed on that phone, together
+  with your proposals to them not yet taken in, removes your name from the anonymous identifier and deletes the identifier. If Firebase no
   longer lets the phone delete it (it can ask for a recent sign-in, which an anonymous
   identifier cannot give), an identifier without a name or any data remains in Firebase
   Authentication; it no longer leads to you and is deleted after 12 months without
