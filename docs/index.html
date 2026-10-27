@@ -34,115 +34,284 @@
 <h1>🎵 Cântări de Laudă: Politica de confidențialitate</h1>
 <p class="meta">
   Aplicația: <strong>Cântări de Laudă</strong> (Praise Songs), <code>com.worship.worship_book</code><br>
-  Dezvoltator: Timotei Petre · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Ultima actualizare: 2026-10-17 · <a href="#english">English version below</a>
+  Operator: Timotei Sorin Petre, persoană fizică · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
+  Ultima actualizare: 2026-10-26 · <a href="#english">English version below</a>
 </p>
 
 <div class="card">
 <h2>Pe scurt</h2>
-<p><strong>Fără cont, Cântări de Laudă nu trimite nimic despre tine nicăieri, cu două
-excepții:</strong> când deschizi un program partajat de altcineva, trimite numele pe
-care l-ai ales în aplicație și un identificator anonim, ca liderul să te vadă
-în echipă; iar când raportezi o greșeală într-o cântare din catalog, trimite
-raportul cu un identificator anonim, fără numele tău. Contul e opțional; cu
-el, stocăm doar ce au nevoie funcțiile pe care le folosești.</p>
+<p><strong>Fără cont, Cântări de Laudă nu trimite nimic din care să fii recunoscut, cu
+două excepții:</strong> când deschizi un program partajat de altcineva, trimite numele pe
+care l-ai ales în aplicație și un identificator anonim, ca liderul să te vadă în echipă;
+iar când raportezi o greșeală într-o cântare din catalog, trimite raportul cu un
+identificator anonim, fără numele tău. Ca orice aplicație care folosește internetul,
+cererile ei tehnice (cărțile de cântări, verificarea versiunii noi) ajung la serverele
+respective cu adresa IP a telefonului. Contul e opțional; cu el, ce scrie la „Ce se
+sincronizează cu contul” se păstrează privat în cont. Rapoartele de eroare pleacă doar
+dacă le pornești. Fără analytics, fără reclame, fără tracking.</p>
 </div>
 
-<h2>Detalii</h2>
+<h2>Cine răspunde</h2>
+<p>Operatorul datelor tale este <strong>Timotei Sorin Petre</strong>, dezvoltatorul
+aplicației, persoană fizică. Pentru orice ține de această politică sau de datele tale,
+scrie la <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a>.</p>
+
+<h2>Fără cont</h2>
 <ul>
-  <li><strong>Fără cont:</strong> totul stă pe dispozitivul tău. Internetul e folosit pentru
-  descărcarea catalogului public („Actualizează biblioteca") și citirea
-  programelor partajate prin cod. La prima pornire aplicația se oferă să-ți țină minte
-  numele; e opțional, iar numele stă pe telefon. Când deschizi un program partajat de altcineva (din versiunea 1.6.0), aplicația creează un identificator anonim (Firebase
-  Authentication, fără email și fără parolă) și îl trimite împreună cu numele, cum scrie la
-  „Oamenii dintr-un program partajat". Dacă ai sărit peste nume, aplicația ți-l cere o
-  singură dată, atunci; dacă sari și acolo, nu creează și nu trimite nimic, iar programul
-  se citește fără ca tu să apari în echipa lui. Cealaltă excepție e raportul unei
-  greșeli, trimis doar dacă vrei, descris la „Raportarea unei greșeli dintr-o cântare din
-  catalog". Nimic altceva nu se încarcă.</li>
-  <li><strong>Cu cont (opțional):</strong> stocăm emailul și numele tău (prin Firebase
-  Authentication) pentru identificare; cântările tale și setlist-urile se sincronizează
-  privat în contul tău (Google Firestore, regiune UE) ca să supraviețuiască reinstalării și
-  să te urmeze pe alte dispozitive. Nimeni altcineva nu le poate citi.</li>
-  <li><strong>Partajarea programelor e prin alegere:</strong> când partajezi un program
-  cu echipa, numele lui, cântările din el și numele tău afișat devin lizibile pentru
-  oricine are codul de partajare. Oprești partajarea oricând.</li>
+  <li>Totul stă pe dispozitivul tău. La prima pornire aplicația se oferă să-ți țină minte
+  numele; e opțional, iar numele stă pe telefon.</li>
+  <li>Când deschizi un program partajat de altcineva (din versiunea 1.6.0), aplicația
+  creează un identificator anonim (Firebase Authentication, fără email și fără parolă) și
+  îl trimite împreună cu numele, cum scrie la „Oamenii dintr-un program partajat”. Dacă ai
+  sărit peste nume, aplicația ți-l cere o singură dată, atunci; dacă sari și acolo, nu
+  creează și nu trimite nimic, iar programul se citește fără ca tu să apari în echipa
+  lui.</li>
+  <li>Cealaltă excepție e raportul unei greșeli, trimis doar dacă vrei, descris la
+  „Raportarea unei greșeli dintr-o cântare din catalog”. Nimic altceva despre tine nu se
+  încarcă.</li>
+</ul>
+
+<h2>Cereri tehnice, cu sau fără cont</h2>
+<p>Aceste cereri nu poartă numele tău și niciun identificator al tău, dar, ca orice cerere
+pe internet, ajung la server cu adresa IP a telefonului, pe care serverul o poate păstra în
+jurnalele lui, după politica lui:</p>
+<ul>
+  <li><strong>Cărțile de cântări:</strong> lista cărților, cărțile pe care le descarci și
+  „Actualizează biblioteca” vin de pe GitHub (repo-ul public
+  <code>timi-petre/worship-book-catalog</code>). „Laudele Domnului” 2024 e chiar în
+  aplicație și nu se descarcă.</li>
+  <li><strong>Versiunea nouă:</strong> la fiecare pornire, aplicația întreabă App Store
+  (iPhone, iPad) sau Google Play (Android) dacă există o versiune mai nouă.</li>
+  <li><strong>App Check:</strong> fiecare cerere către Firebase (contul, programele
+  partajate, rapoartele de greșeală) poartă o dovadă că vine din aplicația adevărată,
+  obținută pe telefon de la Google Play Integrity (Android) sau Apple App Attest (iPhone,
+  iPad). Nu conține nume și nici date din cont; apără programele partajate și rapoartele
+  de abuz.</li>
+  <li><strong>Linkurile pe care le trimiți:</strong> o cântare sau un program trimise ca
+  link deschid pagina <code>cantari.ontagonal.app</code> pentru cine le atinge. Cântarea
+  sau programul stau în partea linkului de după „#”, pe care browserul n-o trimite
+  serverului.</li>
+</ul>
+
+<h2>Ce se sincronizează cu contul</h2>
+<p>Cu un cont opțional (email și parolă, Google sau Apple), următoarele se păstrează
+privat în contul tău (Google Cloud Firestore, regiune UE), ca să supraviețuiască
+reinstalării și să te urmeze pe celelalte dispozitive. Nimeni altcineva nu le poate
+citi:</p>
+<ul>
+  <li>emailul și numele (Firebase Authentication); cu Google, și adresa pozei de profil
+  Google, arătată ca avatar până îți alegi tu o poză;</li>
+  <li>cântările tale: cele scrise sau importate de tine și cele salvate la favorite;</li>
+  <li>programele tale, cu numele și rolurile celor care slujesc la fiecare, dacă le
+  treci;</li>
+  <li>notițele tale pe cântări și reglajele fiecărei cântări (gama aleasă, transpunerea,
+  tempoul, numele dat cântării pentru echipă);</li>
+  <li>istoricul cântărilor deschise: cel mult ultimele 500 de deschideri, cu data și ora,
+  și de câte ori ai deschis fiecare cântare;</li>
+  <li>poza de profil, dacă alegi una: un JPEG mic (256 de pixeli), ales prin selectorul
+  de poze al sistemului, fără acces la galeria ta.</li>
+</ul>
+<p><strong>Rămân doar pe telefon:</strong> lista echipei de închinare (numele și rolurile
+obișnuite pe care le ții în aplicație), partiturile PDF adăugate de tine, cărțile
+descărcate, căutările și setările aplicației. Fără cont, și numele ales stă pe telefon
+până când deschizi un program partajat de altcineva.</p>
+
+<h2>Programele partajate</h2>
+<ul>
+  <li><strong>Partajarea e prin alegere și cere cont:</strong> când partajezi un program,
+  numele lui, cântările din el (titlul și textul), numele date cântărilor pentru echipă și
+  numele tău afișat devin lizibile pentru oricine are codul de partajare. Oprești
+  partajarea oricând.</li>
+  <li><strong>Numele echipei și reglajele tale, oprite implicit:</strong> două
+  comutatoare din dialogul de partajare hotărăsc dacă pleacă mai mult odată cu programul.
+  „Trimite și numele echipei” adaugă cine slujește și rolul fiecăruia la acel program;
+  „Trimite și reglajele mele” adaugă notițele, gama, transpunerea și tempoul tău.
+  Amândouă rămân oprite până le pornești, iar ce trimit poate citi oricine are codul.
+  Numele dintr-un program sau dintr-o echipă de laudă a unei biserici pot arăta că cineva
+  face parte dintr-o comunitate religioasă, deci trimite numele altor oameni doar cu
+  acordul lor.</li>
+  <li><strong>Codul rămâne rezervat (din versiunea 1.16):</strong> codul rămâne rezervat
+  contului tău, ca nimeni altcineva să nu-l poată folosi pentru alt program: se păstrează
+  doar codul și identificatorul intern al contului, fără program și fără nume, și după
+  ștergerea contului, când identificatorul nu mai duce la tine.</li>
   <li><strong>Oamenii dintr-un program partajat:</strong> când deschizi un program
   partajat, lista echipei lui păstrează numele tău și momentul ultimei deschideri, și te
-  arată „online" pentru scurt timp după aceea. Cu cont, numele e numele afișat al contului
-  (sau, dacă nu ai unul, partea din fața lui „@" din email). Fără cont, e numele ales în
-  aplicație, păstrat lângă identificatorul anonim pe care aplicația îl creează prima dată
-  când deschizi un program partajat de altcineva (sau lângă cel creat deja pentru un
-  raport de greșeală). Lista o văd doar liderul programului și co-liderii numiți de el. Liderul te poate face co-lider cu sau fără cont; fără cont,
-  rolul e legat de identificatorul anonim, care se pierde dacă dezinstalezi aplicația sau
-  îi ștergi datele, ori dacă intri într-un cont care există deja (aplicația te anunță
-  înainte). Dacă îți faci mai târziu un cont nou în aplicație, identificatorul anonim
-  devine acel cont, deci rolul și numele ales rămân. După 90 de zile de la ultima ta
-  deschidere, intrarea ta se șterge data următoare când liderul deschide programul cu
-  internet, în aplicație, versiunea 1.5.0 sau mai nouă. Se mai șterge când liderul
-  oprește partajarea sau își șterge contul din versiunea 1.5.0 sau mai nouă; o intrare
-  rămasă de la o versiune mai veche o ștergem la cererea ta, pe email. Ne poți cere
-  oricând pe email să-ți ștergem intrarea. Un co-lider e păstrat în programul partajat
-  doar ca identificator intern al contului, fără nume. O cântare pe care o propui în
-  programul altcuiva poartă numele tău afișat (fără cont, numele ales) și poate fi citită
-  de oricine are codul, până când aplicația liderului o preia; după aceea rămâne doar
-  cântarea.</li>
-  <li><strong>Raportarea unei greșeli dintr-o cântare din catalog (opțională, din
-  1.7.0):</strong> intrarea „Raportează o greșeală" din meniul unei cântări din catalog ne
-  trimite un raport, ca să corectăm cântarea în catalogul pe care îl descarcă toată lumea.
-  Conține doar: ce cântare (identificatorul ei din catalog și, când le are, cartea și
-  numărul), ce e greșit (versurile, acordurile, titlul sau autorul, altceva), textul pe
-  care îl scrii (opțional, cel mult 500 de caractere), versiunea aplicației, data și un
-  identificator. Cu cont, e identificatorul contului tău. Fără cont, e identificatorul
-  anonim pe care aplicația îl folosește deja dacă ți-ai dat numele la deschiderea unui program partajat de altcineva (legat acolo de acest nume), altfel unul creat pentru raport (Firebase
-  Authentication, fără email, parolă sau nume); dacă deschizi mai târziu un astfel de program și îți dai numele, același identificator e folosit și acolo. Raportul în sine nu conține email,
-  nume sau date despre dispozitiv. Te rugăm să nu scrii date personale în text. Nimeni nu poate citi rapoartele din aplicație, nici
-  tu; le citește doar dezvoltatorul. Un identificator poate trimite un singur raport
-  pentru o cântare. Raportul se păstrează până când corectura apare în catalog sau
-  raportul e respins, apoi se șterge; ne poți cere pe email să-l ștergem mai devreme.</li>
-  <li><strong>Fără analytics, fără reclame, fără tracking.</strong> Datele sunt procesate
-  de Google Firebase (furnizorul nostru de stocare) cu garanțiile lui standard.</li>
-  <li><strong>Microfon (opțional, la cerere):</strong> butonul „Ascultă gama" din
+  arată „online” pentru scurt timp după aceea. Cu cont, numele e numele afișat al contului
+  (sau, dacă nu ai unul, eticheta generică „worship team”; versiunile de până la 1.15
+  foloseau partea din fața lui „@” din email). Fără cont, e numele ales în aplicație,
+  păstrat lângă identificatorul anonim pe care aplicația îl creează prima dată când
+  deschizi un program partajat de altcineva (sau lângă cel creat deja pentru un raport de
+  greșeală). Lista o văd doar liderul programului și co-liderii numiți de el. Intrarea ta
+  se șterge la 90 de zile după ultima ta deschidere, când liderul oprește partajarea sau
+  când își șterge contul; ne poți cere oricând pe email s-o ștergem.</li>
+  <li><strong>Co-liderii:</strong> liderul te poate face co-lider cu sau fără cont. Un
+  co-lider e păstrat în programul partajat doar ca identificator intern al contului, fără
+  nume. Fără cont, rolul e legat de identificatorul anonim, care se pierde dacă
+  dezinstalezi aplicația sau îi ștergi datele, ori dacă intri într-un cont care există
+  deja (aplicația te anunță înainte). Dacă îți faci mai târziu un cont nou în aplicație,
+  identificatorul anonim devine acel cont, deci rolul și numele ales rămân.</li>
+  <li><strong>Propunerile:</strong> o cântare pe care o propui în programul altcuiva
+  poartă numele tău afișat (fără cont, numele ales) și poate fi citită de oricine are
+  codul, până când aplicația liderului o preia; după aceea rămâne doar cântarea.</li>
+  <li><strong>Blocarea:</strong> liderul sau un co-lider te poate bloca în programul
+  lui; nu mai poți propune cântări în el și nu mai apari în lista echipei lui.
+  Identificatorul tău intern (al contului sau cel anonim), fără nume, rămâne în programul
+  partajat, vizibil oricui are codul, până la deblocare sau până la ștergerea programului,
+  și după ștergerea contului sau a datelor tale, când nu mai duce la tine.</li>
+</ul>
+
+<h2>Raportarea unei greșeli dintr-o cântare din catalog</h2>
+<p>Intrarea „Raportează o greșeală” din meniul unei cântări din catalog (din 1.7.0) ne
+trimite un raport, ca să corectăm cântarea în catalogul pe care îl descarcă toată lumea.
+Conține doar: ce cântare (identificatorul ei din catalog și, când le are, cartea și
+numărul), ce e greșit (versurile, acordurile, titlul sau autorul, altceva), textul pe care
+îl scrii (opțional, cel mult 500 de caractere), versiunea aplicației, data și un
+identificator. Cu cont, e identificatorul contului tău. Fără cont, e identificatorul anonim
+pe care aplicația îl folosește deja dacă ți-ai dat numele la deschiderea unui program
+partajat de altcineva (legat acolo de acest nume), altfel unul creat pentru raport
+(Firebase Authentication, fără email, parolă sau nume); dacă deschizi mai târziu un astfel
+de program și îți dai numele, același identificator e folosit și acolo. Raportul în sine
+nu conține email, nume sau date despre dispozitiv. Te rugăm să nu scrii date personale în
+text. Nimeni nu poate citi rapoartele din aplicație, nici tu; le citește doar
+dezvoltatorul. Un identificator poate trimite un singur raport pentru o cântare.</p>
+
+<h2>Rapoartele de eroare</h2>
+<p>Din versiunea 1.16, rapoartele de eroare sunt oprite până le pornești tu: ecranul de
+bun venit te întreabă, cu bifa „Trimite rapoarte de eroare” nebifată, iar același
+comutator e în Setări. Până alegi, nu pleacă nimic. Cu ele pornite, dacă aplicația se
+închide neașteptat sau o eroare o împiedică să facă ceva, pleacă un raport tehnic prin
+Firebase Crashlytics: modelul dispozitivului, versiunea sistemului, eroarea și locul din
+cod unde a apărut, plus un identificator al instalării, creat de Crashlytics. Niciodată
+cântările, căutările, numele sau contul tău; raportul nu e legat de cont. Le poți opri
+oricând din Setări. Versiunile de până la 1.15 trimit rapoartele de eroare automat, fără
+comutator.</p>
+
+<h2>Microfonul, camera și linkurile</h2>
+<ul>
+  <li><strong>Microfon (opțional, la cerere):</strong> butonul „Ascultă gama” din
   alegerea gamei ascultă câteva secunde prin microfon ca să ghicească gama cântării.
   Sunetul e analizat <strong>pe dispozitivul tău, în memorie</strong>: nu se scrie
   niciun fișier audio, nu se trimite nimic nicăieri și nu se stochează nimic din el.
   Se salvează doar gama pe care o alegi tu apoi, exact ca o gamă apăsată cu degetul.
   Microfonul e folosit doar cât rulează acel buton, iar permisiunea se cere prima dată
   când îl apeși.</li>
-  <li><strong>Camera (opțională, la cerere, din 1.6.0):</strong> butonul „Scanează codul QR"
-  din Programe citește codul QR al unui program sau al unei cântări primite. Imaginea
+  <li><strong>Camera (opțională, la cerere, din 1.6.0):</strong> butonul „Scanează codul
+  QR” din Programe citește codul QR al unui program sau al unei cântări primite. Imaginea
   camerei e citită <strong>pe dispozitivul tău</strong>, de un cititor de coduri inclus în
   aplicație, și aruncată: nu se salvează nicio poză și nicio imagine nu pleacă de pe
   telefon. Se păstrează doar programul sau cântarea pe care alegi apoi să le salvezi.
   Camera e folosită doar cât e deschis scanerul, iar permisiunea se cere prima dată când
   îl deschizi.</li>
-  <li><strong>„Ascultă pe YouTube" (din 1.5.0):</strong> butonul deschide căutarea YouTube
-  pentru titlul și autorul cântării, în aplicația YouTube sau în browser. Aplicația nu
-  trimite nimic; ce faci acolo ține de politica de confidențialitate a YouTube (Google).</li>
-  <li><strong>Rapoarte de eroare:</strong> dacă aplicația se închide neașteptat, un raport
-  tehnic (model dispozitiv, versiune OS, stack trace; niciodată cântările, căutările sau
-  identitatea ta) e trimis prin Firebase Crashlytics ca problema să poată fi reparată.
-  Rapoartele sunt folosite doar pentru diagnosticare și nu sunt legate de contul tău.</li>
-  <li><strong>Ștergerea:</strong> ștergerea contului din aplicație (Cont → Șterge contul)
-  oprește programele pe care le partajezi (codurile lor nu mai funcționează, iar tot ce
-  e stocat în ele se șterge), îți scoate numele din listele de echipă ale programelor pe
-  care le-ai urmărit pe telefonul respectiv și elimină înregistrarea de autentificare și
-  datele tale private sincronizate. Ștergerea cere internet și o autentificare recentă;
-  aplicația te roagă să te autentifici din nou dacă e nevoie. Intrările din alte programe, deschise de pe alt dispozitiv, se șterg cum e
-  descris mai sus, sau le ștergem la cerere, pe email. Rapoartele de greșeală trimise
-  rămân până sunt rezolvate, cum e descris mai sus, apoi se șterg; la cerere, pe email,
-  le ștergem mai devreme. Ne poți scrie și pe email pentru eliminare. Dacă ți-ai făcut contul după ce ai folosit aplicația fără cont, ștergerea
-  acoperă și intrările de dinainte.</li>
-  <li><strong>Ștergerea fără cont:</strong> Cont → Șterge datele mele din programe îți
-  scoate intrările din listele de echipă ale programelor urmărite pe telefonul respectiv,
-  scoate numele de pe identificatorul anonim și șterge identificatorul. Dacă Firebase nu
-  mai lasă telefonul să-l șteargă (poate cere o autentificare recentă, pe care un
-  identificator anonim n-o poate da), în Firebase Authentication rămâne un identificator
-  fără nume și fără date, care nu mai duce la tine. Numele ales rămâne doar pe telefonul
-  tău. Intrarea într-un cont care există deja scoate și ea întâi aceste intrări și acest
-  nume. Intrările rămase (de pildă, deschise fără internet) se șterg după 90 de zile, cum
-  e descris mai sus, sau la cerere, pe email. Rapoartele de greșeală trimise rămân până
-  sunt rezolvate, apoi se șterg; după ștergerea identificatorului nu mai duc la tine.</li>
+  <li><strong>„Ascultă pe YouTube”, linkurile spre partituri și „Caută pe
+  internet”:</strong> deschid YouTube, site-ul partiturii sau o căutare Google, în
+  aplicația YouTube sau în browser. Aplicația nu trimite nimic; ce faci acolo ține de
+  politica de confidențialitate a site-ului respectiv.</li>
+</ul>
+
+<h2>Cine primește datele</h2>
+<ul>
+  <li><strong>Google (Firebase)</strong>, ca persoană împuternicită, după termenii Firebase
+  de prelucrare a datelor: Firebase Authentication (conturile și identificatorii anonimi),
+  Cloud Firestore (datele sincronizate, programele partajate, rapoartele; regiune UE),
+  Crashlytics (doar dacă îl pornești) și App Check.</li>
+  <li><strong>Google și Apple, când intri cu ele:</strong> te autentifică în calitate de
+  operatori proprii, după politicile lor, și trimit emailul și numele tău la Firebase
+  Authentication. Cu Sign in with Apple îți poți ascunde emailul; atunci primim doar o
+  adresă privată de redirecționare.</li>
+  <li><strong>GitHub, App Store și Google Play:</strong> doar cererile tehnice de mai
+  sus.</li>
+  <li><strong>Oricine are codul unui program:</strong> ce partajează programul, cum scrie
+  la „Programele partajate”.</li>
+</ul>
+<p>Nu vindem datele tale și nu le dăm nimănui altcuiva.</p>
+
+<h2>Transferuri în afara SEE</h2>
+<p>Firestore păstrează datele în UE. Firebase Authentication, Crashlytics și App Check pot
+prelucra date și în Statele Unite. Google e certificat în cadrul EU-U.S. Data Privacy
+Framework, iar termenii Firebase de prelucrare a datelor cuprind clauzele contractuale
+standard ale Comisiei Europene.</p>
+
+<h2>Temeiurile legale (GDPR art. 6)</h2>
+<ul>
+  <li><strong>Executarea serviciului pe care îl ceri (art. 6 alin. 1 lit. b):</strong>
+  contul și sincronizarea lui, programele partajate, numele tău în echipa unui program,
+  co-liderii și propunerile.</li>
+  <li><strong>Interesul legitim (art. 6 alin. 1 lit. f):</strong> rapoartele de greșeală
+  (corectarea catalogului), App Check, rezervarea codului și blocarea (apărarea
+  programelor partajate de abuz) și cererile tehnice (livrarea cărților și anunțul versiunii noi). Te
+  poți opune oricând.</li>
+  <li><strong>Consimțământul (art. 6 alin. 1 lit. a):</strong> rapoartele de eroare; îl
+  poți retrage oricând din Setări, fără să afecteze rapoartele trimise înainte.</li>
+</ul>
+
+<h2>Cât păstrăm datele</h2>
+<ul>
+  <li><strong>Datele contului:</strong> cât timp ai contul; se șterg când îl ștergi (vezi
+  „Ștergerea”).</li>
+  <li><strong>Intrarea ta în lista echipei unui program:</strong> se șterge la 90 de zile
+  după ultima ta deschidere a programului, sau mai devreme, când liderul oprește
+  partajarea.</li>
+  <li><strong>Programele partajate:</strong> până când liderul oprește partajarea sau își
+  șterge contul. Un program partajat în care nu s-a mai scris nimic de 24 de luni se
+  șterge, împreună cu lista echipei, propunerile și datele de prezență; rezervarea codului
+  rămâne, cum scrie mai sus.</li>
+  <li><strong>Propunerile:</strong> până când aplicația liderului le preia; după aceea
+  rămâne în program doar cântarea.</li>
+  <li><strong>Blocările:</strong> cât ține programul partajat, dacă liderul sau un
+  co-lider nu te deblochează mai devreme.</li>
+  <li><strong>Rapoartele de greșeală:</strong> se șterg la 30 de zile după ce sunt
+  rezolvate (corectura apare în catalog sau raportul e respins); orice raport mai vechi de
+  12 luni se șterge oricum.</li>
+  <li><strong>Identificatorii anonimi:</strong> unul fără nicio conectare de 12 luni se
+  șterge, împreună cu numele de pe el.</li>
+  <li><strong>Rezervările codurilor:</strong> codul și identificatorul contului, fără
+  termen.</li>
+  <li><strong>La Google:</strong> rapoartele de eroare 90 de zile; adresele IP din
+  jurnalele Firebase Authentication câteva săptămâni.</li>
+  <li><strong>Copiile de siguranță:</strong> baza de date se exportă de mână, cam o dată
+  pe lună, pe calculatorul dezvoltatorului, și se păstrează ultimele 12 exporturi; o dată
+  ștearsă dispare din ele după ce 12 exporturi noi le-au înlocuit pe cele vechi.</li>
+</ul>
+<p>Curățenia care aplică aceste termene rulează cel puțin o dată pe lună, deci o dată
+poate rămâne până la o lună peste termen.</p>
+
+<h2>Drepturile tale</h2>
+<p>Ai dreptul să-ți accesezi datele, să ceri corectarea, ștergerea sau restricționarea
+lor, să te opui prelucrării pe temeiul interesului legitim, să primești datele
+sincronizate într-un format care se poate citi automat (JSON) și să-ți retragi
+consimțământul pentru rapoartele de eroare. Scrie la
+<a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a>; răspundem în cel mult o lună.
+Poți face și plângere la Autoritatea Națională de Supraveghere a Prelucrării Datelor cu
+Caracter Personal, ANSPDCP (<a href="https://www.dataprotection.ro">www.dataprotection.ro</a>),
+sau la autoritatea din țara UE în care locuiești.</p>
+
+<h2>Ștergerea</h2>
+<ul>
+  <li><strong>Cu cont:</strong> ștergerea contului din aplicație (Cont → Șterge contul)
+  oprește programele pe care le partajezi (codurile lor nu mai funcționează, iar tot ce e
+  stocat în ele se șterge, afară de rezervarea codului de mai sus), îți scoate numele din
+  listele de echipă ale programelor pe care le-ai urmărit pe telefonul respectiv,
+  împreună cu propunerile tale încă nepreluate din ele, cere Google (și, pe iPhone și iPad, Apple) să retragă accesul aplicației la contul Google sau
+  Apple cu care ai intrat și elimină înregistrarea de autentificare și datele tale private
+  sincronizate. Ștergerea cere
+  internet și o autentificare recentă; aplicația te roagă să te autentifici din nou dacă e
+  nevoie. Intrările și propunerile din alte programe, deschise de pe alt dispozitiv, se
+  șterg cum scrie
+  la „Cât păstrăm datele”, sau le ștergem la cerere, pe email. Rapoartele de greșeală
+  trimise se șterg tot cum scrie acolo; la cerere, pe email, le ștergem mai devreme. Dacă
+  ți-ai făcut contul după ce ai folosit aplicația fără cont, ștergerea acoperă și
+  intrările de dinainte.</li>
+  <li><strong>Fără cont:</strong> Cont → Șterge datele mele din programe îți scoate
+  intrările din listele de echipă ale programelor urmărite pe telefonul respectiv,
+  împreună cu propunerile tale încă nepreluate din ele, scoate numele de pe identificatorul anonim și șterge identificatorul. Dacă Firebase nu mai lasă
+  telefonul să-l șteargă (poate cere o autentificare recentă, pe care un identificator
+  anonim n-o poate da), în Firebase Authentication rămâne un identificator fără nume și
+  fără date, care nu mai duce la tine și se șterge după 12 luni fără conectare. Numele ales
+  rămâne doar pe telefonul tău. Intrarea într-un cont care există deja scoate și ea întâi
+  aceste intrări și acest nume. Intrările rămase (de pildă, deschise fără internet) se
+  șterg după 90 de zile, sau la cerere, pe email. Rapoartele de greșeală trimise se șterg
+  cum scrie la „Cât păstrăm datele”; după ștergerea identificatorului nu mai duc la
+  tine.</li>
 </ul>
 
 <h2 id="stergere">Cereri de ștergere a contului și a datelor</h2>
@@ -152,22 +321,45 @@ el, stocăm doar ce au nevoie funcțiile pe care le folosești.</p>
 <p>Dacă nu mai ai aplicația instalată, scrie la
 <a href="mailto:ontagonal@gmail.com?subject=%C8%98tergere%20cont%20C%C3%A2nt%C4%83ri%20de%20Laud%C4%83">ontagonal@gmail.com</a>
 de pe adresa cu care te-ai înregistrat și contul, datele private sincronizate și programele
-pe care le partajezi vor fi șterse în cel mult 30 de
-zile. Fără cont, folosește <em>Cont → Șterge datele mele din programe</em>, sau scrie-ne
+pe care le partajezi vor fi șterse în cel mult 30 de zile.</p>
+<p>Dacă ai intrat cu Apple și ți-ai ascuns emailul, noi știm doar o adresă privată de
+redirecționare, deci un mesaj de pe adresa ta reală nu ne duce la cont: trimite-ne în
+schimb adresa privată. O găsești pe iPhone în Setări, la contul tău Apple, la „Sign in with
+Apple” (Conectare cu Apple), în dreptul acestei aplicații; se termină în
+<code>@privaterelay.appleid.com</code>.</p>
+<p>Fără cont, folosește <em>Cont → Șterge datele mele din programe</em>, sau scrie-ne
 numele ales și codurile programelor.</p>
 </div>
 
 <h2>Copii</h2>
-<p>Aplicația nu se adresează copiilor. Singurele date personale colectate vreodată sunt
-emailul și numele, cu un cont opțional, sau, fără cont, numele pe care îl alegi, trimis
-doar când deschizi un program partajat de altcineva. Un raport de greșeală nu poartă
-nume sau email, doar un identificator și ce scrii în el.</p>
+<p>Aplicația nu se adresează copiilor și nu cere vârsta nimănui. Fără cont, singurele date
+personale pe care le trimite sunt numele pe care îl alegi când deschizi un program
+partajat de altcineva, cu un identificator anonim, și rapoartele de greșeală pe care alegi
+să le trimiți, fără nume și fără email. Cu cont, păstrează datele de la „Ce se
+sincronizează cu contul”.</p>
 
 <h2>Conținutul bibliotecii</h2>
-<p>Cântările din Bibliotecă provin de pe resursecrestine.ro și sunt licențiate
-CC BY-NC-SA 3.0 (atribuire, necomercial, share-alike). Aplicația este și va rămâne
-gratuită. Dacă deții drepturile asupra unui cântec și vrei să fie eliminat,
-scrie-ne și va fi scos prompt.</p>
+<ul>
+  <li><strong>Cântările de pe resursecrestine.ro</strong> sunt licențiate de site sub
+  CC BY-NC-SA 3.0 (atribuire, necomercial, distribuire în aceleași condiții,
+  <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">creativecommons.org/licenses/by-nc-sa/3.0</a>);
+  fiecare cântare numește pagina de unde vine.</li>
+  <li><strong>„Laudele Domnului”, ediția 2024:</strong> prin acord cu Editura ICAM, toate
+  drepturile rezervate. Doar în aplicație, fără drept de redistribuire.</li>
+  <li><strong>„Pe Drumul Credinței”:</strong> cu permisiunea Uniunii Bisericilor Creștine
+  după Evanghelie (BCEV), pentru folosirea în aplicație. Nu e sub o licență Creative
+  Commons și nu se redistribuie.</li>
+  <li><strong>Cărțile de pe cantaricrestine.ro</strong> (Imnuri Creștine, Cântările
+  Evangheliei, Lăudați pe Domnul, Cântecele Bucuriei și celelalte): site-ul permite
+  vizualizarea și distribuirea lor gratuită. Nu sunt sub o licență Creative Commons;
+  drepturile rămân ale autorilor și editurilor lor.</li>
+  <li><strong>Fișierul vechi al catalogului</strong> (<code>catalog.json</code>), citit
+  încă de versiunile aplicației de dinainte ca fiecare carte să se descarce separat,
+  numește în antet doar CC BY-NC-SA 3.0; i se aplică tot condițiile de mai sus, pe
+  sursă.</li>
+</ul>
+<p>Aplicația este și va rămâne gratuită. Dacă deții drepturile asupra unei cântări și vrei
+să fie scoasă, scrie-ne și va fi scoasă prompt.</p>
 
 <h2>Modificări</h2>
 <p>Dacă o versiune viitoare schimbă vreodată cele de mai sus, această politică va fi
@@ -182,74 +374,159 @@ actualizată înainte, iar schimbarea va fi anunțată clar în notele de actual
 <h1 id="english">🎵 Praise Songs: Privacy Policy</h1>
 <p class="meta">
   App: <strong>Praise Songs</strong> (Cântări de Laudă), <code>com.worship.worship_book</code><br>
-  Developer: Timotei Petre · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Last updated: 2026-10-17
+  Controller: Timotei Sorin Petre, natural person · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
+  Last updated: 2026-10-26
 </p>
 
 <div class="card">
 <h2>Summary</h2>
-<p><strong>Without an account, Praise Songs sends nothing about you anywhere, with two
-exceptions:</strong> when you open a setlist someone else shared with you, it sends
-the name you chose in the app and an anonymous identifier, so the leader can
-see you in the team; and when you report a mistake in a catalog song, it sends
-your report with an anonymous identifier, without your name. An account is
-optional; with one, we store only what the features you use need.</p>
+<p><strong>Without an account, Praise Songs sends nothing that identifies you, with two
+exceptions:</strong> when you open a setlist someone else shared with you, it sends the
+name you chose in the app and an anonymous identifier, so the leader can see you in the
+team; and when you report a mistake in a catalog song, it sends your report with an
+anonymous identifier, without your name. Like any app that uses the internet, its
+technical requests (the song books, the check for a new version) reach those servers with
+your device's IP address. An account is optional; with one, the items listed under "What
+syncs with your account" are kept privately in it. Crash reports are sent only if you turn
+them on. No analytics, no ads, no tracking.</p>
 </div>
 
-<h2>Details</h2>
+<h2>Who is responsible</h2>
+<p>The controller of your data is <strong>Timotei Sorin Petre</strong>, the developer of
+the app, a natural person. For anything about this policy or your data, write to
+<a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a>.</p>
+
+<h2>Without an account</h2>
 <ul>
-  <li><strong>No account:</strong> everything is stored on your device. Internet is used
-  to download the public song catalog ("Update library") and
-  to read setlists shared with you by code. The first time it starts, the app offers to
-  remember your name; giving it is optional, and the name stays on your phone. When you open a setlist someone else shared (from version 1.6.0), the app creates an anonymous identifier (Firebase Authentication, without email or password) and send it
+  <li>Everything stays on your device. The first time it starts, the app offers to
+  remember your name; giving it is optional, and the name stays on your phone.</li>
+  <li>When you open a setlist someone else shared (from version 1.6.0), the app creates an
+  anonymous identifier (Firebase Authentication, without email or password) and sends it
   together with that name, as described under "People in a shared setlist". If you
   skipped the name, the app asks for it once, at that moment; if you skip it again, it
   creates nothing and sends nothing, and you read the setlist without appearing in its
-  team. The other exception is a mistake report you choose to send, described under
-  "Reporting a mistake in a catalog song". Nothing else is uploaded.</li>
-  <li><strong>With an account (optional):</strong> we store your email and name (via
-  Firebase Authentication) to identify you; your own songs and setlists are synced
-  privately to your account (Google Firestore, EU region) so they survive reinstalls and
-  follow you across devices. Nobody else can read them.</li>
-  <li><strong>Setlist sharing is by choice:</strong> when you share a setlist with
-  your team, its name, its songs, and your display name become readable by anyone who has
-  the sharing code. Stop sharing at any time to take it offline.</li>
+  team.</li>
+  <li>The other exception is a mistake report you choose to send, described under
+  "Reporting a mistake in a catalog song". Nothing else about you is uploaded.</li>
+</ul>
+
+<h2>Technical requests, with or without an account</h2>
+<p>These requests carry no name and no identifier of yours, but, like any request on the
+internet, they reach the server with your device's IP address, which that server may log
+under its own privacy policy:</p>
+<ul>
+  <li><strong>Song books:</strong> the list of books, the books you download and "Update
+  library" come from GitHub (the public repository
+  <code>timi-petre/worship-book-catalog</code>). "Laudele Domnului" 2024 is inside the app
+  and needs no download.</li>
+  <li><strong>New version:</strong> at each start, the app asks the App Store (iPhone,
+  iPad) or Google Play (Android) whether a newer version exists.</li>
+  <li><strong>App Check:</strong> every request to Firebase (account, shared setlists,
+  mistake reports) carries a proof that it comes from the real app, obtained on your
+  device from Google Play Integrity (Android) or Apple App Attest (iPhone, iPad). It
+  carries no name and no account data; it protects the shared setlists and the reports
+  from abuse.</li>
+  <li><strong>Links you send:</strong> a song or setlist sent as a link opens the page
+  <code>cantari.ontagonal.app</code> for whoever taps it. The song or setlist travels in
+  the part of the link after "#", which the browser does not send to the server.</li>
+</ul>
+
+<h2>What syncs with your account</h2>
+<p>With an optional account (email and password, Google or Apple), the following are kept
+privately in your account (Google Cloud Firestore, EU region), so they survive reinstalls
+and follow you to your other devices. Nobody else can read them:</p>
+<ul>
+  <li>your email and name (Firebase Authentication); with Google, also the link to your
+  Google profile picture, shown as your avatar until you pick your own photo;</li>
+  <li>your songs: the ones you write or import and the ones you save to your
+  favourites;</li>
+  <li>your setlists, including the names and roles of the people serving in each one, if
+  you add them;</li>
+  <li>your notes on songs and each song's settings (the key you chose, transposition,
+  tempo, the name you give a song for your team);</li>
+  <li>the history of the songs you opened: up to the last 500 openings, with date and
+  time, and how many times you opened each song;</li>
+  <li>your profile photo, if you choose one: a small JPEG (256 pixels), picked through the
+  system photo picker, without access to your photo library.</li>
+</ul>
+<p><strong>Stays only on your phone:</strong> the worship team list (the names and usual
+roles you keep in the app), the sheet music PDFs you add, the downloaded books, your
+searches and the app's settings. Without an account, the name you chose also stays on
+your phone until you open a setlist someone else shared.</p>
+
+<h2>Shared setlists</h2>
+<ul>
+  <li><strong>Sharing is by choice and needs an account:</strong> when you share a
+  setlist, its name, its songs (title and text), the names you give songs for your team
+  and your display name become readable by anyone who has the sharing code. Stop sharing
+  at any time to take it offline.</li>
+  <li><strong>Team names and your settings, off by default:</strong> two switches in the
+  sharing dialog decide whether more goes with the setlist. "Send the team names too" adds
+  who is serving and their roles in that setlist; "Send my settings too" adds your notes,
+  key, transposition and tempo. Both stay off until you turn them on, and what they send is
+  readable by anyone who has the code. Names in a church's setlist or worship team can
+  reveal that someone takes part in a religious community, so send other people's names
+  only with their agreement.</li>
+  <li><strong>The code stays reserved (from version 1.16):</strong> the code stays
+  reserved to your account, so no one else can reuse it for another setlist: only the code
+  and your internal account identifier are kept, without the setlist or your name, also
+  after you delete your account, when the identifier no longer leads to you.</li>
   <li><strong>People in a shared setlist:</strong> when you open a shared setlist, its
   team list records your name and the time you last opened it, and shows you as "online"
   for a short while after. With an account, the name is your account's display name (or,
-  if you have none, the part of your email before the "@"). Without an account, it is the
-  name you chose in the app, stored with the anonymous identifier the app creates the
-  first time you open a setlist someone else shared (or the one it already created for a
-  mistake report). Only the setlist's leader and the
-  co-leaders the leader appoints can see this list. The leader can make you a co-leader
-  with or without an account; without one, the role is tied to the anonymous identifier,
-  which is lost if you uninstall the app or clear its data, or if you sign in to an
-  account that already exists (the app warns you first). If you later create a new
-  account in the app, the anonymous identifier becomes that account, so your role and
-  your chosen name stay. Once 90 days have passed since you last opened the setlist, your
-  entry is deleted the next time the leader opens the setlist with an internet connection
-  in the app, version 1.5.0 or later. It is also deleted when the leader stops sharing the
-  setlist or deletes their account in version 1.5.0 or later; an entry left behind by an
-  older version is removed when you ask us by email. You can ask us by email to delete
-  your entry at any time. A co-leader is stored in the shared setlist only as an internal
-  account identifier, without a name. A song you propose to someone else's setlist
-  carries your display name (without an account, the name you chose) and can be read by
-  anyone who has the code until the leader's app takes it in; after that only the song
-  remains.</li>
-  <li><strong>Reporting a mistake in a catalog song (optional, from 1.7.0):</strong> the
-  "Report a mistake" entry in a catalog song's menu sends us a report so we can correct
-  the song in the catalog everyone downloads. It contains only: which catalog song (its
-  catalog identifier and, when it has them, the songbook and the hymn number), what is
-  wrong (lyrics, chords, title or author, something else), the text you write (optional,
-  up to 500 characters), the app version, the date, and an identifier. With an account it
-  is your account's identifier. Without one, it is the anonymous identifier the app already uses if you gave your name when opening a setlist someone else shared (linked there to that name), or otherwise one it creates for this (Firebase Authentication, without email,
-  password or name); if you later open such a setlist and give your name, that same identifier is used there too. The report itself contains no email, no name and no device details. Please don't
-  write personal information in the text. Nobody can read reports from the app, not even you; only the developer reads
-  them. Each identifier can send one report per song. A report is kept until the
-  correction is published in the catalog or the report is rejected, and is then deleted;
-  you can ask us by email to delete it sooner.</li>
-  <li><strong>No analytics, no ads, no tracking.</strong> Data is processed by Google
-  Firebase (our storage provider) under its standard safeguards.</li>
+  if you have none, the generic label "worship team"; versions up to 1.15 used the part of
+  your email before the "@"). Without an account, it is the name you chose in the app,
+  stored with the anonymous identifier the app creates the first time you open a setlist
+  someone else shared (or the one it already created for a mistake report). Only the
+  setlist's leader and the co-leaders the leader appoints can see this list. Your entry is
+  deleted 90 days after you last opened the setlist, when the leader stops sharing it, or
+  when the leader deletes their account; you can ask us by email to delete it at any
+  time.</li>
+  <li><strong>Co-leaders:</strong> the leader can make you a co-leader with or without an
+  account. A co-leader is stored in the shared setlist only as an internal account
+  identifier, without a name. Without an account, the role is tied to the anonymous
+  identifier, which is lost if you uninstall the app or clear its data, or if you sign in
+  to an account that already exists (the app warns you first). If you later create a new
+  account in the app, the anonymous identifier becomes that account, so your role and your
+  chosen name stay.</li>
+  <li><strong>Proposals:</strong> a song you propose to someone else's setlist carries
+  your display name (without an account, the name you chose) and can be read by anyone who
+  has the code until the leader's app takes it in; after that only the song remains.</li>
+  <li><strong>Blocking:</strong> the leader or a co-leader can block you in their setlist;
+  you can then no longer propose songs to it or appear in its team list. Your internal
+  identifier (of your account, or the anonymous one), without a name, stays in the shared
+  setlist, readable by anyone who has the code, until you are unblocked or the setlist is
+  deleted, also after you delete your account or your data, when it no longer leads to
+  you.</li>
+</ul>
+
+<h2>Reporting a mistake in a catalog song</h2>
+<p>The "Report a mistake" entry in a catalog song's menu (from 1.7.0) sends us a report
+so we can correct the song in the catalog everyone downloads. It contains only: which
+catalog song (its catalog identifier and, when it has them, the songbook and the hymn
+number), what is wrong (lyrics, chords, title or author, something else), the text you
+write (optional, up to 500 characters), the app version, the date, and an identifier. With
+an account it is your account's identifier. Without one, it is the anonymous identifier
+the app already uses if you gave your name when opening a setlist someone else shared
+(linked there to that name), or otherwise one it creates for this (Firebase
+Authentication, without email, password or name); if you later open such a setlist and
+give your name, that same identifier is used there too. The report itself contains no
+email, no name and no device details. Please don't write personal information in the
+text. Nobody can read reports from the app, not even you; only the developer reads them.
+Each identifier can send one report per song.</p>
+
+<h2>Crash reports</h2>
+<p>From version 1.16, crash reports are off until you turn them on: the welcome screen
+asks, with the box unchecked, and the same switch is in Settings. Until you choose,
+nothing is sent. When they are on and the app crashes, or an error stops it from doing
+something, a technical report is sent through Firebase Crashlytics: device model, system
+version, the error and where in the code it happened, and an installation identifier
+created by Crashlytics. Never your songs, searches, name or account; the report is not
+linked to your account. You can turn reports off at any time in Settings. Versions up to
+1.15 send crash reports automatically, without a switch.</p>
+
+<h2>Microphone, camera and links</h2>
+<ul>
   <li><strong>Microphone (optional, on request):</strong> the "listen for the key"
   button in the key picker records a few seconds through the microphone to guess the
   song's key. The audio is analysed <strong>on your device, in memory</strong>: no audio
@@ -263,35 +540,114 @@ optional; with one, we store only what the features you use need.</p>
   no picture is saved and no image leaves your phone. Only the setlist or song you then
   choose to save is kept. The camera is used only while the scanner is open, and the
   permission is asked the first time you open it.</li>
-  <li><strong>"Listen on YouTube" (from 1.5.0):</strong> the button opens a YouTube search
-  for the song's title and author, in the YouTube app or in your browser. The app itself
-  sends nothing; what you do there falls under YouTube's (Google's) privacy policy.</li>
-  <li><strong>Crash reports:</strong> if the app crashes, a technical report (device
-  model, OS version, stack trace; never your songs, searches, or identity) is sent via
-  Firebase Crashlytics so the problem can be fixed. Crash reports are used only for
-  diagnostics and are not linked to your account.</li>
-  <li><strong>Deletion:</strong> deleting your account in the app (Account → Delete
+  <li><strong>"Listen on YouTube", sheet music links and "Search the web":</strong> they
+  open YouTube, the sheet music site or a Google search in the YouTube app or in your
+  browser. The app itself sends nothing; what you do there falls under the privacy policy
+  of that site.</li>
+</ul>
+
+<h2>Who receives your data</h2>
+<ul>
+  <li><strong>Google (Firebase)</strong>, as our processor, under the Firebase data
+  processing terms: Firebase Authentication (accounts and anonymous identifiers), Cloud
+  Firestore (synced data, shared setlists, reports; EU region), Crashlytics (only if you
+  turn it on) and App Check.</li>
+  <li><strong>Google and Apple, when you sign in with them:</strong> they authenticate you
+  as controllers in their own right, under their own privacy policies, and pass your email
+  and name to Firebase Authentication. With Sign in with Apple you can hide your email;
+  then we only receive a private relay address.</li>
+  <li><strong>GitHub, the App Store and Google Play:</strong> only the technical requests
+  described above.</li>
+  <li><strong>Anyone who has a setlist's code:</strong> what that setlist shares, as
+  described under "Shared setlists".</li>
+</ul>
+<p>We do not sell your data and do not pass it to anyone else.</p>
+
+<h2>Transfers outside the EEA</h2>
+<p>Firestore keeps the data in the EU. Firebase Authentication, Crashlytics and App Check
+may also process data in the United States. Google is certified under the EU-U.S. Data
+Privacy Framework, and the Firebase data processing terms include the European
+Commission's standard contractual clauses.</p>
+
+<h2>Legal bases (GDPR art. 6)</h2>
+<ul>
+  <li><strong>Performance of the service you ask for (art. 6(1)(b)):</strong> the account
+  and its sync, shared setlists, your name in a setlist's team, co-leaders and
+  proposals.</li>
+  <li><strong>Legitimate interest (art. 6(1)(f)):</strong> mistake reports (keeping the
+  catalog correct), App Check, the code reservation and blocking (keeping the shared
+  setlists safe from abuse), and the technical requests (delivering the books and telling you about new
+  versions). You can object to these at any time.</li>
+  <li><strong>Consent (art. 6(1)(a)):</strong> crash reports, which you can withdraw at
+  any time in Settings, without affecting the reports sent before.</li>
+</ul>
+
+<h2>How long we keep data</h2>
+<ul>
+  <li><strong>Account data:</strong> as long as you keep the account; deleted when you
+  delete it (see "Deletion").</li>
+  <li><strong>Your entry in a setlist's team list:</strong> deleted 90 days after you last
+  opened the setlist, or earlier, when the leader stops sharing it.</li>
+  <li><strong>Shared setlists:</strong> until the leader stops sharing them or deletes
+  their account. A shared setlist in which nothing has been written for 24 months is
+  deleted, together with its team list, proposals and presence data; its code reservation
+  stays, as described above.</li>
+  <li><strong>Proposals:</strong> until the leader's app takes them in; then only the song
+  remains in the setlist.</li>
+  <li><strong>Blocks:</strong> as long as the shared setlist lasts, unless the leader or a
+  co-leader unblocks you sooner.</li>
+  <li><strong>Mistake reports:</strong> deleted 30 days after being handled (the
+  correction is published in the catalog or the report is rejected); any report older than
+  12 months is deleted regardless.</li>
+  <li><strong>Anonymous identifiers:</strong> one with no sign-in for 12 months is
+  deleted, together with the name on it.</li>
+  <li><strong>Code reservations:</strong> the code and the account identifier, without a
+  time limit.</li>
+  <li><strong>At Google:</strong> crash reports for 90 days; IP addresses logged by
+  Firebase Authentication for a few weeks.</li>
+  <li><strong>Backups:</strong> the database is exported by hand, about once a month, to
+  the developer's computer, and the last 12 exports are kept; deleted data disappears from
+  them once 12 newer exports have replaced the old ones.</li>
+</ul>
+<p>The cleanup that applies these terms runs at least once a month, so an item can stay
+up to a month past its term.</p>
+
+<h2>Your rights</h2>
+<p>You have the right to access your data, to have it corrected, erased or restricted, to
+object to processing based on legitimate interest, to receive your synced data in a
+machine-readable format (JSON) and to withdraw your consent to crash reports. Write to
+<a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a>; we answer within one month.
+You can also complain to the Romanian data protection authority, ANSPDCP
+(<a href="https://www.dataprotection.ro">www.dataprotection.ro</a>), or to the authority of
+the EU country where you live.</p>
+
+<h2>Deletion</h2>
+<ul>
+  <li><strong>With an account:</strong> deleting your account in the app (Account → Delete
   account) stops the setlists you share (their codes stop working and everything stored
-  in them is removed), removes your name from the member lists of the setlists you
-  followed on that phone, and removes your authentication record and your private synced
-  data. This needs an internet connection and a recent sign-in; the app asks you to sign
-  in again if necessary. Entries in other setlists that you
-  opened from a different device are deleted as described above, or we remove them on
-  request by email. Mistake reports you sent stay until they are handled, as described
-  above, then are deleted; we delete them sooner on request by email. You can also email
-  us for removal. If you created the account after
-  using the app without one, this also covers the entries from before.</li>
-  <li><strong>Deletion without an account:</strong> Account → Delete my data from
-  setlists removes your entries from the team lists of the setlists you followed on that
-  phone, removes your name from the anonymous identifier and deletes the identifier. If
-  Firebase no longer lets the phone delete it (it can ask for a recent sign-in, which an
-  anonymous identifier cannot give), an identifier without a name or any data remains in
-  Firebase Authentication; it no longer leads to you. The name you chose stays only on
-  your phone. Signing in to an account that already exists removes those entries and
-  that name first, too. Entries left behind (for example, opened offline) are deleted
-  after 90 days as described above, or on request by email. Mistake reports you sent stay
-  until they are handled and are then deleted; once the identifier is deleted, they no
-  longer lead to you.</li>
+  in them is removed, except the code reservation described above), removes your name
+  from the team lists of the setlists you followed on that phone, together with your
+  proposals to them not yet taken in, asks Google (and, on
+  iPhone and iPad, Apple) to remove the app's access to the Google or Apple account you
+  signed in with, and removes your authentication record and your private synced
+  data. This needs an internet connection
+  and a recent sign-in; the app asks you to sign in again if necessary. Entries and
+  proposals in other setlists that you opened from a different device are deleted as described under "How
+  long we keep data", or we remove them on request by email. Mistake reports you sent are
+  deleted as described there too; we delete them sooner on request by email. If you
+  created the account after using the app without one, this also covers the entries from
+  before.</li>
+  <li><strong>Without an account:</strong> Account → Delete my data from setlists removes
+  your entries from the team lists of the setlists you followed on that phone, together
+  with your proposals to them not yet taken in, removes your name from the anonymous identifier and deletes the identifier. If Firebase no
+  longer lets the phone delete it (it can ask for a recent sign-in, which an anonymous
+  identifier cannot give), an identifier without a name or any data remains in Firebase
+  Authentication; it no longer leads to you and is deleted after 12 months without
+  sign-in. The name you chose stays only on your phone. Signing in to an account that
+  already exists removes those entries and that name first, too. Entries left behind (for
+  example, opened offline) are deleted after 90 days, or on request by email. Mistake
+  reports you sent are deleted as described under "How long we keep data"; once the
+  identifier is deleted, they no longer lead to you.</li>
 </ul>
 
 <h2 id="deletion">Account &amp; data deletion requests</h2>
@@ -301,20 +657,44 @@ optional; with one, we store only what the features you use need.</p>
 <p>If you no longer have the app installed, email
 <a href="mailto:ontagonal@gmail.com?subject=Account%20deletion%20Praise%20Songs">ontagonal@gmail.com</a>
 from the address you registered with and your account, private synced data and the setlists
-you share will be deleted within 30 days. Without an
-account, use <em>Account → Delete my data from setlists</em>, or email us the name you
-chose and the setlist codes.</p>
+you share will be deleted within 30 days.</p>
+<p>If you signed in with Apple and chose to hide your email, we only know a private relay
+address, so a message from your real address does not lead us to your account: send us
+that private address instead. You find it on your iPhone in Settings, under your Apple
+Account, at "Sign in with Apple", in the entry for this app; it ends in
+<code>@privaterelay.appleid.com</code>.</p>
+<p>Without an account, use <em>Account → Delete my data from setlists</em>, or email us
+the name you chose and the setlist codes.</p>
 </div>
 
 <h2>Children</h2>
-<p>The app is not directed at children. The only personal data ever collected is your
-email and name with an optional account or, without one, the name you choose, sent only
-when you open a setlist someone else shared. A mistake report carries no name and no
-email, only an identifier and what you write in it.</p>
+<p>The app is not directed at children and does not ask anyone's age. Without an account,
+the only personal data it sends is the name you choose when you open a setlist someone
+else shared, with an anonymous identifier, and the mistake reports you choose to send,
+which carry no name and no email. With an account, it keeps the data listed under "What
+syncs with your account".</p>
 
 <h2>Library content</h2>
-<p>Library songs come from resursecrestine.ro, licensed CC BY-NC-SA 3.0. The app is and
-will remain free of charge. Rights holders can request prompt removal by email.</p>
+<ul>
+  <li><strong>Songs from resursecrestine.ro</strong> are licensed by that site under
+  CC BY-NC-SA 3.0 (attribution, non-commercial, share-alike,
+  <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">creativecommons.org/licenses/by-nc-sa/3.0</a>);
+  each song names the page it comes from.</li>
+  <li><strong>"Laudele Domnului", 2024 edition:</strong> by agreement with Editura ICAM,
+  all rights reserved. Only inside the app, not for redistribution.</li>
+  <li><strong>"Pe Drumul Credinței":</strong> with the permission of Uniunea Bisericilor
+  Creștine după Evanghelie (BCEV), for use in the app only. It is not under a Creative
+  Commons licence and is not for redistribution.</li>
+  <li><strong>The songbooks from cantaricrestine.ro</strong> (Imnuri Creștine, Cântările
+  Evangheliei, Lăudați pe Domnul, Cântecele Bucuriei and the others): that site allows
+  viewing and distributing them free of charge. They are not under a Creative Commons
+  licence; the rights stay with their authors and publishers.</li>
+  <li><strong>The old catalog file</strong> (<code>catalog.json</code>), still read by app
+  versions from before books were downloaded one by one, names only CC BY-NC-SA 3.0 in its
+  header; the terms above, by source, apply to it too.</li>
+</ul>
+<p>The app is and will remain free of charge. If you hold the rights to a song and want
+it removed, email us and it will be taken out promptly.</p>
 
 <h2>Changes</h2>
 <p>If a future version ever changes any of the above, this policy will be updated first
