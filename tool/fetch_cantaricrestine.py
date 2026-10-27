@@ -3,9 +3,14 @@
 
 The site (lyrics for projection, PowerPoint) exposes a documented JSON API
 (https://www.cantaricrestine.ro/documentatie-api.php; the `token` parameter
-is any random value). Terms of use permit free viewing/copying/distribution
-— matching our free app. Hymn numbers come inside `denumire` ("001 Lui
-Dumnezeu să-I cânți"), the full text in `descriere`.
+is any random value). Terms of use permit free viewing/copying/distribution,
+like our free app. Hymn numbers come inside `denumire` ("001 Lui Dumnezeu
+să-I cânți"), the full text in `descriere`.
+
+Asked as who we are (UA below), never disguised as a browser. A refusal
+(401/403) stops the run at once, with a non-zero exit and a message that says
+so: nothing is retried and nothing is written, so the resumable state keeps
+the last good texts and the weekly workflow publishes the books from it.
 
 Output: tool/out/cantaricrestine_songs.jsonl, one record per song:
 {id, book_code, book, number, title, text, url}. Resumable per category
@@ -18,18 +23,23 @@ import random
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
 OUT = Path(__file__).parent / "out"
 RESULT = OUT / "cantaricrestine_songs.jsonl"
 
-# The site's WAF rejects non-browser user agents (403), including the
-# documented API — a plain browser UA is required to use it at all.
-UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-      "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
+# Who is asking, with a contact (audit 1.15.0, S12). Until 26 oct 2026 this
+# was a browser's UA, because the site's filter had once answered 403 to
+# non-browser agents: a filter we went around on purpose, against the rule of
+# tool/build_partitura_links.py ("nu ocolim nimic"). On 26 oct 2026 one
+# request with this UA got 200 and JSON. If the site refuses it, we ask the
+# site for access; we do not put the disguise back.
+UA = ("CantariDeLaudaImport/1.0 (catalog for the free app Cantari de Lauda; "
+      "contact: ontagonal@gmail.com)")
 SLEEP = 1.0
-LIMIT = 200  # results per page — few requests per book
+LIMIT = 200  # results per page, few requests per book
 
 # Category code -> canonical book name (site menus skip diacritics).
 #
@@ -63,8 +73,17 @@ def fetch_page(code, page):
     url = (f"https://www.cantaricrestine.ro/api.php?token={token}"
            f"&categorie={code}&limita={LIMIT}&pagina={page}")
     req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        data = json.loads(resp.read().decode("utf-8", "replace"))
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode("utf-8", "replace"))
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            # SystemExit, not an Exception: main()'s retry loop lets it pass.
+            sys.exit(f"cantaricrestine.ro a REFUZAT cererea ({e.code}) pentru "
+                     f"[{code}] p{page}, cu User-Agent-ul nostru. Nu ocolim "
+                     "filtrul: cartile raman pe textele din starea salvata. "
+                     "De cerut acces site-ului (audit 1.15.0, S12).")
+        raise
     # Dincolo de ultima pagina API-ul raspunde cu un sir ("Nu sunt
     # rezultate"), nu cu un obiect. La reluare, paginile deja facute sunt
     # sarite fara sa se citeasca total_pagini, deci se ajunge acolo.
@@ -81,7 +100,7 @@ def parse_song(code, raw):
     title = SUFFIX.sub("", match.group(2) if match else denumire).strip()
     if not title:
         return None
-    # The title field lacks diacritics; the text has them — when the first
+    # The title field lacks diacritics; the text has them; when the first
     # text line is the same phrase, prefer its spelling for display.
     first_line = text.split("\n", 1)[0].strip().rstrip(".,;:!?")
     if first_line and _fold(first_line) == _fold(title):
@@ -127,7 +146,7 @@ def main():
                     continue
                 try:
                     data = fetch_page(code, page)
-                except Exception as e:  # noqa: BLE001 — log and move on
+                except Exception as e:  # noqa: BLE001, log and move on
                     print(f"  !! {code} p{page}: {e}", flush=True)
                     time.sleep(SLEEP * 5)
                     continue

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fetches the songbook (carte) songs from the resursecrestine.ro CANTECE
-section — lyrics-only hymnals like Cântările Harului / Evangheliei / Domnului /
-Psalmilor / Harfa — and converts them to ChordPro with proper {soc}/{eoc}
+section (lyrics-only hymnals like Cântările Harului / Evangheliei / Domnului /
+Psalmilor / Harfa) and converts them to ChordPro with proper {soc}/{eoc}
 chorus markers (the pages carry labeled stanzas).
 
 Reads tool/out/cantece_index.jsonl (from scan_cantece_books.py), fetches every
@@ -101,7 +101,7 @@ def to_chordpro(page_html: str, meta: dict, book: str):
     if book:
         doc.append(f"# Carte: {meta['album']}")
     doc.append(f"# Sursă: resursecrestine.ro — {meta['url']}")
-    doc.append("# Licență conținut: CC BY-NC-SA 3.0 (atribuire, necomercial)")
+    # The licence line is added by write_songs_file(), from LICENSES.
     doc.append("")
     doc.extend(body)
     return "\n".join(doc)

@@ -85,8 +85,7 @@ def main() -> None:
             "collection": cid,
             "name": name,
             "description": "",
-            "source": catalog["source"],
-            "license": catalog["license"],
+            # `source` and `license`: write_songs_file(), from the songs.
             "generated": date,
             "count": len(book_songs),
             "songs": book_songs,
