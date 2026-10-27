@@ -134,8 +134,10 @@ până când deschizi un program partajat de altcineva.</p>
   acordul lor.</li>
   <li><strong>Codul rămâne rezervat (din versiunea 1.16):</strong> codul rămâne rezervat
   contului tău, ca nimeni altcineva să nu-l poată folosi pentru alt program: se păstrează
-  doar codul și identificatorul intern al contului, fără program și fără nume, și după
-  ștergerea contului, când identificatorul nu mai duce la tine.</li>
+  doar codul și identificatorul intern al contului, fără program și fără nume,
+  și după ștergerea contului, când identificatorul nu mai duce la tine. La un
+  program scos după o notificare, rezervarea păstrează și un semn că a fost
+  scos, ca să nu mai poată fi publicat din nou sub acel cod.</li>
   <li><strong>Oamenii dintr-un program partajat:</strong> când deschizi un program
   partajat, lista echipei lui păstrează numele tău și momentul ultimei deschideri, și te
   arată „online” pentru scurt timp după aceea. Cu cont, numele e numele afișat al contului
@@ -277,7 +279,8 @@ standard ale Comisiei Europene.</p>
   12 luni se șterge oricum.</li>
   <li><strong>Identificatorii anonimi:</strong> unul nefolosit de 12 luni (aplicația nu
   s-a conectat deloc cu el în acest timp) se șterge, împreună cu numele de pe el.</li>
-  <li><strong>Rezervările codurilor:</strong> codul și identificatorul contului, fără
+  <li><strong>Rezervările codurilor:</strong> codul, identificatorul contului
+  și, la un program scos după o notificare, semnul că a fost scos, fără
   termen.</li>
   <li><strong>La Google:</strong> rapoartele de eroare 90 de zile; adresele IP din
   jurnalele Firebase Authentication câteva săptămâni.</li>
@@ -492,8 +495,11 @@ your phone until you open a setlist someone else shared.</p>
   only with their agreement.</li>
   <li><strong>The code stays reserved (from version 1.16):</strong> the code stays
   reserved to your account, so no one else can reuse it for another setlist: only the code
-  and your internal account identifier are kept, without the setlist or your name, also
-  after you delete your account, when the identifier no longer leads to you.</li>
+  and your internal account identifier are kept, without the setlist or your
+  name, also after you delete your account, when the identifier no longer leads
+  to you. For a setlist taken down after a notice, the reservation also keeps a
+  mark that it was taken down, so it cannot be published again under that
+  code.</li>
   <li><strong>People in a shared setlist:</strong> when you open a shared setlist, its
   team list records your name and the time you last opened it, and shows you as "online"
   for a short while after. With an account, the name is your account's display name (or,
@@ -635,8 +641,9 @@ Commission's standard contractual clauses.</p>
   12 months is deleted regardless.</li>
   <li><strong>Anonymous identifiers:</strong> one unused for 12 months (the app has not
   connected with it at all in that time) is deleted, together with the name on it.</li>
-  <li><strong>Code reservations:</strong> the code and the account identifier, without a
-  time limit.</li>
+  <li><strong>Code reservations:</strong> the code, the account identifier and,
+  for a setlist taken down after a notice, the mark that it was taken down,
+  without a time limit.</li>
   <li><strong>At Google:</strong> crash reports for 90 days; IP addresses logged by
   Firebase Authentication for a few weeks.</li>
   <li><strong>Backups:</strong> the database and the list of accounts in Firebase
