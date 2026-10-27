@@ -178,13 +178,16 @@ dezvoltatorul. Un identificator poate trimite un singur raport pentru o cântare
 <h2>Rapoartele de eroare</h2>
 <p>Din versiunea 1.16, rapoartele de eroare sunt oprite până le pornești tu: ecranul de
 bun venit te întreabă, cu bifa „Trimite rapoarte de eroare” nebifată, iar același
-comutator e în Setări. Până alegi, nu pleacă nimic. Cu ele pornite, dacă aplicația se
-închide neașteptat sau o eroare o împiedică să facă ceva, pleacă un raport tehnic prin
-Firebase Crashlytics: modelul dispozitivului, versiunea sistemului, eroarea și locul din
-cod unde a apărut, plus un identificator al instalării, creat de Crashlytics. Niciodată
-cântările, căutările, numele sau contul tău; raportul nu e legat de cont. Le poți opri
-oricând din Setări. Versiunile de până la 1.15 trimit rapoartele de eroare automat, fără
-comutator.</p>
+comutator e în Setări. Până alegi, nu pleacă nimic. O singură excepție, pe iPhone: dacă ai
+folosit o versiune de până la 1.15, la prima pornire după actualizare pot pleca o singură
+dată rapoartele rămase netrimise de la versiunea veche, împreună cu datele tehnice de
+pornire ale Crashlytics, înainte ca aplicația să apuce să oprească trimiterea. Cu ele
+pornite, dacă aplicația se închide neașteptat sau o eroare o împiedică să facă ceva,
+pleacă un raport tehnic prin Firebase Crashlytics: modelul dispozitivului, versiunea
+sistemului, eroarea și locul din cod unde a apărut, plus un identificator al instalării,
+creat de Crashlytics. Niciodată cântările, căutările, numele sau contul tău; raportul nu e
+legat de cont. Le poți opri oricând din Setări. Versiunile de până la 1.15 trimit
+rapoartele de eroare automat, fără comutator.</p>
 
 <h2>Microfonul, camera și linkurile</h2>
 <ul>
@@ -262,15 +265,17 @@ standard ale Comisiei Europene.</p>
   <li><strong>Rapoartele de greșeală:</strong> se șterg la 30 de zile după ce sunt
   rezolvate (corectura apare în catalog sau raportul e respins); orice raport mai vechi de
   12 luni se șterge oricum.</li>
-  <li><strong>Identificatorii anonimi:</strong> unul fără nicio conectare de 12 luni se
-  șterge, împreună cu numele de pe el.</li>
+  <li><strong>Identificatorii anonimi:</strong> unul nefolosit de 12 luni (aplicația nu
+  s-a conectat deloc cu el în acest timp) se șterge, împreună cu numele de pe el.</li>
   <li><strong>Rezervările codurilor:</strong> codul și identificatorul contului, fără
   termen.</li>
   <li><strong>La Google:</strong> rapoartele de eroare 90 de zile; adresele IP din
   jurnalele Firebase Authentication câteva săptămâni.</li>
-  <li><strong>Copiile de siguranță:</strong> baza de date se exportă de mână, cam o dată
-  pe lună, pe calculatorul dezvoltatorului, și se păstrează ultimele 12 exporturi; o dată
-  ștearsă dispare din ele după ce 12 exporturi noi le-au înlocuit pe cele vechi.</li>
+  <li><strong>Copiile de siguranță:</strong> baza de date și lista conturilor din Firebase
+  Authentication (emailul, numele, furnizorul de conectare și datele tehnice ale contului)
+  se exportă de mână, cam o dată pe lună, pe calculatorul dezvoltatorului, și se păstrează
+  ultimele 12 exporturi; o dată ștearsă dispare din ele după ce 12 exporturi noi le-au
+  înlocuit pe cele vechi.</li>
 </ul>
 <p>Curățenia care aplică aceste termene rulează cel puțin o dată pe lună, deci o dată
 poate rămâne până la o lună peste termen.</p>
@@ -306,7 +311,7 @@ sau la autoritatea din țara UE în care locuiești.</p>
   împreună cu propunerile tale încă nepreluate din ele, scoate numele de pe identificatorul anonim și șterge identificatorul. Dacă Firebase nu mai lasă
   telefonul să-l șteargă (poate cere o autentificare recentă, pe care un identificator
   anonim n-o poate da), în Firebase Authentication rămâne un identificator fără nume și
-  fără date, care nu mai duce la tine și se șterge după 12 luni fără conectare. Numele ales
+  fără date, care nu mai duce la tine și se șterge după 12 luni de nefolosire. Numele ales
   rămâne doar pe telefonul tău. Intrarea într-un cont care există deja scoate și ea întâi
   aceste intrări și acest nume. Intrările rămase (de pildă, deschise fără internet) se
   șterg după 90 de zile, sau la cerere, pe email. Rapoartele de greșeală trimise se șterg
@@ -518,12 +523,15 @@ Each identifier can send one report per song.</p>
 <h2>Crash reports</h2>
 <p>From version 1.16, crash reports are off until you turn them on: the welcome screen
 asks, with the box unchecked, and the same switch is in Settings. Until you choose,
-nothing is sent. When they are on and the app crashes, or an error stops it from doing
-something, a technical report is sent through Firebase Crashlytics: device model, system
-version, the error and where in the code it happened, and an installation identifier
-created by Crashlytics. Never your songs, searches, name or account; the report is not
-linked to your account. You can turn reports off at any time in Settings. Versions up to
-1.15 send crash reports automatically, without a switch.</p>
+nothing is sent. One exception, on iPhone: if you used a version up to 1.15, on the first
+start after the update the reports the old version left unsent, together with Crashlytics'
+technical start-up data, may go out once, before the app gets to turn sending off. When
+they are on and the app crashes, or an error stops it from doing something, a technical
+report is sent through Firebase Crashlytics: device model, system version, the error and
+where in the code it happened, and an installation identifier created by Crashlytics.
+Never your songs, searches, name or account; the report is not linked to your account. You
+can turn reports off at any time in Settings. Versions up to 1.15 send crash reports
+automatically, without a switch.</p>
 
 <h2>Microphone, camera and links</h2>
 <ul>
@@ -599,15 +607,17 @@ Commission's standard contractual clauses.</p>
   <li><strong>Mistake reports:</strong> deleted 30 days after being handled (the
   correction is published in the catalog or the report is rejected); any report older than
   12 months is deleted regardless.</li>
-  <li><strong>Anonymous identifiers:</strong> one with no sign-in for 12 months is
-  deleted, together with the name on it.</li>
+  <li><strong>Anonymous identifiers:</strong> one unused for 12 months (the app has not
+  connected with it at all in that time) is deleted, together with the name on it.</li>
   <li><strong>Code reservations:</strong> the code and the account identifier, without a
   time limit.</li>
   <li><strong>At Google:</strong> crash reports for 90 days; IP addresses logged by
   Firebase Authentication for a few weeks.</li>
-  <li><strong>Backups:</strong> the database is exported by hand, about once a month, to
-  the developer's computer, and the last 12 exports are kept; deleted data disappears from
-  them once 12 newer exports have replaced the old ones.</li>
+  <li><strong>Backups:</strong> the database and the list of accounts in Firebase
+  Authentication (email, name, sign-in provider and the account's technical data) are
+  exported by hand, about once a month, to the developer's computer, and the last 12
+  exports are kept; deleted data disappears from them once 12 newer exports have replaced
+  the old ones.</li>
 </ul>
 <p>The cleanup that applies these terms runs at least once a month, so an item can stay
 up to a month past its term.</p>
@@ -642,8 +652,7 @@ the EU country where you live.</p>
   with your proposals to them not yet taken in, removes your name from the anonymous identifier and deletes the identifier. If Firebase no
   longer lets the phone delete it (it can ask for a recent sign-in, which an anonymous
   identifier cannot give), an identifier without a name or any data remains in Firebase
-  Authentication; it no longer leads to you and is deleted after 12 months without
-  sign-in. The name you chose stays only on your phone. Signing in to an account that
+  Authentication; it no longer leads to you and is deleted after 12 months unused. The name you chose stays only on your phone. Signing in to an account that
   already exists removes those entries and that name first, too. Entries left behind (for
   example, opened offline) are deleted after 90 days, or on request by email. Mistake
   reports you sent are deleted as described under "How long we keep data"; once the
