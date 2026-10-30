@@ -498,6 +498,12 @@ p { margin: 0 0 1em; letter-spacing: 0; }
 
 .muted { color: var(--on-surface-variant); font-size: 0.9375rem; }
 
+/* Pagina de termeni (termeni/index.html): același panou, dar cu rând de citit,
+   nu cu lățimea întregii pagini. Textul vine din aplicație, deci un cuvânt
+   lung nu are voie să împingă pagina în lateral pe telefon. */
+.legal h1 { font-size: clamp(2rem, 6vw, 3rem); }
+.terms-text { max-width: 48rem; overflow-wrap: break-word; }
+
 .book-list { list-style: none; padding: 0; margin: 0 0 1rem; }
 .book-list li { padding: 0.5rem 0; border-bottom: 1px solid var(--outline-variant); }
 .book-list li:last-child { border-bottom: 0; }
