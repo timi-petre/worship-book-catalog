@@ -35,7 +35,7 @@
 <p class="meta">
   Aplicația: <strong>Cântări de Laudă</strong> (Praise Songs), <code>com.worship.worship_book</code><br>
   Operator: Timotei Sorin Petre, persoană fizică · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Ultima actualizare: 2026-10-27 · <a href="#english">English version below</a>
+  Ultima actualizare: 2026-11-04 · <a href="#english">English version below</a>
 </p>
 
 <div class="card">
@@ -93,7 +93,9 @@ jurnalele lui, după politica lui:</p>
   <li><strong>Linkurile pe care le trimiți:</strong> o cântare sau un program trimise ca
   link deschid pagina <code>cantari.ontagonal.app</code> pentru cine le atinge. Cântarea
   sau programul stau în partea linkului de după „#”, pe care browserul n-o trimite
-  serverului.</li>
+  serverului. Pagina e găzduită de Cloudflare, care, ca persoană împuternicită, păstrează
+  jurnale tehnice cu adresa IP a vizitatorilor; site-ul nu folosește cookies sau
+  analytics.</li>
 </ul>
 
 <h2>Ce se sincronizează cu contul</h2>
@@ -227,11 +229,16 @@ rapoartele de eroare automat, fără comutator.</p>
   operatori proprii, după politicile lor, și trimit emailul și numele tău la Firebase
   Authentication. Cu Sign in with Apple îți poți ascunde emailul; atunci primim doar o
   adresă privată de redirecționare.</li>
+  <li><strong>Cloudflare</strong>, ca persoană împuternicită, după acordul lui de prelucrare
+  a datelor: găzduiește pagina <code>cantari.ontagonal.app</code> (inclusiv linkurile pe
+  care le trimiți) și păstrează jurnalele tehnice cu adresa IP a vizitatorilor.</li>
   <li><strong>GitHub, App Store și Google Play:</strong> cererile tehnice de mai
   sus și, pentru notificările despre conținut, GitHub găzduiește și jurnalul de
   la „Contact”, fără nume sau adrese.</li>
   <li><strong>Google (Gmail), când ne scrii pe email:</strong> mesajul, adresa și numele pe
-  care ni-l dai stau în contul Gmail al dezvoltatorului.</li>
+  care ni-l dai stau în contul Gmail al dezvoltatorului. Tot acolo ajunge și adresa
+  contului tău, dacă îți scriem fiindcă un program partajat de tine a fost scos (vezi
+  „Contact”).</li>
   <li><strong>Oricine are codul unui program:</strong> ce partajează programul, cum scrie
   la „Programele partajate”.</li>
 </ul>
@@ -242,6 +249,10 @@ rapoartele de eroare automat, fără comutator.</p>
 prelucra date și în Statele Unite. Google e certificat în cadrul EU-U.S. Data Privacy
 Framework, iar termenii Firebase de prelucrare a datelor cuprind clauzele contractuale
 standard ale Comisiei Europene.</p>
+<p>Cloudflare, Inc., care găzduiește <code>cantari.ontagonal.app</code>, e în Statele Unite
+și poate prelucra jurnalele site-ului în afara SEE. E certificat în cadrul EU-U.S. Data
+Privacy Framework, iar acordul lui de prelucrare a datelor cuprinde clauzele contractuale
+standard ale Comisiei Europene, care se aplică dacă certificarea cade.</p>
 
 <h2>Temeiurile legale (GDPR art. 6)</h2>
 <ul>
@@ -250,7 +261,9 @@ standard ale Comisiei Europene.</p>
   co-liderii și propunerile.</li>
   <li><strong>Interesul legitim (art. 6 alin. 1 lit. f):</strong> rapoartele de greșeală
   (corectarea catalogului), App Check, rezervarea codului și blocarea (apărarea
-  programelor partajate de abuz), cererile tehnice (livrarea cărților și anunțul versiunii noi) și
+  programelor partajate de abuz), copia unui program scos după o notificare (revenirea
+  lui, dacă notificarea se arată nefondată), cererile tehnice (livrarea cărților, anunțul
+  versiunii noi, găzduirea site-ului și a linkurilor trimise) și
   excepția de o singură dată de la „Rapoartele de eroare” (iPhone și iPad, la prima pornire după
   actualizarea de la o versiune de până la 1.15): diagnosticarea căderilor aplicației, scopul spus
   chiar în politica versiunii 1.15, pentru rapoartele înregistrate atunci și
@@ -287,8 +300,16 @@ standard ale Comisiei Europene.</p>
   <li><strong>Rezervările codurilor:</strong> codul, identificatorul contului
   și, la un program scos după o notificare, semnul că a fost scos, fără
   termen.</li>
+  <li><strong>Un program partajat scos după o notificare:</strong> o copie privată a lui,
+  cu lista echipei, propunerile și datele de prezență, pe calculatorul dezvoltatorului,
+  până se încheie disputa: programul revine, contestația liderului primește răspuns sau
+  trec 6 luni de la emailul cu motivul fără contestație.</li>
   <li><strong>La Google:</strong> rapoartele de eroare 90 de zile; adresele IP din
   jurnalele Firebase Authentication câteva săptămâni.</li>
+  <li><strong>La Cloudflare:</strong> jurnalele tehnice ale <code>cantari.ontagonal.app</code>,
+  cum stabilește acordul lui de prelucrare a datelor: până nu mai sunt necesare pentru
+  serviciu, cel târziu la încetarea contractului nostru cu Cloudflare. Cloudflare nu
+  publică un termen fix pentru ele.</li>
   <li><strong>Copiile de siguranță:</strong> baza de date și lista conturilor din Firebase
   Authentication (emailul, numele, furnizorul de conectare, datele tehnice ale contului și, la
   conectarea cu email și parolă, hash-ul parolei) se exportă de mână, cam o dată pe lună, pe calculatorul dezvoltatorului, și se păstrează
@@ -386,6 +407,16 @@ cont, păstrează datele de la „Ce se sincronizează cu contul”.</p>
 <p>Aplicația este și va rămâne gratuită. Dacă deții drepturile asupra unei cântări și vrei
 să fie scoasă, scrie-ne și va fi scoasă prompt.</p>
 
+<h2 id="testare-android">Testarea pe Android (Google Play)</h2>
+<p>Până când aplicația ajunge public în Google Play, cine vrea s-o testeze pe Android intră
+în grupul Google <code>cantari-de-lauda-testeri</code> și se înscrie ca tester în Google
+Play. Vedem adresa contului Google cu care intri în grup, doar noi, ca administratori ai
+grupului; Play Console ne arată doar câți testeri s-au înscris. Nimeni nu scrie în grup și
+nu folosim adresa pentru altceva. Temeiul: consimțământul tău (GDPR art. 6 alin. 1 lit. a),
+pe care îl retragi ieșind din grup. Grupul și lista de emailuri folosită înainte în Play
+Console se șterg după ce aplicația ajunge public în Google Play. Google prelucrează aceste
+date după termenii Google Groups și Google Play.</p>
+
 <h2>Modificări</h2>
 <p>Dacă o versiune viitoare schimbă vreodată cele de mai sus, această politică va fi
 actualizată înainte, iar schimbarea va fi anunțată clar în notele de actualizare.</p>
@@ -401,13 +432,17 @@ cu data primirii, obiectul (codul programului sau cântarea), ce am făcut, data
 o trimitere la conversația din Gmail, fără numele sau adresa ta, în depozitul privat de cod
 al dezvoltatorului, pe GitHub, cât e nevoie.</p>
 
+<p>Dacă un program partajat de tine e scos după o notificare sau o raportare, îți scriem
+motivul la adresa contului, din același cont Gmail, și cum poți contesta decizia. Jurnalul
+ține doar data acelui email și o trimitere la conversație, fără adresa ta.</p>
+
 <hr>
 
 <h1 id="english">🎵 Praise Songs: Privacy Policy</h1>
 <p class="meta">
   App: <strong>Praise Songs</strong> (Cântări de Laudă), <code>com.worship.worship_book</code><br>
   Controller: Timotei Sorin Petre, natural person · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Last updated: 2026-10-27
+  Last updated: 2026-11-04
 </p>
 
 <div class="card">
@@ -463,7 +498,9 @@ under its own privacy policy:</p>
   from abuse.</li>
   <li><strong>Links you send:</strong> a song or setlist sent as a link opens the page
   <code>cantari.ontagonal.app</code> for whoever taps it. The song or setlist travels in
-  the part of the link after "#", which the browser does not send to the server.</li>
+  the part of the link after "#", which the browser does not send to the server. The page
+  is hosted by Cloudflare, which, as our processor, keeps technical logs with the IP
+  address of visitors; the site uses no cookies or analytics.</li>
 </ul>
 
 <h2>What syncs with your account</h2>
@@ -598,11 +635,16 @@ automatically, without a switch.</p>
   as controllers in their own right, under their own privacy policies, and pass your email
   and name to Firebase Authentication. With Sign in with Apple you can hide your email;
   then we only receive a private relay address.</li>
+  <li><strong>Cloudflare</strong>, as a processor, under its data processing addendum: it
+  hosts the page <code>cantari.ontagonal.app</code> (including the links you send) and
+  keeps the technical logs with the IP address of visitors.</li>
   <li><strong>GitHub, the App Store and Google Play:</strong> the technical
   requests described above and, for notices about content, GitHub also hosts the
   log described under "Contact", without names or addresses.</li>
   <li><strong>Google (Gmail), when you write to us by email:</strong> your message, your
-  address and the name you give are kept in the developer's Gmail account.</li>
+  address and the name you give are kept in the developer's Gmail account. So is your
+  account's address if we write to you because a setlist you shared was taken down (see
+  "Contact").</li>
   <li><strong>Anyone who has a setlist's code:</strong> what that setlist shares, as
   described under "Shared setlists".</li>
 </ul>
@@ -613,6 +655,10 @@ automatically, without a switch.</p>
 may also process data in the United States. Google is certified under the EU-U.S. Data
 Privacy Framework, and the Firebase data processing terms include the European
 Commission's standard contractual clauses.</p>
+<p>Cloudflare, Inc., which hosts <code>cantari.ontagonal.app</code>, is in the United States
+and may process the site's logs outside the EEA. It is certified under the EU-U.S. Data
+Privacy Framework, and its data processing addendum includes the European Commission's
+standard contractual clauses, which apply if that certification lapses.</p>
 
 <h2>Legal bases (GDPR art. 6)</h2>
 <ul>
@@ -621,8 +667,10 @@ Commission's standard contractual clauses.</p>
   proposals.</li>
   <li><strong>Legitimate interest (art. 6(1)(f)):</strong> mistake reports (keeping the
   catalog correct), App Check, the code reservation and blocking (keeping the shared
-  setlists safe from abuse), the technical requests (delivering the books and telling you about new
-  versions), and the one-time exception described under "Crash reports" (iPhone and iPad, on the
+  setlists safe from abuse), the copy of a setlist taken down after a notice (restoring it
+  if the notice proves unfounded), the technical requests (delivering the books, telling
+  you about new versions, hosting the site and the links you send), and the one-time
+  exception described under "Crash reports" (iPhone and iPad, on the
   first start after updating from a version up to 1.15): diagnosing the app's crashes, the purpose
   stated in the policy of version 1.15, for the reports recorded under it and
   the technical start-up data sent with them. These reports are not linked to
@@ -658,8 +706,16 @@ Commission's standard contractual clauses.</p>
   <li><strong>Code reservations:</strong> the code, the account identifier and,
   for a setlist taken down after a notice, the mark that it was taken down,
   without a time limit.</li>
+  <li><strong>A shared setlist taken down after a notice:</strong> a private copy of it,
+  with its team list, proposals and presence data, on the developer's computer, until the
+  dispute is closed: the setlist is restored, the leader's objection is answered, or 6
+  months pass after we email you the reason without one.</li>
   <li><strong>At Google:</strong> crash reports for 90 days; IP addresses logged by
   Firebase Authentication for a few weeks.</li>
+  <li><strong>At Cloudflare:</strong> the technical logs of <code>cantari.ontagonal.app</code>,
+  as its data processing addendum sets: until they are no longer needed to provide the
+  service, at the latest when our agreement with Cloudflare ends. Cloudflare publishes no
+  fixed period for them.</li>
   <li><strong>Backups:</strong> the database and the list of accounts in Firebase
   Authentication (email, name, sign-in provider, the account's technical data and, for email
   sign-in, the password hash) are exported by hand, about once a month, to the developer's computer, and the last 12
@@ -754,6 +810,16 @@ data listed under "What syncs with your account".</p>
 <p>The app is and will remain free of charge. If you hold the rights to a song and want
 it removed, email us and it will be taken out promptly.</p>
 
+<h2>Testing on Android (Google Play)</h2>
+<p>Until the app is public on Google Play, anyone who wants to test it on Android joins the
+Google group <code>cantari-de-lauda-testeri</code> and opts in as a tester on Google Play.
+We see the Google account address you join the group with, only us, as the group's
+managers; Play Console shows us only how many testers have opted in. Nobody posts in the
+group and we don't use the address for anything else. Legal basis: your consent
+(GDPR art. 6(1)(a)), which you withdraw by leaving the group. The group, and the email
+list used before it in Play Console, are deleted once the app is public on Google Play.
+Google processes this data under the Google Groups and Google Play terms.</p>
+
 <h2>Changes</h2>
 <p>If a future version ever changes any of the above, this policy will be updated first
 and the change will be clearly announced in the app's update notes.</p>
@@ -768,6 +834,11 @@ developer's Gmail account (Google). To show how the notice was handled, we keep 
 the date it arrived, what it is about (the setlist code or the song), what we did, when we
 answered and a reference to the conversation in Gmail, without your name or address, in the
 developer's private code repository on GitHub, for as long as needed.</p>
+
+<p>If a setlist you share is taken down after a notice or a report, we email you the reason
+at your account's address, from the same Gmail account, and tell you how to contest the
+decision. The log keeps only the date of that email and a reference to the conversation,
+without your address.</p>
 
 </body>
 </html>
