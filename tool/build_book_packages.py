@@ -12,8 +12,17 @@ The manifest books.json mirrors collections.json (same schema, top-level key
 the books in the Library's order (lib/utils/book_order.dart: priority books
 first by prefix, the rest alphabetically, Diverse last).
 
+Each entry carries `sha256`, the fingerprint of its published file, and a
+`generated` that moves only when the book's content does (write_package()).
+Both come from the PREVIOUS manifest, read from tool/out/books/books.json:
+the weekly workflow downloads the published one there before this runs, and
+a manual run must do the same, or every book gets today's date.
+
 Output: tool/out/books/*.json
-Upload: gh release upload books tool/out/books/*.json -R timi-petre/worship-book-catalog
+Upload, the books first and books.json last (it vouches for their sha256),
+with -R timi-petre/worship-book-catalog from outside that repo:
+  gh release upload books <every tool/out/books/*.json but books.json> --clobber
+  gh release upload books tool/out/books/books.json --clobber
 """
 
 import gzip
@@ -23,7 +32,7 @@ import sys
 import unicodedata
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from import_resursecrestine import write_songs_file  # noqa: E402
+from import_resursecrestine import write_package  # noqa: E402
 
 ROOT = pathlib.Path(__file__).parent.parent
 OUT = ROOT / "tool" / "out" / "books"
@@ -76,6 +85,15 @@ def main() -> None:
     ordered = sorted(by_book, key=lambda b: (book_rank(b), b))
 
     OUT.mkdir(parents=True, exist_ok=True)
+    manifest_file = OUT / "books.json"
+    previous = {}
+    if manifest_file.exists():
+        previous = {
+            c.get("id"): c
+            for c in json.loads(manifest_file.read_text()).get("collections", [])
+        }
+    print(f"previous books.json: {len(previous)} books, "
+          f"{sum('sha256' in c for c in previous.values())} with sha256")
     entries = []
     total = 0
     for name in ordered + ["Diverse"]:
@@ -91,7 +109,7 @@ def main() -> None:
             "songs": book_songs,
         }
         f = OUT / f"{cid}.json"
-        write_songs_file(f, payload)
+        generated, sha = write_package(f, payload, previous.get(cid))
         size = f.stat().st_size
         total += len(book_songs)
         entries.append(
@@ -102,20 +120,23 @@ def main() -> None:
                 "count": len(book_songs),
                 "bytes": size,
                 "url": f"{RELEASE_URL}/{cid}.json",
-                "generated": date,
+                "generated": generated,
+                "sha256": sha,
             }
         )
         gz = len(gzip.compress(f.read_bytes()))
         print(f"{cid}.json: {len(book_songs)} songs, "
-              f"{size / 1e6:.2f} MB ({gz / 1e6:.2f} MB gzip)")
+              f"{size / 1e6:.2f} MB ({gz / 1e6:.2f} MB gzip), {generated}")
 
     assert total == len(songs), f"{total} packaged != {len(songs)} in catalog"
     manifest = {"collections": entries, "generated": date, "withdrawn": WITHDRAWN}
-    (OUT / "books.json").write_text(
+    manifest_file.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=1),
         encoding="utf-8",
     )
-    print(f"books.json: {len(entries)} packages, {total} songs total")
+    dated = sum(e["generated"] == date for e in entries)
+    print(f"books.json: {len(entries)} packages ({dated} dated {date}), "
+          f"{total} songs total")
 
 
 if __name__ == "__main__":

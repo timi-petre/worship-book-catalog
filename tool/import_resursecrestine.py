@@ -838,6 +838,43 @@ def write_songs_file(path, payload):
               f"attached, {rejected} rejected by similarity gate")
 
 
+def write_package(path, payload, previous):
+    """Writes a package a manifest lists (a book, a collection) through
+    write_songs_file() and returns its manifest `generated` and `sha256`.
+
+    `generated` moves only with the content (5 nov 2026). Until then every
+    package took the date of the run, so "Actualizează biblioteca", which
+    compares the manifest's date with the downloaded file's, fetched every
+    book again whenever anything at all had changed (Diverse alone is
+    30 MB). Now the file is first written with the date of `previous`, the
+    same id's entry in the manifest published before; when its sha256 is the
+    one `previous` carries, nothing changed: the date stays and so does the
+    file, byte for byte. Otherwise it is written again with today's date,
+    `payload["generated"]` as the caller set it. Writing twice is safe:
+    write_songs_file() is idempotent on its own output.
+
+    `sha256` is the published file's, so the app can tell a changed or a
+    damaged download apart without trusting a date.
+
+    The first run after this change (the published manifest has no sha256
+    yet) gives every package today's date once, like every run before it.
+    Deliberately: comparing with the published files instead (their ~65 MB,
+    or the digests GitHub keeps for release assets) would add a second
+    source of truth to the workflow for that single run.
+    """
+    today = payload["generated"]
+    old = previous or {}
+    if old.get("sha256") and old.get("generated"):
+        payload["generated"] = old["generated"]
+    write_songs_file(path, payload)
+    sha = hashlib.sha256(path.read_bytes()).hexdigest()
+    if sha == old.get("sha256") or payload["generated"] == today:
+        return payload["generated"], sha
+    payload["generated"] = today
+    write_songs_file(path, payload)
+    return today, hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def _content_hash(songs):
     """Fingerprint of everything that decides the published songs: the
     uncorrected songs (clean lyrics candidates included), the corrections and

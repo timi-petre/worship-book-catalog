@@ -36,7 +36,9 @@ colecție. --retry-no-stanzas ignoră lista pentru rularea aceea, pentru cazul �
 care site-ul sau parserul se schimbă; fără expirare, fără reîncercări automate.
 
 Output: tool/out/collections/<id>.json + tool/out/collections/collections.json
-Upload: gh release upload collections <files> -R timi-petre/worship-book-catalog
+Upload: gh release upload collections <files> -R timi-petre/worship-book-catalog,
+<id>.json first and collections.json last: the manifest vouches for the sha256
+of the file (write_package()), so it does not go out before it.
 """
 
 import argparse
@@ -46,7 +48,7 @@ import sys
 import time
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from import_resursecrestine import CATALOG_FILE, OUT, fetch, write_songs_file  # noqa: E402
+from import_resursecrestine import CATALOG_FILE, OUT, fetch, write_package  # noqa: E402
 from fetch_book_songs import canonical_book, to_chordpro  # noqa: E402
 
 RELEASE_URL = (
@@ -241,16 +243,20 @@ def main() -> None:
         "count": len(songs),
         "songs": songs,
     }
-    col_file = col_dir / f"{args.cid}.json"
-    write_songs_file(col_file, payload)
-    print(f"{col_file.name}: {len(songs)} songs, "
-          f"{col_file.stat().st_size / 1e6:.1f} MB")
-
-    # Update (or create) the manifest, replacing this collection's entry.
+    # The manifest as published (the workflow fetches it first): its entry
+    # for this collection decides whether the date moves (write_package()).
     manifest_file = col_dir / "collections.json"
     manifest = {"collections": []}
     if manifest_file.exists():
         manifest = json.loads(manifest_file.read_text())
+    previous = next((c for c in manifest.get("collections", [])
+                     if c.get("id") == args.cid), None)
+    col_file = col_dir / f"{args.cid}.json"
+    generated, sha = write_package(col_file, payload, previous)
+    print(f"{col_file.name}: {len(songs)} songs, "
+          f"{col_file.stat().st_size / 1e6:.1f} MB, {generated}")
+
+    # Update (or create) the manifest, replacing this collection's entry.
     entry = {
         "id": args.cid,
         "name": args.name,
@@ -258,7 +264,8 @@ def main() -> None:
         "count": len(songs),
         "bytes": col_file.stat().st_size,
         "url": f"{RELEASE_URL}/{args.cid}.json",
-        "generated": date,
+        "generated": generated,
+        "sha256": sha,
     }
     manifest["collections"] = [
         c for c in manifest.get("collections", []) if c.get("id") != args.cid

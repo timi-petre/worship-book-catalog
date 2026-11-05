@@ -156,8 +156,30 @@ jobs:
       - name: Pachetele pe cărți
         if: steps.diff.outputs.changed == 'yes'
         run: |
+          # Manifestul PUBLICAT, adus întâi: din el își ia fiecare carte data
+          # și amprenta (sha256). O carte cu aceeași amprentă își păstrează
+          # data, deci aplicația n-o mai descarcă degeaba. Până pe 5 nov 2026,
+          # fiecare rulare punea data ei pe toate cărțile, iar „Actualizează
+          # biblioteca” le aducea din nou pe toate (Diverse singură, 30 MB).
+          # Fără manifest, toate primesc data de azi, ca înainte. Prin /tmp:
+          # o descărcare întreruptă nu lasă jumătate de JSON în locul lui.
+          mkdir -p tool/out/books
+          if curl -sfL -o /tmp/books.json \
+               https://github.com/timi-petre/worship-book-catalog/releases/download/books/books.json; then
+            mv /tmp/books.json tool/out/books/books.json
+          else
+            echo "(fără manifest publicat, toate cărțile primesc data de azi)"
+          fi
           python3 tool/build_book_packages.py
-          gh release upload books tool/out/books/*.json --clobber
+          # Cărțile întâi, manifestul la urmă: el garantează amprenta fiecărui
+          # fișier, deci nu iese înaintea lor. O urcare picată lasă publicat
+          # manifestul vechi, nu unul care trimite la fișiere încă neurcate.
+          carti=()
+          for f in tool/out/books/*.json; do
+            [ "$f" = tool/out/books/books.json ] || carti+=("$f")
+          done
+          gh release upload books "${carti[@]}" --clobber
+          gh release upload books tool/out/books/books.json --clobber
 
       - name: Colecția „Cântări de pe internet"
         if: steps.diff.outputs.changed == 'yes'
@@ -165,7 +187,8 @@ jobs:
           # Manifestul PUBLICAT, adus întâi: scriptul rescrie collections.json
           # pornind de la ce găsește local, deci fără pasul ăsta ar publica un
           # manifest care conține doar colecția reconstruită acum, iar restul
-          # ar dispărea din aplicație la toată lumea.
+          # ar dispărea din aplicație la toată lumea. Tot din el vin data și
+          # amprenta colecției: data se schimbă doar cu conținutul (ca la cărți).
           mkdir -p tool/out/collections
           curl -sL -o tool/out/collections/collections.json \
             https://github.com/timi-petre/worship-book-catalog/releases/download/collections/collections.json \
@@ -197,9 +220,9 @@ jobs:
               sys.exit("Manifestul n-are colecția nouă, nu urc nimic.")
           print("manifest:", sorted(ids))
           PY
-          gh release upload collections \
-            tool/out/collections/cantari-internet.json \
-            tool/out/collections/collections.json --clobber
+          # Colecția întâi, manifestul la urmă, ca la cărți.
+          gh release upload collections tool/out/collections/cantari-internet.json --clobber
+          gh release upload collections tool/out/collections/collections.json --clobber
 
       # always(): o sursă care crapă nu mai are voie să arunce la gunoi orele
       # de crawl de dinaintea ei. Pe 27 aug 2026, cantaricrestine.ro a picat
