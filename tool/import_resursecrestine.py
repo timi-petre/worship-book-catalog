@@ -776,6 +776,13 @@ def _curated():
     return docs
 
 
+# Cedilla -> comma-below (ADR 0027): s/t with cedilla (U+015F U+0163 U+015E
+# U+0162) become s/t with comma (U+0219 U+021B U+0218 U+021A). Written as
+# escapes on purpose: the two spellings look the same in an editor.
+COMMA_BELOW = str.maketrans("\u015f\u0163\u015e\u0162", "\u0219\u021b\u0218\u021a")
+TEXT_FIELDS = ("title", "author", "theme", "album", "chordpro", "lyrics")
+
+
 def write_songs_file(path, payload):
     """The one exit for every published song file: catalog.json (finalize),
     the book packages incl. Diverse (build_book_packages.py) and the
@@ -798,6 +805,10 @@ def write_songs_file(path, payload):
     goes right before `songs`, after `name` and `generated`, which the app
     reads from a file's first 512 bytes (CollectionsStore._headOf); a long
     label in front would push them out.
+
+    Sources mix s/t with cedilla and with comma; here the cedilla ones become
+    comma-below in the text fields (COMMA_BELOW, TEXT_FIELDS; ADR 0027).
+    Idempotent, like the rest.
     """
     curated = _curated()
     # The last door before a file goes public: whatever path brought an
@@ -823,6 +834,18 @@ def write_songs_file(path, payload):
         source, key, song["chordpro"] = _licensed(song)
         sources.add(source)
         keys.add(key)
+        # Cedilla -> comma-below (ADR 0027). After the clean-lyrics gate
+        # (_lyrics_match) and _licensed, so it is only a spelling change: no
+        # song gains or loses "Doar versuri" because of it. Text fields only:
+        # id, url, book and number are keys (the app's copies are recognised
+        # by url, and _licensed picks the PDC licence with == on the book
+        # name). Titles and lyrics with no diacritics are not "repaired":
+        # that would be a guess; the guard protects the shape of the data,
+        # not the spelling. Laudele Domnului 2024 never passes here and stays
+        # exactly as ICAM sent it (ADR 0016, decision 9).
+        for field in TEXT_FIELDS:
+            if isinstance(song.get(field), str):
+                song[field] = song[field].translate(COMMA_BELOW)
     songs = payload.pop("songs")
     payload.pop("source", None)
     payload.pop("license", None)
@@ -883,10 +906,18 @@ def _content_hash(songs):
     uncorrected songs (clean lyrics candidates included), the corrections and
     the licence labels. The weekly workflow publishes when it changes, not
     only when `count` does, so a reconversion, a correction or a new label
-    reaches people at the same song count."""
+    reaches people at the same song count.
+
+    The comma-below table and its fields are in too (ADR 0027). The workflow
+    gate (count + content_hash) is computed in finalize() on the entries
+    BEFORE write_songs_file(), so without it the conversion would be
+    invisible to the gate: it would wait hidden and leave with the first
+    unrelated change, on 17 books at once. With it, it leaves at the first run
+    after tool/ reaches worship-book-catalog, on a date chosen."""
     h = hashlib.sha256(
         json.dumps(songs, ensure_ascii=False, sort_keys=True).encode("utf-8"))
     h.update(json.dumps(LICENSES, ensure_ascii=False).encode("utf-8"))
+    h.update(json.dumps([TEXT_FIELDS, sorted(COMMA_BELOW.items())]).encode("utf-8"))
     for f in sorted(CURATED_DIR.glob("*.cho")):
         h.update(f.name.encode("utf-8") + b"\0" + f.read_bytes())
     return h.hexdigest()
@@ -1002,7 +1033,7 @@ def finalize() -> None:
             n_cc += 1
         print(f"merged {n_cc} cantaricrestine.ro songbook songs "
               f"({n_cc_dropped} duplicate uploads dropped)")
-    songs.sort(key=lambda s: s["title"].lower())
+    songs.sort(key=lambda s: s["title"].translate(COMMA_BELOW).lower())
     CATALOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     # `source` and `license` come from write_songs_file(), per song source.
     payload = {
