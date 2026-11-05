@@ -161,6 +161,7 @@ jobs:
         if: steps.diff.outputs.changed == 'yes'
         run: |
           REL=https://github.com/timi-petre/worship-book-catalog/releases/download
+          # exit 1 e bariera: o descărcare ruptă la mijloc (curl 18/56) lasă fișierul parțial în /tmp, iar mv l-ar pune în locul manifestului.
           curl -sSfL --retry 3 -o /tmp/books.json "$REL/books/books.json" \
             || { echo "::error title=books.json publicat nu s-a putut aduce::Nu public nimic."; exit 1; }
           curl -sSfL --retry 3 -o /tmp/collections.json "$REL/collections/collections.json" \
