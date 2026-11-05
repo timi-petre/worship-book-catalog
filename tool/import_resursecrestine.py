@@ -856,11 +856,14 @@ def write_package(path, payload, previous):
     `sha256` is the published file's, so the app can tell a changed or a
     damaged download apart without trusting a date.
 
-    The first run after this change (the published manifest has no sha256
-    yet) gives every package today's date once, like every run before it.
-    Deliberately: comparing with the published files instead (their ~65 MB,
-    or the digests GitHub keeps for release assets) would add a second
-    source of truth to the workflow for that single run.
+    A `previous` without sha256 (the manifests published before 5 nov 2026)
+    gives the package today's date, like every run before. The transition is
+    therefore a one-time manual step, not code: before the first run with
+    this function, the published manifests go back up with each entry's
+    sha256 taken from the digest GitHub keeps for its release asset and the
+    dates unchanged (docs/runbook.md §2), so the first run moves only the
+    books that really changed. In the workflow it would be a second source of
+    truth for a single run.
     """
     today = payload["generated"]
     old = previous or {}

@@ -10,7 +10,9 @@
 #  2. reia, incremental, TOATE sursele: indexul cu acorduri și indexul de
 #     cântece de pe resursecrestine.ro, cântările din cărți, versurile de pe
 #     cantaricrestine.ro, versurile curate și numerele de imn
-#  3. reface catalog.json și îl publică pe canalul dev + un release datat
+#  3. reface catalog.json; dacă s-a schimbat, aduce manifestele publicate ale
+#     pachetelor (obligatorii: fără ele nu publică nimic) și publică
+#     catalog.json pe canalul dev + un release datat
 #  4. RECONSTRUIEȘTE ȘI PUBLICĂ PACHETELE, partea fără de care nimic nu ajunge
 #     în aplicație: din 1.4.6, aplicația nu mai citește catalog.json, ci
 #     pachetele pe cărți din release-ul "books" și colecțiile din "collections"
@@ -142,6 +144,31 @@ jobs:
           [ "$NEW" != "$OLD" ] && CHANGED=yes || CHANGED=no
           { echo "changed=$CHANGED"; echo "count=${NEW%% *}"; } >> "$GITHUB_OUTPUT"
 
+      # Manifestele PUBLICATE, aduse înainte să se publice ceva. Din ele își
+      # iau cărțile și colecția data și amprenta (sha256): o carte neschimbată
+      # își păstrează data, deci aplicația n-o mai descarcă degeaba. Tot din
+      # collections.json rămân colecțiile pe care rularea nu le reface
+      # (Cântările Bibliei). Sunt OBLIGATORII: dacă unul nu vine (5xx, rețea),
+      # rularea se oprește aici, fără să urce nimic, nici catalog.json pe dev,
+      # deci luni viitoare se reia tot. Până pe 5 nov 2026 descărcarea era
+      # opțională: o cădere trecătoare dădea data de azi tuturor cărților
+      # (~45 MB descărcați din nou pe fiecare telefon), iar collections.json
+      # rămânea doar cu colecția refăcută. Prima publicare nu mai trece pe aici
+      # (release-urile books și collections există); dacă e vreodată nevoie,
+      # se face manual. --retry 3: un 5xx trecător nu costă o săptămână. Prin
+      # /tmp și mv: o descărcare întreruptă nu lasă jumătate de JSON în locul lor.
+      - name: Manifestele publicate
+        if: steps.diff.outputs.changed == 'yes'
+        run: |
+          REL=https://github.com/timi-petre/worship-book-catalog/releases/download
+          curl -sSfL --retry 3 -o /tmp/books.json "$REL/books/books.json" \
+            || { echo "::error title=books.json publicat nu s-a putut aduce::Nu public nimic."; exit 1; }
+          curl -sSfL --retry 3 -o /tmp/collections.json "$REL/collections/collections.json" \
+            || { echo "::error title=collections.json publicat nu s-a putut aduce::Nu public nimic."; exit 1; }
+          mkdir -p tool/out/books tool/out/collections
+          mv /tmp/books.json tool/out/books/books.json
+          mv /tmp/collections.json tool/out/collections/collections.json
+
       - name: Publică catalog.json pe dev + release datat
         if: steps.diff.outputs.changed == 'yes'
         run: |
@@ -156,20 +183,11 @@ jobs:
       - name: Pachetele pe cărți
         if: steps.diff.outputs.changed == 'yes'
         run: |
-          # Manifestul PUBLICAT, adus întâi: din el își ia fiecare carte data
-          # și amprenta (sha256). O carte cu aceeași amprentă își păstrează
-          # data, deci aplicația n-o mai descarcă degeaba. Până pe 5 nov 2026,
-          # fiecare rulare punea data ei pe toate cărțile, iar „Actualizează
-          # biblioteca” le aducea din nou pe toate (Diverse singură, 30 MB).
-          # Fără manifest, toate primesc data de azi, ca înainte. Prin /tmp:
-          # o descărcare întreruptă nu lasă jumătate de JSON în locul lui.
-          mkdir -p tool/out/books
-          if curl -sfL -o /tmp/books.json \
-               https://github.com/timi-petre/worship-book-catalog/releases/download/books/books.json; then
-            mv /tmp/books.json tool/out/books/books.json
-          else
-            echo "(fără manifest publicat, toate cărțile primesc data de azi)"
-          fi
+          # tool/out/books/books.json e manifestul publicat (pasul „Manifestele
+          # publicate”): din el își ia fiecare carte data și amprenta. Până pe
+          # 5 nov 2026, fiecare rulare punea data ei pe toate cărțile, iar
+          # „Actualizează biblioteca” le aducea din nou pe toate (Diverse
+          # singură, 30 MB).
           python3 tool/build_book_packages.py
           # Cărțile întâi, manifestul la urmă: el garantează amprenta fiecărui
           # fișier, deci nu iese înaintea lor. O urcare picată lasă publicat
@@ -184,15 +202,11 @@ jobs:
       - name: Colecția „Cântări de pe internet"
         if: steps.diff.outputs.changed == 'yes'
         run: |
-          # Manifestul PUBLICAT, adus întâi: scriptul rescrie collections.json
-          # pornind de la ce găsește local, deci fără pasul ăsta ar publica un
-          # manifest care conține doar colecția reconstruită acum, iar restul
-          # ar dispărea din aplicație la toată lumea. Tot din el vin data și
-          # amprenta colecției: data se schimbă doar cu conținutul (ca la cărți).
-          mkdir -p tool/out/collections
-          curl -sL -o tool/out/collections/collections.json \
-            https://github.com/timi-petre/worship-book-catalog/releases/download/collections/collections.json \
-            || echo "(fără manifest publicat, se scrie unul nou)"
+          # tool/out/collections/collections.json e manifestul publicat (pasul
+          # „Manifestele publicate”): scriptul îl rescrie pornind de la el, deci
+          # fără el ar publica un manifest doar cu colecția refăcută acum, iar
+          # restul ar dispărea din aplicație la toată lumea. Tot din el vin data
+          # și amprenta colecției: data se schimbă doar cu conținutul (ca la cărți).
           COL=(--id cantari-internet
                --name "Cântări de pe internet"
                --description "Cântări care nu apar în nicio carte de cântări, numai versuri.")
