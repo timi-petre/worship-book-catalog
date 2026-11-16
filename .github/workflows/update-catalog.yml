@@ -87,7 +87,8 @@ jobs:
           # Cache-ul de reușite ȘI lista paginilor fără strofe: fără a doua,
           # aceleași ~1.600 de pagini moarte s-ar cere din nou în fiecare
           # săptămână, cu tot bugetul ars pe zero cântări noi.
-          for f in cantari-internet.songs.jsonl cantari-internet.no-stanzas.txt; do
+          for f in cantari-internet.songs.jsonl cantari-internet.no-stanzas.txt \
+                   cantarile-bibliei.songs.jsonl; do
             if [ -e "tool/out/$f" ]; then mv "tool/out/$f" tool/out/collections/; fi
           done
           wc -l tool/out/*.jsonl tool/out/collections/*.jsonl \
@@ -147,10 +148,11 @@ jobs:
       # Manifestele PUBLICATE, aduse înainte să se publice ceva. Din ele își
       # iau cărțile și colecția data și amprenta (sha256): o carte neschimbată
       # își păstrează data, deci aplicația n-o mai descarcă degeaba. Tot din
-      # collections.json rămân colecțiile pe care rularea nu le reface
-      # (Cântările Bibliei). Sunt OBLIGATORII: dacă unul nu vine (5xx, rețea),
-      # rularea se oprește aici, fără să urce nimic, nici catalog.json pe dev,
-      # deci luni viitoare se reia tot. Până pe 5 nov 2026 descărcarea era
+      # collections.json rămân colecțiile pe care rularea nu le reface (azi
+      # niciuna: din 16 nov 2026 și Cântările Bibliei se reîmpachetează).
+      # Sunt OBLIGATORII: dacă unul nu vine (5xx, rețea), rularea se oprește
+      # aici, fără să urce nimic, nici catalog.json pe dev, deci luni viitoare
+      # se reia tot. Până pe 5 nov 2026 descărcarea era
       # opțională: o cădere trecătoare dădea data de azi tuturor cărților
       # (~45 MB descărcați din nou pe fiecare telefon), iar collections.json
       # rămânea doar cu colecția refăcută. Prima publicare nu mai trece pe aici
@@ -239,6 +241,23 @@ jobs:
           gh release upload collections tool/out/collections/cantari-internet.json --clobber
           gh release upload collections tool/out/collections/collections.json --clobber
 
+      # Sursă fixă (un album, 140 de cântări), deci nicio descărcare: doar
+      # reîmpachetarea cache-ului din starea restaurată. Fără pasul ăsta,
+      # nicio regulă nouă din write_songs_file() n-a mai ajuns la colecție: a
+      # stat din 24 aug până pe 16 nov 2026 cu rândul de licență vechi și cu
+      # 18 sedile (ADR 0027 din worship-book). write_package() îi păstrează
+      # data și octeții cât timp nu se schimbă nimic, deci nimeni n-o descarcă
+      # degeaba. Cache lipsă: --no-fetch iese nenul, pasul e roșu și nu urcă
+      # nimic; colecția publicată rămâne cum era.
+      - name: Colecția „Cântările Bibliei" (doar reîmpachetare)
+        if: steps.diff.outputs.changed == 'yes'
+        run: |
+          python3 tool/build_collection.py --no-fetch --id cantarile-bibliei \
+            --name "Cântările Bibliei" \
+            --description "Cântări pe texte biblice de Nicolae Moldoveanu"
+          gh release upload collections tool/out/collections/cantarile-bibliei.json --clobber
+          gh release upload collections tool/out/collections/collections.json --clobber
+
       # always(): o sursă care crapă nu mai are voie să arunce la gunoi orele
       # de crawl de dinaintea ei. Pe 27 aug 2026, cantaricrestine.ro a picat
       # după 1h28m și starea nu s-a mai salvat, deci totul s-a reluat de la zero.
@@ -249,7 +268,8 @@ jobs:
                    cantaricrestine_songs.jsonl chord_lyrics.jsonl book_numbers.jsonl; do
             [ -e "tool/out/$f" ] && gzip -kf "tool/out/$f"
           done
-          for f in cantari-internet.songs.jsonl cantari-internet.no-stanzas.txt; do
+          for f in cantari-internet.songs.jsonl cantari-internet.no-stanzas.txt \
+                   cantarile-bibliei.songs.jsonl; do
             if [ -e "tool/out/collections/$f" ]; then
               gzip -kf "tool/out/collections/$f"
               mv "tool/out/collections/$f.gz" tool/out/

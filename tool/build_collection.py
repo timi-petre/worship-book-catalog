@@ -256,7 +256,10 @@ def main() -> None:
     print(f"{col_file.name}: {len(songs)} songs, "
           f"{col_file.stat().st_size / 1e6:.1f} MB, {generated}")
 
-    # Update (or create) the manifest, replacing this collection's entry.
+    # Update (or create) the manifest, replacing this collection's entry IN
+    # PLACE: the app lists collections in manifest order (collection_providers
+    # .dart), so moving the rebuilt one to the end would reorder the Library
+    # (16 nov 2026, when "Cântările Bibliei" joined the weekly run).
     entry = {
         "id": args.cid,
         "name": args.name,
@@ -267,9 +270,9 @@ def main() -> None:
         "generated": generated,
         "sha256": sha,
     }
-    manifest["collections"] = [
-        c for c in manifest.get("collections", []) if c.get("id") != args.cid
-    ] + [entry]
+    cols = manifest.get("collections", [])
+    i = next((n for n, c in enumerate(cols) if c.get("id") == args.cid), len(cols))
+    manifest["collections"] = cols[:i] + [entry] + cols[i + 1:]
     manifest["generated"] = date
     manifest_file.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=1),
