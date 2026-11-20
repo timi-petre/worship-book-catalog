@@ -35,7 +35,7 @@
 <p class="meta">
   Aplicația: <strong>Cântări de Laudă</strong> (Praise Songs), <code>com.worship.worship_book</code><br>
   Operator: Timotei Sorin Petre, persoană fizică · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Ultima actualizare: 2026-11-07 · <a href="#english">English version below</a>
+  Ultima actualizare: 2026-11-20 · <a href="#english">English version below</a>
 </p>
 
 <div class="card">
@@ -121,8 +121,9 @@ citi:</p>
 </ul>
 <p><strong>Rămân doar pe telefon:</strong> lista echipei de închinare (numele și rolurile
 obișnuite pe care le ții în aplicație), partiturile PDF adăugate de tine, cărțile
-descărcate, căutările și setările aplicației. Fără cont, și numele ales stă pe telefon
-până când deschizi un program partajat de altcineva.</p>
+descărcate, căutările și setările aplicației, inclusiv ecranul pe care îl alegi pentru
+urmărirea liderului (acorduri sau versuri, din versiunea 1.19.0). Fără cont, și numele
+ales stă pe telefon până când deschizi un program partajat de altcineva.</p>
 
 <h2>Programele partajate</h2>
 <ul>
@@ -130,14 +131,18 @@ până când deschizi un program partajat de altcineva.</p>
   numele lui, cântările din el (titlul și textul), numele date cântărilor pentru echipă și
   numele tău afișat devin lizibile pentru oricine are codul de partajare. Oprești
   partajarea oricând.</li>
-  <li><strong>Numele echipei și reglajele tale, oprite implicit:</strong> două
-  comutatoare din dialogul de partajare hotărăsc dacă pleacă mai mult odată cu programul.
-  „Trimite și numele echipei” adaugă cine slujește și rolul fiecăruia la acel program;
-  „Trimite și reglajele mele” adaugă notițele, gama, transpunerea și tempoul tău.
-  Amândouă rămân oprite până le pornești, iar ce trimit poate citi oricine are codul.
-  Numele dintr-un program sau dintr-o echipă de laudă a unei biserici pot arăta că cineva
-  face parte dintr-o comunitate religioasă, deci trimite numele altor oameni doar cu
-  acordul lor.</li>
+  <li><strong>Numele echipei și reglajele tale pleacă mereu odată cu programul (din
+  versiunea 1.19.0):</strong> cine slujește și rolul fiecăruia la acel program, plus
+  reglajele tale pe cântările lui (notițele, gama, transpunerea, tempoul și track-ul);
+  într-un program cu co-lideri, reglajele setate pentru toți. Nu există comutator pentru
+  ele: dialogul de partajare o spune, iar oricine are codul le poate citi. Asta e valabil
+  și pentru programele partajate înainte de actualizare. Versiunile de până la 1.18 trimit
+  numele echipei și reglajele tale proprii doar cu comutatoarele lor din dialogul de
+  partajare pornite; comutatoarele stau oprite până le pornești tu sau până folosești cu
+  același cont versiunea 1.19.0 ori una mai nouă, care le pornește la programele pe care
+  le partajezi. Numele dintr-un program sau dintr-o echipă de laudă a unei biserici pot
+  arăta că cineva face parte dintr-o comunitate religioasă, deci adaugă numele altor
+  oameni într-un program doar cu acordul lor.</li>
   <li><strong>Codul rămâne rezervat (din versiunea 1.16):</strong> codul rămâne rezervat
   contului tău, ca nimeni altcineva să nu-l poată folosi pentru alt program: se păstrează
   doar codul și identificatorul intern al contului, fără program și fără nume,
@@ -168,6 +173,17 @@ până când deschizi un program partajat de altcineva.</p>
   Identificatorul tău intern (al contului sau cel anonim), fără nume, rămâne în programul
   partajat, vizibil oricui are codul, până la deblocare sau până la ștergerea programului,
   și după ștergerea contului sau a datelor tale, când nu mai duce la tine.</li>
+  <li><strong>Prezentarea urmărită de echipă (din versiunea 1.19.0):</strong> când
+  liderul (sau un co-lider) prezintă un program partajat, aplicația ține în el o singură
+  înregistrare mică de poziție: identificatorul celui care conduce (cont sau anonim, fără
+  nume), ora fiecărei schimbări, ce cântare și ce strofă sunt pe ecran, dacă ecranul
+  sălii e golit („Negru”) și un cod aleator al acelei prezentări, care nu leagă nimic de
+  un om sau de un dispozitiv. Nu conține text de cântare și nici nume. Telefoanele care
+  au programul deschis, cu o sesiune, trec singure pe strofa respectivă; înregistrarea o
+  poate citi oricine are codul și o sesiune, ca prezența descrisă mai sus. Rămâne până la
+  închiderea prezentării; dacă aplicația e oprită înainte, până la prima deschidere a
+  programului de către un editor după 3 ore sau până la oprirea partajării. Nu se ține
+  niciun istoric. Urmărirea cere internet.</li>
 </ul>
 
 <h2>Raportarea unei greșeli dintr-o cântare din catalog</h2>
@@ -293,6 +309,9 @@ standard ale Comisiei Europene, care se aplică dacă certificarea cade.</p>
   rămâne, cum scrie mai sus.</li>
   <li><strong>Propunerile:</strong> până când aplicația liderului le preia; după aceea
   rămâne în program doar cântarea.</li>
+  <li><strong>Poziția prezentării:</strong> până când liderul închide prezentarea; dacă
+  aplicația a fost oprită, până la prima deschidere a programului de către un editor după
+  3 ore sau până la oprirea partajării. Niciun istoric.</li>
   <li><strong>Blocările:</strong> cât ține programul partajat, dacă liderul sau un
   co-lider nu te deblochează mai devreme.</li>
   <li><strong>Rapoartele de greșeală:</strong> se șterg la 30 de zile după ce sunt
@@ -338,7 +357,8 @@ sau la autoritatea din țara UE în care locuiești.</p>
   oprește programele pe care le partajezi (codurile lor nu mai funcționează, iar tot ce e
   stocat în ele se șterge, afară de rezervarea codului de mai sus), îți scoate numele din
   listele de echipă ale programelor pe care le-ai urmărit pe telefonul respectiv,
-  împreună cu propunerile tale încă nepreluate din ele, cere Google (și, pe iPhone și iPad, Apple) să retragă accesul aplicației la contul Google sau
+  împreună cu propunerile tale încă nepreluate din ele și cu înregistrarea de poziție a
+  unei prezentări pe care o conduceai în ele, cere Google (și, pe iPhone și iPad, Apple) să retragă accesul aplicației la contul Google sau
   Apple cu care ai intrat și elimină înregistrarea de autentificare și datele tale private
   sincronizate. Ștergerea cere
   internet și o autentificare recentă; aplicația te roagă să te autentifici din nou dacă e
@@ -350,7 +370,8 @@ sau la autoritatea din țara UE în care locuiești.</p>
   intrările de dinainte.</li>
   <li><strong>Fără cont:</strong> Cont → Șterge datele mele din programe îți scoate
   intrările din listele de echipă ale programelor urmărite pe telefonul respectiv,
-  împreună cu propunerile tale încă nepreluate din ele, scoate numele de pe identificatorul anonim și șterge identificatorul. Dacă Firebase nu mai lasă
+  împreună cu propunerile tale încă nepreluate din ele și cu înregistrarea de poziție a
+  unei prezentări pe care o conduceai în ele, scoate numele de pe identificatorul anonim și șterge identificatorul. Dacă Firebase nu mai lasă
   telefonul să-l șteargă (poate cere o autentificare recentă, pe care un identificator
   anonim n-o poate da), în Firebase Authentication rămâne un identificator fără nume și
   fără date, care nu mai duce la tine și se șterge după 12 luni de nefolosire. Numele ales
@@ -445,7 +466,7 @@ motivul la adresa contului, din același cont Gmail, și cum poți contesta deci
 <p class="meta">
   App: <strong>Praise Songs</strong> (Cântări de Laudă), <code>com.worship.worship_book</code><br>
   Controller: Timotei Sorin Petre, natural person · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Last updated: 2026-11-07
+  Last updated: 2026-11-20
 </p>
 
 <div class="card">
@@ -529,8 +550,9 @@ and follow you to your other devices. Nobody else can read them:</p>
 </ul>
 <p><strong>Stays only on your phone:</strong> the worship team list (the names and usual
 roles you keep in the app), the sheet music PDFs you add, the downloaded books, your
-searches and the app's settings. Without an account, the name you chose also stays on
-your phone until you open a setlist someone else shared.</p>
+searches and the app's settings, including the screen you choose for following the
+leader (chords or lyrics, from version 1.19.0). Without an account, the name you chose
+also stays on your phone until you open a setlist someone else shared.</p>
 
 <h2>Shared setlists</h2>
 <ul>
@@ -538,13 +560,17 @@ your phone until you open a setlist someone else shared.</p>
   setlist, its name, its songs (title and text), the names you give songs for your team
   and your display name become readable by anyone who has the sharing code. Stop sharing
   at any time to take it offline.</li>
-  <li><strong>Team names and your settings, off by default:</strong> two switches in the
-  sharing dialog decide whether more goes with the setlist. "Send the team names too" adds
-  who is serving and their roles in that setlist; "Send my settings too" adds your notes,
-  key, transposition and tempo. Both stay off until you turn them on, and what they send is
-  readable by anyone who has the code. Names in a church's setlist or worship team can
-  reveal that someone takes part in a religious community, so send other people's names
-  only with their agreement.</li>
+  <li><strong>Team names and your settings always go with the setlist (from version
+  1.19.0):</strong> who is serving and their roles in that setlist, and your settings on
+  its songs (notes, key, transposition, tempo and track); in a setlist with co-leaders,
+  the settings set for everyone. There is no switch for them: the sharing dialog says so,
+  and anyone who has the code can read them. This also applies to the setlists you shared
+  before updating. Versions up to 1.18 send the team names and your own settings only with
+  their switches in the sharing dialog turned on; the switches stay off until you turn
+  them on, or until you use version 1.19.0 or later with the same account, which turns
+  them on for the setlists you share. Names in a church's setlist or worship team can
+  reveal that someone takes part in a religious community, so add other people's names
+  to a setlist only with their agreement.</li>
   <li><strong>The code stays reserved (from version 1.16):</strong> the code stays
   reserved to your account, so no one else can reuse it for another setlist: only the code
   and your internal account identifier are kept, without the setlist or your
@@ -579,6 +605,17 @@ your phone until you open a setlist someone else shared.</p>
   setlist, readable by anyone who has the code, until you are unblocked or the setlist is
   deleted, also after you delete your account or your data, when it no longer leads to
   you.</li>
+  <li><strong>The presentation the team follows (from version 1.19.0):</strong> when the
+  leader (or a co-leader) presents a shared setlist, the app keeps one small position
+  record in it: the identifier of whoever is leading (account or anonymous, without a
+  name), the time of each change, which song and which verse are on screen, whether the
+  room screen is blanked, and a random code of that presentation, which links to no
+  person or device. No song text and no name is in it. Phones that have the setlist open,
+  with a session, move to that verse by themselves; anyone who has the code and a session
+  can read the record, like the presence described above. It stays until the
+  presentation is closed; if the app is killed first, until the first time an editor
+  opens the setlist more than 3 hours later, or until sharing stops. No history is kept.
+  Following needs an internet connection.</li>
 </ul>
 
 <h2>Reporting a mistake in a catalog song</h2>
@@ -702,6 +739,9 @@ standard contractual clauses, which apply if that certification lapses.</p>
   stays, as described above.</li>
   <li><strong>Proposals:</strong> until the leader's app takes them in; then only the song
   remains in the setlist.</li>
+  <li><strong>The presentation position:</strong> until the leader closes the
+  presentation; if the app was killed, until the first time an editor opens the setlist
+  after 3 hours, or until sharing stops. No history is kept.</li>
   <li><strong>Blocks:</strong> as long as the shared setlist lasts, unless the leader or a
   co-leader unblocks you sooner.</li>
   <li><strong>Mistake reports:</strong> deleted 30 days after being handled (the
@@ -746,7 +786,8 @@ the EU country where you live.</p>
   account) stops the setlists you share (their codes stop working and everything stored
   in them is removed, except the code reservation described above), removes your name
   from the team lists of the setlists you followed on that phone, together with your
-  proposals to them not yet taken in, asks Google (and, on
+  proposals to them not yet taken in and the position record of a presentation you were
+  leading in them, asks Google (and, on
   iPhone and iPad, Apple) to remove the app's access to the Google or Apple account you
   signed in with, and removes your authentication record and your private synced
   data. This needs an internet connection
@@ -758,7 +799,8 @@ the EU country where you live.</p>
   before.</li>
   <li><strong>Without an account:</strong> Account → Delete my data from setlists removes
   your entries from the team lists of the setlists you followed on that phone, together
-  with your proposals to them not yet taken in, removes your name from the anonymous identifier and deletes the identifier. If Firebase no
+  with your proposals to them not yet taken in and the position record of a presentation
+  you were leading in them, removes your name from the anonymous identifier and deletes the identifier. If Firebase no
   longer lets the phone delete it (it can ask for a recent sign-in, which an anonymous
   identifier cannot give), an identifier without a name or any data remains in Firebase
   Authentication; it no longer leads to you and is deleted after 12 months unused. The name you chose stays only on your phone. Signing in to an account that
