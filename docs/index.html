@@ -35,7 +35,7 @@
 <p class="meta">
   Aplicația: <strong>Cântări de Laudă</strong> (Praise Songs), <code>com.worship.worship_book</code><br>
   Operator: Timotei Sorin Petre, persoană fizică · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Ultima actualizare: 2026-11-20 · <a href="#english">English version below</a>
+  Ultima actualizare: 2026-11-26 · <a href="#english">English version below</a>
 </p>
 
 <div class="card">
@@ -86,6 +86,17 @@ jurnalele lui, după politica lui:</p>
   o verificare reușită pe zi; una care pică se reia la următoarea deschidere sau revenire.
   Pe Wi-Fi descarcă singură versiunile noi. „Laudele Domnului” 2024 e chiar în aplicație
   și nu se descarcă.</li>
+  <li><strong>Cartea bisericii (din versiunea 1.20.0):</strong> o biserică își poate ține
+  cântările într-un fișier al ei, pe Google Drive sau pe serverul ei. Dacă îl adaugi cu
+  linkul sau codul QR primit de la ea, aplicația îl descarcă <strong>direct de
+  acolo</strong>, nu prin noi, și îl păstrează pe telefon; o dată pe zi, pe Wi-Fi, îl
+  verifică din nou. Serverul acela (Google sau furnizorul bisericii) vede adresa IP a
+  telefonului, ca orice site pe care îl deschizi. Linkul stă doar în reglajele de pe
+  telefon (și în copia de rezervă iCloud sau Google a telefonului, dacă o folosești): nu
+  urcă în cont și nu intră în rapoartele de eroare. Cartea bisericii nu ajunge la noi;
+  n-o găzduim și n-o citim. O cântare din ea pe care o pui la favorite sau într-un
+  program devine una dintre cântările tale: ca oricare, se sincronizează cu contul tău,
+  dacă ești conectat, și pleacă odată cu programul pe care îl partajezi.</li>
   <li><strong>Versiunea nouă:</strong> la fiecare pornire, aplicația întreabă App Store
   (iPhone, iPad) sau Google Play (Android) dacă există o versiune mai nouă.</li>
   <li><strong>App Check:</strong> fiecare cerere către Firebase (contul, programele
@@ -225,7 +236,8 @@ rapoartele de eroare automat, fără comutator.</p>
   Microfonul e folosit doar cât rulează acel buton, iar permisiunea se cere prima dată
   când îl apeși.</li>
   <li><strong>Camera (opțională, la cerere, din 1.6.0):</strong> butonul „Scanează codul
-  QR” din Programe citește codul QR al unui program sau al unei cântări primite. Imaginea
+  QR” din Programe citește codul QR al unui program sau al unei cântări primite, iar cel
+  din Cartea bisericii, codul cărții unei biserici. Imaginea
   camerei e citită <strong>pe dispozitivul tău</strong>, de un cititor de coduri inclus în
   aplicație, și aruncată: nu se salvează nicio poză și nicio imagine nu pleacă de pe
   telefon. Se păstrează doar programul sau cântarea pe care alegi apoi să le salvezi.
@@ -466,7 +478,7 @@ motivul la adresa contului, din același cont Gmail, și cum poți contesta deci
 <p class="meta">
   App: <strong>Praise Songs</strong> (Cântări de Laudă), <code>com.worship.worship_book</code><br>
   Controller: Timotei Sorin Petre, natural person · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Last updated: 2026-11-20
+  Last updated: 2026-11-26
 </p>
 
 <div class="card">
@@ -516,6 +528,17 @@ under its own privacy policy:</p>
   check a day; a failed one is retried the next time you open or return to the app. On
   Wi-Fi it downloads the new versions by itself. "Laudele Domnului" 2024 is inside the app
   and needs no download.</li>
+  <li><strong>Church songbook (from version 1.20.0):</strong> a church may keep its songs in
+  a file of its own, on Google Drive or on its own server. If you add it with the link
+  or the QR code it gave you, the app downloads it <strong>straight from there</strong>,
+  not through us, and keeps it on your phone; once a day, on Wi-Fi, it checks it again.
+  That server (Google, or the church's provider) sees your device's IP address, like any
+  website you open. The link stays only in the settings on your phone (and in your
+  phone's own iCloud or Google backup, if you use one): it is not uploaded to your
+  account and never goes into crash reports. We do not receive, host or read the
+  church's book. A song from it that you star or put in a setlist becomes one of your
+  songs: like any of them, it syncs with your account if you are signed in, and travels
+  in a setlist you share.</li>
   <li><strong>New version:</strong> at each start, the app asks the App Store (iPhone,
   iPad) or Google Play (Android) whether a newer version exists.</li>
   <li><strong>App Check:</strong> every request to Firebase (account, shared setlists,
@@ -656,7 +679,8 @@ automatically, without a switch.</p>
   microphone is used only while that button is running, and the permission is asked the
   first time you press it.</li>
   <li><strong>Camera (optional, on request, from 1.6.0):</strong> the "Scan a QR code"
-  button in Setlists reads the QR code of a shared setlist or song. The camera image is
+  button in Setlists reads the QR code of a shared setlist or song, and the one under
+  Church songbook reads the code of a church songbook. The camera image is
   read <strong>on your device</strong>, by a code reader built into the app, and dropped:
   no picture is saved and no image leaves your phone. Only the setlist or song you then
   choose to save is kept. The camera is used only while the scanner is open, and the
