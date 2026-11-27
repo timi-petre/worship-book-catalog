@@ -697,6 +697,24 @@ def _is_icam(song_id, text="", book=""):
             or f"# Carte: {ICAM_BOOK}" in text)
 
 
+# Songs taken out of EVERY published file, by id, for legal reasons
+# (docs/juridic.md §2, the rows named below). The sources keep serving them
+# and the weekly run rebuilds everything from the sources, so a song deleted
+# by hand from a package would be back the next Monday: the rule lives HERE
+# and write_songs_file(), the one exit, drops them. Ids only, never text; the
+# same idea as WITHDRAWN in build_book_packages.py, but per song.
+REMOVED_SONGS = {
+    # „Dacă ești purtat de valul furios”, the second variant at nr. 272: the
+    # 2006 Baptist Union text (©) under the 1913 label. The 1913 one, c323500,
+    # stays. Row „Cântările Evangheliei”; removed 27 nov 2026, Timi's call.
+    "c5935",
+    # „Părintele asupra-mi veghează”: a translation of „I Am His Child”, by
+    # Clara McAlister Brooks (1882-1980), protected in the EU until 2050. Row
+    # „Partituri culese”, B3; removed 27 nov 2026, Timi's call.
+    "c324953",
+}
+
+
 PDC_BOOK = "Pe Drumul Credinței"  # the BCEV Union's book
 CC_URL = "https://creativecommons.org/licenses/by-nc-sa/3.0/"
 
@@ -788,6 +806,8 @@ def write_songs_file(path, payload):
     the book packages incl. Diverse (build_book_packages.py) and the
     collections (build_collection.py).
 
+    The songs of REMOVED_SONGS are dropped HERE, so no output carries them.
+
     Manual corrections replace `chordpro` HERE, so no output can skip them,
     and drop `lyrics`: the corrected text is the only one that ships. The
     site's clean lyrics feed the app's synthetic "Doar versuri" version, so a
@@ -819,6 +839,15 @@ def write_songs_file(path, payload):
     if icam:
         sys.exit(f"{path.name}: {len(icam)} cantari din Laudele Domnului (ICAM), "
                  f"ex. {icam[:3]}; textul e licentiat doar pentru aplicatie, ADR 0016")
+    # Dropped, not refused like ICAM: the sources bring them back every week
+    # (REMOVED_SONGS). In place, so a caller holding the list (the book
+    # packages) counts what was written; `count` follows.
+    songs = payload["songs"]
+    kept = [s for s in songs if str(s["id"]) not in REMOVED_SONGS]
+    if len(kept) != len(songs):
+        print(f"{path.name}: {len(songs) - len(kept)} scoase (REMOVED_SONGS)")
+        songs[:] = kept
+        payload["count"] = len(kept)
     applied = rejected = 0
     for song in payload["songs"]:
         doc = curated.get(str(song["id"]))
@@ -903,8 +932,8 @@ def write_package(path, payload, previous):
 
 def _content_hash(songs):
     """Fingerprint of everything that decides the published songs: the
-    uncorrected songs (clean lyrics candidates included), the corrections and
-    the licence labels. The weekly workflow publishes when it changes, not
+    uncorrected songs (clean lyrics candidates included), the corrections,
+    the licence labels and REMOVED_SONGS. The weekly workflow publishes when it changes, not
     only when `count` does, so a reconversion, a correction or a new label
     reaches people at the same song count.
 
@@ -918,6 +947,7 @@ def _content_hash(songs):
         json.dumps(songs, ensure_ascii=False, sort_keys=True).encode("utf-8"))
     h.update(json.dumps(LICENSES, ensure_ascii=False).encode("utf-8"))
     h.update(json.dumps([TEXT_FIELDS, sorted(COMMA_BELOW.items())]).encode("utf-8"))
+    h.update(json.dumps(sorted(REMOVED_SONGS)).encode("utf-8"))
     for f in sorted(CURATED_DIR.glob("*.cho")):
         h.update(f.name.encode("utf-8") + b"\0" + f.read_bytes())
     return h.hexdigest()

@@ -32,7 +32,7 @@ import sys
 import unicodedata
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from import_resursecrestine import write_package  # noqa: E402
+from import_resursecrestine import REMOVED_SONGS, write_package  # noqa: E402
 
 ROOT = pathlib.Path(__file__).parent.parent
 OUT = ROOT / "tool" / "out" / "books"
@@ -128,7 +128,10 @@ def main() -> None:
         print(f"{cid}.json: {len(book_songs)} songs, "
               f"{size / 1e6:.2f} MB ({gz / 1e6:.2f} MB gzip), {generated}")
 
-    assert total == len(songs), f"{total} packaged != {len(songs)} in catalog"
+    # write_songs_file() drops REMOVED_SONGS from the lists, in place.
+    removed = sum(str(s["id"]) in REMOVED_SONGS for s in songs)
+    assert total == len(songs) - removed, (
+        f"{total} packaged != {len(songs)} in catalog - {removed} removed")
     manifest = {"collections": entries, "generated": date, "withdrawn": WITHDRAWN}
     manifest_file.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=1),
