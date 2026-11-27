@@ -697,20 +697,15 @@ def _is_icam(song_id, text="", book=""):
             or f"# Carte: {ICAM_BOOK}" in text)
 
 
-# Songs taken out of EVERY published file, by id, for legal reasons
-# (docs/juridic.md §2, the rows named below). The sources keep serving them
-# and the weekly run rebuilds everything from the sources, so a song deleted
-# by hand from a package would be back the next Monday: the rule lives HERE
-# and write_songs_file(), the one exit, drops them. Ids only, never text; the
-# same idea as WITHDRAWN in build_book_packages.py, but per song.
+# Songs taken out of EVERY published file, by id. The sources keep serving
+# them and the weekly run rebuilds everything from the sources, so a song
+# deleted by hand from a package would be back the next Monday: the rule lives
+# HERE and write_songs_file(), the one exit, drops them. Ids only, never text;
+# the same idea as WITHDRAWN in build_book_packages.py, but per song.
 REMOVED_SONGS = {
-    # „Dacă ești purtat de valul furios”, the second variant at nr. 272: the
-    # 2006 Baptist Union text (©) under the 1913 label. The 1913 one, c323500,
-    # stays. Row „Cântările Evangheliei”; removed 27 nov 2026, Timi's call.
+    # Songs withdrawn by the maintainer (27 Nov 2026); reasons in the app
+    # repo's docs/juridic.md.
     "c5935",
-    # „Părintele asupra-mi veghează”: a translation of „I Am His Child”, by
-    # Clara McAlister Brooks (1882-1980), protected in the EU until 2050. Row
-    # „Partituri culese”, B3; removed 27 nov 2026, Timi's call.
     "c324953",
 }
 
