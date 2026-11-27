@@ -35,7 +35,7 @@
 <p class="meta">
   Aplicația: <strong>Cântări de Laudă</strong> (Praise Songs), <code>com.worship.worship_book</code><br>
   Operator: Timotei Sorin Petre, persoană fizică · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Ultima actualizare: 2026-11-26 · <a href="#english">English version below</a>
+  Ultima actualizare: 2026-11-27 · <a href="#english">English version below</a>
 </p>
 
 <div class="card">
@@ -60,14 +60,15 @@ scrie la <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a>.</p>
 
 <h2>Fără cont</h2>
 <ul>
-  <li>Totul stă pe dispozitivul tău. La prima pornire aplicația se oferă să-ți țină minte
-  numele; e opțional, iar numele stă pe telefon.</li>
+  <li>Totul stă pe dispozitivul tău. Aplicația îți cere numele abia când deschizi primul
+  program partajat de altcineva, singurul loc unde e nevoie de el (din versiunea 1.21;
+  înainte se oferea să ți-l țină minte la prima pornire). E opțional, iar numele stă pe
+  telefon.</li>
   <li>Când deschizi un program partajat de altcineva (din versiunea 1.6.0), aplicația
   creează un identificator anonim (Firebase Authentication, fără email și fără parolă) și
-  îl trimite împreună cu numele, cum scrie la „Oamenii dintr-un program partajat”. Dacă ai
-  sărit peste nume, aplicația ți-l cere o singură dată, atunci; dacă sari și acolo, nu
-  creează și nu trimite nimic, iar programul se citește fără ca tu să apari în echipa
-  lui.</li>
+  îl trimite împreună cu numele, cum scrie la „Oamenii dintr-un program partajat”. Numele
+  ți-l cere o singură dată, atunci; dacă sari peste el, nu creează și nu trimite nimic, iar
+  programul se citește fără ca tu să apari în echipa lui.</li>
   <li>Cealaltă excepție e raportul unei greșeli, trimis doar dacă vrei, descris la
   „Raportarea unei greșeli dintr-o cântare din catalog”. Rapoartele de eroare pleacă doar
   dacă le pornești (cu excepția trimiterii de o singură dată pe iPhone și iPad, vezi
@@ -87,10 +88,12 @@ jurnalele lui, după politica lui:</p>
   Pe Wi-Fi descarcă singură versiunile noi. „Laudele Domnului” 2024 e chiar în aplicație
   și nu se descarcă.</li>
   <li><strong>Cartea bisericii (din versiunea 1.20.0):</strong> o biserică își poate ține
-  cântările într-un fișier al ei, pe Google Drive sau pe serverul ei. Dacă îl adaugi cu
-  linkul sau codul QR primit de la ea, aplicația îl descarcă <strong>direct de
-  acolo</strong>, nu prin noi, și îl păstrează pe telefon; o dată pe zi, pe Wi-Fi, îl
-  verifică din nou. Serverul acela (Google sau furnizorul bisericii) vede adresa IP a
+  cântările într-un fișier al ei, pe Google Drive sau pe serverul ei (din versiunea
+  1.21.0, și într-un tabel Google Sheets). Dacă îl adaugi cu linkul sau codul QR primit de
+  la ea, aplicația îl descarcă <strong>direct de acolo</strong>, nu prin noi, și îl
+  păstrează pe telefon. Din versiunea 1.21.0 îl verifică din nou când deschizi aplicația
+  sau revii în ea, cel mult o dată la 15 minute și pe orice rețea; în versiunea 1.20.0, o
+  dată pe zi, pe Wi-Fi. Serverul acela (Google sau furnizorul bisericii) vede adresa IP a
   telefonului, ca orice site pe care îl deschizi. Linkul stă doar în reglajele de pe
   telefon (și în copia de rezervă iCloud sau Google a telefonului, dacă o folosești): nu
   urcă în cont și nu intră în rapoartele de eroare. Cartea bisericii nu ajunge la noi;
@@ -478,7 +481,7 @@ motivul la adresa contului, din același cont Gmail, și cum poți contesta deci
 <p class="meta">
   App: <strong>Praise Songs</strong> (Cântări de Laudă), <code>com.worship.worship_book</code><br>
   Controller: Timotei Sorin Petre, natural person · Contact: <a href="mailto:ontagonal@gmail.com">ontagonal@gmail.com</a><br>
-  Last updated: 2026-11-26
+  Last updated: 2026-11-27
 </p>
 
 <div class="card">
@@ -502,14 +505,15 @@ the app, a natural person. For anything about this policy or your data, write to
 
 <h2>Without an account</h2>
 <ul>
-  <li>Everything stays on your device. The first time it starts, the app offers to
-  remember your name; giving it is optional, and the name stays on your phone.</li>
+  <li>Everything stays on your device. The app asks for your name only when you first open
+  a setlist someone else shared, the one place it is needed (from version 1.21; before, it
+  offered to remember it the first time it started). Giving it is optional, and the name
+  stays on your phone.</li>
   <li>When you open a setlist someone else shared (from version 1.6.0), the app creates an
   anonymous identifier (Firebase Authentication, without email or password) and sends it
-  together with that name, as described under "People in a shared setlist". If you
-  skipped the name, the app asks for it once, at that moment; if you skip it again, it
-  creates nothing and sends nothing, and you read the setlist without appearing in its
-  team.</li>
+  together with that name, as described under "People in a shared setlist". The name
+  is asked for once, at that moment; if you skip it, the app creates nothing and sends
+  nothing, and you read the setlist without appearing in its team.</li>
   <li>The other exception is a mistake report you choose to send, described under
   "Reporting a mistake in a catalog song". Crash reports are sent only if you turn them on
   (except the one-time case on iPhone and iPad, see "Crash reports"). Nothing else about you
@@ -529,10 +533,12 @@ under its own privacy policy:</p>
   Wi-Fi it downloads the new versions by itself. "Laudele Domnului" 2024 is inside the app
   and needs no download.</li>
   <li><strong>Church songbook (from version 1.20.0):</strong> a church may keep its songs in
-  a file of its own, on Google Drive or on its own server. If you add it with the link
-  or the QR code it gave you, the app downloads it <strong>straight from there</strong>,
-  not through us, and keeps it on your phone; once a day, on Wi-Fi, it checks it again.
-  That server (Google, or the church's provider) sees your device's IP address, like any
+  a file of its own, on Google Drive or on its own server (from version 1.21.0, also in a
+  Google Sheets spreadsheet). If you add it with the link or the QR code it gave you, the
+  app downloads it <strong>straight from there</strong>, not through us, and keeps it on
+  your phone. From version 1.21.0 it checks it again when you open or return to the app,
+  at most once every 15 minutes and on any network; in version 1.20.0, once a day, on
+  Wi-Fi. That server (Google, or the church's provider) sees your device's IP address, like any
   website you open. The link stays only in the settings on your phone (and in your
   phone's own iCloud or Google backup, if you use one): it is not uploaded to your
   account and never goes into crash reports. We do not receive, host or read the
